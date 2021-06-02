@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ea56ddb7-581a-46f6-8e6f-9c2c1fb9fc51" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/docs/Ashutosh_Tiwari.pdf" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/resume_staging.pdf" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -55,7 +53,7 @@
       <workItem from="1607543072450" duration="2703000" />
       <workItem from="1609211274042" duration="4445000" />
       <workItem from="1609261888647" duration="1601000" />
-      <workItem from="1622658968144" duration="2127000" />
+      <workItem from="1622658968144" duration="2643000" />
     </task>
     <servers />
   </component>
@@ -66,10 +64,10 @@
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="15" y="38" width="1650" height="930" maximized="true" key="DiffContextDialog" timestamp="1622660428098">
+    <state x="15" y="38" width="1650" height="930" maximized="true" key="DiffContextDialog" timestamp="1622661694332">
       <screen x="0" y="23" width="1680" height="960" />
     </state>
-    <state x="15" y="38" width="1650" height="930" maximized="true" key="DiffContextDialog/0.23.1680.960@0.23.1680.960" timestamp="1622660428098" />
+    <state x="15" y="38" width="1650" height="930" maximized="true" key="DiffContextDialog/0.23.1680.960@0.23.1680.960" timestamp="1622661694332" />
     <state x="538" y="258" width="604" height="490" key="find.popup" timestamp="1622659269735">
       <screen x="0" y="23" width="1680" height="960" />
     </state>
