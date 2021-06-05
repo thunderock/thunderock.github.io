@@ -54,20 +54,35 @@
       <workItem from="1609211274042" duration="4445000" />
       <workItem from="1609261888647" duration="1601000" />
       <workItem from="1622658968144" duration="2696000" />
+      <workItem from="1622921753104" duration="356000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="Vcs.Log.History.Properties">
+    <option name="COLUMN_ORDER">
+      <list>
+        <option value="0" />
+        <option value="2" />
+        <option value="3" />
+        <option value="1" />
+      </list>
+    </option>
+  </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="15" y="38" width="1650" height="930" maximized="true" key="DiffContextDialog" timestamp="1622661694332">
+    <state x="15" y="38" width="1650" height="930" maximized="true" key="DiffContextDialog" timestamp="1622922118824">
       <screen x="0" y="23" width="1680" height="960" />
     </state>
     <state x="15" y="38" width="1650" height="930" maximized="true" key="DiffContextDialog/0.23.1680.960@0.23.1680.960" timestamp="1622661694332" />
+    <state x="627" y="207" key="VCS.ChangeListViewerDialog" timestamp="1622921922913">
+      <screen x="0" y="23" width="1680" height="960" />
+    </state>
+    <state x="627" y="207" key="VCS.ChangeListViewerDialog/-110.-1057.1920.1057/0.23.1680.960@-110.-1057.1920.1057" timestamp="1622921922913" />
     <state x="538" y="258" width="604" height="490" key="find.popup" timestamp="1622659269735">
       <screen x="0" y="23" width="1680" height="960" />
     </state>
