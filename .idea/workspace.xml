@@ -2,6 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ea56ddb7-581a-46f6-8e6f-9c2c1fb9fc51" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/img/anavidhya.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/img/profile.jpg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
     </list>
@@ -55,6 +57,7 @@
       <workItem from="1609261888647" duration="1601000" />
       <workItem from="1622658968144" duration="2696000" />
       <workItem from="1622921753104" duration="356000" />
+      <workItem from="1623184142076" duration="1473000" />
     </task>
     <servers />
   </component>
@@ -83,9 +86,10 @@
       <screen x="0" y="23" width="1680" height="960" />
     </state>
     <state x="627" y="207" key="VCS.ChangeListViewerDialog/-110.-1057.1920.1057/0.23.1680.960@-110.-1057.1920.1057" timestamp="1622921922913" />
-    <state x="538" y="258" width="604" height="490" key="find.popup" timestamp="1622659269735">
+    <state x="538" y="258" width="604" height="490" key="find.popup" timestamp="1623184374579">
       <screen x="0" y="23" width="1680" height="960" />
     </state>
+    <state x="538" y="258" width="604" height="490" key="find.popup/-110.-1057.1920.1057/0.23.1680.960@0.23.1680.960" timestamp="1623184374579" />
     <state x="538" y="258" width="604" height="490" key="find.popup/0.23.1680.960@0.23.1680.960" timestamp="1622659269735" />
   </component>
 </project>
