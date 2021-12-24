@@ -3,7 +3,12 @@
   <component name="ChangeListManager">
     <list default="true" id="ea56ddb7-581a-46f6-8e6f-9c2c1fb9fc51" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/css/style.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Ashutosh_Tiwari.pdf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/anavidhya.jpeg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/profile.jpeg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/profile.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -17,6 +22,9 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="JupyterTrust" id="fd732f80-66ed-454b-bc14-080ffac0dfde" />
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
   <component name="ProjectCodeStyleSettingsMigration">
     <option name="version" value="1" />
   </component>
@@ -30,10 +38,12 @@
   </component>
   <component name="PropertiesComponent">
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_package_manager_path" value="npm" />
-    <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -57,6 +67,8 @@
       <workItem from="1622921753104" duration="356000" />
       <workItem from="1623184142076" duration="1473000" />
       <workItem from="1623198127190" duration="323000" />
+      <workItem from="1640328288571" duration="163000" />
+      <workItem from="1640328458035" duration="71000" />
     </task>
     <servers />
   </component>
@@ -75,20 +87,5 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-  </component>
-  <component name="WindowStateProjectService">
-    <state x="15" y="38" width="1650" height="930" maximized="true" key="DiffContextDialog" timestamp="1622922118824">
-      <screen x="0" y="23" width="1680" height="960" />
-    </state>
-    <state x="15" y="38" width="1650" height="930" maximized="true" key="DiffContextDialog/0.23.1680.960@0.23.1680.960" timestamp="1622661694332" />
-    <state x="627" y="207" key="VCS.ChangeListViewerDialog" timestamp="1622921922913">
-      <screen x="0" y="23" width="1680" height="960" />
-    </state>
-    <state x="627" y="207" key="VCS.ChangeListViewerDialog/-110.-1057.1920.1057/0.23.1680.960@-110.-1057.1920.1057" timestamp="1622921922913" />
-    <state x="538" y="258" width="604" height="490" key="find.popup" timestamp="1623184374579">
-      <screen x="0" y="23" width="1680" height="960" />
-    </state>
-    <state x="538" y="258" width="604" height="490" key="find.popup/-110.-1057.1920.1057/0.23.1680.960@0.23.1680.960" timestamp="1623184374579" />
-    <state x="538" y="258" width="604" height="490" key="find.popup/0.23.1680.960@0.23.1680.960" timestamp="1622659269735" />
   </component>
 </project>
