@@ -31,13 +31,13 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "/home/ashutosh/code/thunderock.github.io",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/ashutosh/code/thunderock.github.io&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/images" />
@@ -62,7 +62,8 @@
       <workItem from="1623198127190" duration="323000" />
       <workItem from="1652333533388" duration="86000" />
       <workItem from="1652333624621" duration="1295000" />
-      <workItem from="1652765019652" duration="2053000" />
+      <workItem from="1652765019652" duration="2111000" />
+      <workItem from="1652769508184" duration="8000" />
     </task>
     <servers />
   </component>
