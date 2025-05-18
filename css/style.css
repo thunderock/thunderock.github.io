@@ -281,11 +281,13 @@ p{
 .cta-section {
     padding: 60px 0;
     background-color: #fbfbfb;
-    margin-top: 120px;
+    margin-top: 40px;
     margin-bottom: 40px;
     position: relative;
-    z-index: 1;
+    z-index: 2;
     clear: both;
+    display: block;
+    width: 100%;
 }
 
 .cta-section h2 {
@@ -294,6 +296,8 @@ p{
     color: #727272;
     font-weight: 600;
     text-transform: uppercase;
+    position: relative;
+    z-index: 2;
 }
 
 .cta-text {
@@ -304,6 +308,8 @@ p{
     margin-left: auto;
     margin-right: auto;
     font-weight: 350;
+    position: relative;
+    z-index: 2;
 }
 
 .cta-buttons {
@@ -311,6 +317,8 @@ p{
     gap: 20px;
     justify-content: center;
     flex-wrap: wrap;
+    position: relative;
+    z-index: 2;
 }
 
 .cta-buttons .btn {
@@ -381,6 +389,7 @@ p{
     position: relative;
     z-index: 1;
     margin-bottom: 30px;
+    overflow: visible;
 }
 
 /* Ensure proper spacing for the education section */
@@ -394,10 +403,11 @@ p{
 .cta-section::before {
     content: '';
     position: absolute;
-    top: -60px;
+    top: -20px;
     left: 0;
     right: 0;
     height: 2px;
     background-color: #e0e0e0;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    z-index: 1;
 }
