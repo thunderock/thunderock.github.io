@@ -280,7 +280,10 @@ p{
 .cta-section {
     padding: 60px 0;
     background-color: #fbfbfb;
-    margin-top: 40px;
+    margin-top: 80px;
+    margin-bottom: 40px;
+    position: relative;
+    z-index: 1;
 }
 
 .cta-section h2 {
@@ -369,4 +372,27 @@ p{
         max-width: 300px;
         margin-bottom: 10px;
     }
+}
+
+/* Add spacing between sections */
+.row {
+    position: relative;
+    z-index: 1;
+}
+
+/* Ensure proper spacing for the education section */
+#education {
+    position: relative;
+    z-index: 1;
+}
+
+/* Add a divider between sections */
+.cta-section::before {
+    content: '';
+    position: absolute;
+    top: -40px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background-color: #e0e0e0;
 }
