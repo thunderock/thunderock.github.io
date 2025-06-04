@@ -166,6 +166,7 @@ p{
         h1, h2, h3, h4, h5, h6 {
             line-height: inherit;
         }
+        margin-bottom: 40px;
     }
 
     /*----- TIMELINE ITEM -----*/
@@ -274,4 +275,139 @@ p{
     #sidebar-heading {
         text-align: center;
     }
+}
+
+/* Call to Action Section Styles */
+.cta-section {
+    padding: 60px 0;
+    background-color: #fbfbfb;
+    margin-top: 40px;
+    margin-bottom: 40px;
+    position: relative;
+    z-index: 2;
+    clear: both;
+    display: block;
+    width: 100%;
+}
+
+.cta-section h2 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    color: #727272;
+    font-weight: 600;
+    text-transform: uppercase;
+    position: relative;
+    z-index: 2;
+}
+
+.cta-text {
+    font-size: 1.2rem;
+    color: #939393;
+    margin-bottom: 30px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    font-weight: 350;
+    position: relative;
+    z-index: 2;
+}
+
+.cta-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 2;
+}
+
+.cta-buttons .btn {
+    padding: 12px 30px;
+    border-radius: 30px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.cta-buttons .btn-primary {
+    background-color: #00BFFF;
+    border-color: #00BFFF;
+}
+
+.cta-buttons .btn-primary:hover {
+    background-color: #0099cc;
+    border-color: #0099cc;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 191, 255, 0.2);
+}
+
+.cta-buttons .btn-outline-primary {
+    color: #00BFFF;
+    border-color: #00BFFF;
+}
+
+.cta-buttons .btn-outline-primary:hover {
+    background-color: #00BFFF;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 191, 255, 0.2);
+}
+
+.cta-buttons .btn i {
+    margin-right: 8px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .cta-section {
+        padding: 40px 20px;
+    }
+    
+    .cta-section h2 {
+        font-size: 2rem;
+    }
+    
+    .cta-text {
+        font-size: 1.1rem;
+    }
+    
+    .cta-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .cta-buttons .btn {
+        width: 100%;
+        max-width: 300px;
+        margin-bottom: 10px;
+    }
+}
+
+/* Add spacing between sections */
+.row {
+    position: relative;
+    z-index: 1;
+    margin-bottom: 30px;
+    overflow: visible;
+}
+
+/* Ensure proper spacing for the education section */
+#education {
+    position: relative;
+    z-index: 1;
+    margin-top: 40px;
+}
+
+/* Add a divider between sections */
+.cta-section::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: #e0e0e0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    z-index: 1;
 }
