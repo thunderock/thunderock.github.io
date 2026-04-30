@@ -1,0 +1,347 @@
+\documentclass[letterpaper]{article}
+
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{marvosym}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\usepackage[english]{babel}
+\usepackage{tabularx}
+\usepackage{ragged2e}
+\input{glyphtounicode}
+
+\usepackage{xcolor}
+\definecolor{accent}{HTML}{3B9B8F}
+\definecolor{accentlight}{HTML}{E8F5F3}
+\definecolor{accentdark}{HTML}{2A7A70}
+\hypersetup{
+    colorlinks,
+    linkcolor={accentdark},
+    citecolor={accentdark},
+    urlcolor={accentdark}
+}
+%----------FONT OPTIONS----------
+\usepackage[default]{sourcesanspro}
+
+
+\pagestyle{fancy}
+\fancyhf{} % clear all header and footer fields
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% Adjust margins
+\addtolength{\oddsidemargin}{-0.5in}
+\addtolength{\evensidemargin}{-0.5in}
+\addtolength{\textwidth}{1in}
+\addtolength{\topmargin}{-.6in}
+\addtolength{\textheight}{1.2in}
+
+\urlstyle{same}
+
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+
+% Sections formatting - colored background bar
+\let\oldsection\section
+\renewcommand{\section}[1]{%
+  \vspace{3pt}\noindent%
+  \colorbox{accent}{\parbox{\dimexpr\textwidth-2\fboxsep\relax}{\strut\textcolor{white}{\large\scshape #1}}}%
+  \vspace{2pt}\par%
+}
+
+% Ensure that generate pdf is machine readable/ATS parsable
+\pdfgentounicode=1
+
+%-------------------------
+% Vertical rhythm: standardize itemize spacing across all nesting levels
+% so topics, sub-bullets, and consecutive items breathe consistently.
+% Levels in this document:
+%   itemize,1 = company/role list (label hidden)
+%   itemize,2 = role's main bullets and topic items
+%   itemize,3 = sub-bullets nested under a topic
+\setlist[itemize]{leftmargin=1.4em, labelsep=0.4em,
+                  parsep=0pt, partopsep=0pt}
+\setlist[itemize,2]{itemsep=0.5pt, topsep=1pt}
+\setlist[itemize,3]{itemsep=0.25pt, topsep=0.5pt, leftmargin=1.3em}
+
+%-------------------------
+% Custom commands
+\newcommand{\resumeItem}[1]{%
+  \item\small{\justifying #1}%
+}
+
+% Two-line role header rendered as a single tabular for perfectly uniform
+% row spacing (no fragile negative \vspace between two tabulars).
+\newcommand{\resumeSubheading}[4]{%
+  \item%
+    \begin{tabular*}{0.97\textwidth}{@{}l@{\extracolsep{\fill}}r@{}}%
+      \textbf{#1} & #2 \\%
+      \textit{\small#3} & \textit{\small #4} \\%
+    \end{tabular*}%
+}
+
+\newcommand{\resumeSubSubheading}[2]{%
+    \item%
+    \begin{tabular*}{0.97\textwidth}{@{}l@{\extracolsep{\fill}}r@{}}%
+      \textit{\small#1} & \textit{\small #2} \\%
+    \end{tabular*}%
+}
+
+\newcommand{\resumeProjectHeading}[2]{%
+    \item%
+    \begin{tabular*}{0.97\textwidth}{@{}l@{\extracolsep{\fill}}r@{}}%
+      \small#1 & #2 \\%
+    \end{tabular*}%
+}
+
+\newcommand{\resumeSubItem}[1]{\resumeItem{#1}}
+
+% Topic sub-heading within a role: bold topic name, colon, then inline
+% description sentence. Pair with a nested \resumeItemListStart/End if
+% sub-bullets are needed under the topic.
+\newcommand{\resumeTopic}[2]{%
+  \item\small{\justifying \textbf{#1}: #2}%
+}
+
+% Sub-bullet marker (level 3): a small en-dash for a clean look.
+\renewcommand{\labelitemiii}{\small\textendash}
+
+\newcommand{\resumeSubHeadingListStart}{%
+  \begin{itemize}[leftmargin=0.1in, label={}, itemsep=3pt, topsep=2pt]%
+}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}}
+\newcommand{\resumeItemListEnd}{\end{itemize}}
+
+%-------------------------------------------
+%%%%%%  RESUME STARTS HERE  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{document}
+
+\begin{center}
+    \textbf{\Huge \scshape \textcolor{accentdark}{Ashutosh Tiwari}} \\ \vspace{2pt}
+    {\color{accent}\rule{\textwidth}{2pt}} \\ \vspace{2pt}
+    \small 669-292-7534 $|$
+    \href{mailto:findashutoshtiwari@gmail.com}{\underline{findashutoshtiwari@gmail.com}} $|$
+    \href{https://linkedin.com/in/ashutosh--tiwari}{\underline{Linkedin@ashutosh--tiwari}} $|$
+    \href{https://thunderock.github.io/}{\underline{Homepage/Portfolio}} $|$
+    \href{https://github.com/thunderock}{\underline{Github@thunderock}}
+\end{center}
+
+
+%-----------EXPERIENCE-----------
+% \section{Summary}}
+% Experienced Machine Learning Engineer with expertise in NLP, Graph ML, Large Language Models, and large-scale data pipelines. Proven ability to develop and optimize machine learning models, ensuring fairness and unbiased performance. Published researcher with skills in Python, PyTorch, and more. Committed to leveraging advanced ML techniques to drive innovation in fintech, health, and e-commerce sectors.
+
+\section{Work Experience}
+  \resumeSubHeadingListStart
+
+  \resumeSubheading
+    {Senior Machine Learning Engineer (ML Platform \& Frameworks)}{Jul. 2024 -- Present}
+    {{\href{https://www.linkedin.com/company/adobe/}{\textcolor{accentdark}{\underline{ADOBE FIREFLY}}}}}{GENERATIVE AI, COMPUTER VISION, LARGE LANGUAGE MODELS}
+    \resumeItemListStart
+      \resumeItem{Leading part of ML Platform focused on offline inference for videos/images and on training frameworks for foundation models.}
+      \resumeTopic{Distributed Inference Frameworks}{Designed and led engineering for the org's online and offline inference systems powering experimentation and production at scale.}
+        \resumeItemListStart
+          \resumeItem{Built online inference on vLLM + Ray for rapid experimentation with LLMs such as Falcon-40B and Llama~2~70B.}
+          \resumeItem{Built offline inference on Ray Data + PyTorch Lightning, achieving 10--50$\times$ faster image loading and 3--8K images/sec on 32 GPUs.}
+        \resumeItemListEnd
+      \resumeTopic{Foundation Model Training Framework}{Leading development of a PyTorch-based training framework adopted across the org for training generative models on billions of images and videos.}
+        \resumeItemListStart
+          \resumeItem{Designed a plugin-based strategy pattern over FSDP/FSDP2 to make distributed training strategies pluggable.}
+          \resumeItem{Integrated Flash Attention 2/3, context parallelism, and distributed attention for DiT text-to-image and text-to-video training.}
+        \resumeItemListEnd
+      \resumeTopic{Enrichment Service}{Orchestration and abstraction layer over the inference framework and other ML Platform offerings; runs fire-and-forget pipelines on datasets of billions of images and videos.}
+      \resumeTopic{Data Quality Framework}{Wrote the org's first data quality framework on Cerberus, used across enrichment pipelines to validate the correctness of feature-generation outputs.}
+    \resumeItemListEnd
+
+    \resumeSubheading
+      {Senior Software Engineer (Data Platform)}{Sep. 2023 -- Jul. 2024}
+      {{\href{https://www.linkedin.com/company/evolution-iq/}{\textcolor{accentdark}{\underline{EVOLUTIONIQ}}}}}{DATA PLATFORM, NATURAL LANGUAGE PROCESSING, REGRESSION}
+      \resumeItemListStart
+        \resumeItem{Part of the Scoring and Quality sub-team, working at the intersection of generative AI, fin-tech, and the health sector.}
+        \resumeTopic{Data Pipelines}{Led development of pipelines that ingest and process the data used for training across all of our machine learning models.}
+        \resumeTopic{Model Training Pipelines}{Led pipelines that train models to predict a claimant's expected time to return to work, ICD extraction from diagnosis notes, and alternate VOC recommendations.}
+        \resumeTopic{Fairness \& Bias Framework}{Built a framework to evaluate and measure model fairness and bias metrics across different demographic groups.}
+      \resumeItemListEnd
+
+%     \resumeSubheading
+%     {Career Break for Master's Degree}{Aug. 2021 -- Sep. 2023}
+%     {Indiana University, Bloomington}{Master of Science in Computational Data Science}
+%     \resumeItemListStart
+%       \resumeItem{Completed coursework and research in Fairness Aware AI, Network Science, and Natural Language Processing.}
+%       \resumeItem{Engaged in projects and independent studies to enhance practical skills in machine learning and data science.}
+%     \resumeItemListEnd
+
+    \resumeSubheading
+      {Software Dev Engineer II (ML Platform)}{Jan. 2019 -- Jul. 2021}
+      {{\href{https://www.linkedin.com/company/swiggy-in/}{\textcolor{accentdark}{\underline{SWIGGY}}}}}{DATA SCIENCE PLATFORM, TIME SERIES FORECASTING}
+      \resumeItemListStart
+        \resumeTopic{Online Inference Platform}{Core contributor to the online inference platform serving 18M+ monthly transacting users across food delivery and quick commerce, with models autoscaled by real-time load metrics.}
+          \resumeItemListStart
+            \resumeItem{Engineered a dynamic request-routing layer that evaluated incoming API calls against geo-tags, traffic profiles, and service metadata, then dispatched them to model clusters partitioned by region and load domain.}
+            \resumeItem{Implemented routing/dispatch on an Akka-style actor framework for resilient asynchronous invocation, fault isolation across clusters, and backpressure-aware scheduling at sustained low P99 under high QPS.}
+          \resumeItemListEnd
+        \resumeTopic{Feature Store}{Built and maintained a Feature Store and pipeline serving on-demand features to deployed ML models at production scale (4Bn rows, 10K QPS), with multichannel ingestion via Spark, Flink, and user files.}
+        \resumeTopic{Forecasting \& Correlation Platform}{Founding member of the platform used by many teams to forecast time series; forecasts powered critical scaling decisions across the org in real time.}
+        \resumeTopic{DAQ}{Led DAQ, a tool used to scrape APIs at scale, collecting 15M rows daily for analysis and model training.}
+      \resumeItemListEnd
+
+    \resumeSubheading
+      {Software Development Engineer (Search Relevance)}{Sep. 2017 -- Jan. 2019}
+      {{\href{https://www.linkedin.com/company/flipkart/}{\textcolor{accentdark}{\underline{FLIPKART (a Walmart company)}}}}}{SEARCH RELEVANCE, QUERY INTENT, NLP}
+      \resumeItemListStart
+        \resumeTopic{Search Intent Models}{Built and improved CRF/Neural Network-based intent models powering user search and discovery for millions every day; identified error classes, designed solutions, and shipped fixes.}
+        \resumeTopic{Tail Query Classifier}{Implemented a FastText-based query store classifier that predicts the category of a tail query.}
+        \resumeTopic{ML Workflow Automation}{Built the first workflow at Flipkart to automate training and auto-deployment of search models---written first in Luigi and later migrated to Airflow.}
+          \resumeItemListStart
+            \resumeItem{Wrote a generic Airflow framework that creates DAGs at runtime for different ML models and orchestrates the train$\rightarrow$deploy flow, including data and model validations.}
+          \resumeItemListEnd
+        \resumeTopic{Large-Scale Data Pipelines}{Implemented Cascading/HDFS pipelines (4Bn+ datapoints) to extract user-event data and transform it for model training.}
+      \resumeItemListEnd
+
+    \resumeSubheading
+      {Software Development Engineer}{Sep. 2016 -- Sep. 2017}
+      {{\href{https://www.linkedin.com/company/groupon/}{\textcolor{accentdark}{\underline{GROUPON}}}}}{BACKEND ENGINEERING}
+      \resumeItemListStart
+        \resumeTopic{Cyclops}{Worked on Cyclops, an interface between Customer Representatives and internal services; deployed to all countries in which Groupon operates.}
+      \resumeItemListEnd
+
+    \resumeSubheading
+      {Software Engineer}{Sep. 2015 -- Aug. 2016}
+      {{\href{https://www.linkedin.com/company/netspeed-systems/about/}{\textcolor{accentdark}{\underline {NETSPEED SYSTEMS (Acquired by Intel)}}}}}{GRAPH ALGORITHMS, NETWORK ON CHIP}
+      \resumeItemListStart
+        \resumeTopic{Network-on-Chip Modules}{Led engineering on modules including Polarity-based Arbitration, Multi-Cast Filtering, and Structural Latency Breakdown.}
+      \resumeItemListEnd
+
+  \resumeSubHeadingListEnd
+
+\newpage
+\section{Publications}
+
+Accepted at \underline{\emph{\href{https://netsci2023.wixsite.com/netsci2023}{NetSci 2023}}} (Poster Presentation) and \underline{\emph{\href{https://www.ic2s2.org/}{IC2S2 2023}}} (Parallel Talk) as \textbf{first author}
+\begingroup
+\renewcommand{\section}[2]{}%
+\begin{thebibliography}{}
+ \bibitem{none} \textbf{Ashutosh Tiwari}, Prof. Sadamori Kojaku, Prof. Yong-Yeol Ahn,
+\textquotedblleft Biased Contrastive Learning debiases Graph Neural Networks,\textquotedblright\ \textit{ International Conference on Network Science (NetSci)},
+2023.\hfill \href{https://github.com/thunderock/residual2vec_/blob/master/paper/2023-07-03-fairness-NetSci2023.pdf}{\underline{Poster}}
+
+In this work, we propose a non-parametric contrastive learning framework to learn debiased graph embeddings with respect to sensitive node attributes and structural homophily. Through empirical evaluations on different datasets, we demonstrate that our method offers a better approach to debiasing compared to existing approaches and thus results in more organic recommendations across different GNN architectures.
+% \textbullet \quad Will be submitting full paper to \underline{\href{https://www.icwsm.org/2023/index.html/call_for_submissions.html}{ICWSM 2023}} as \textbf{first author} on \textbf{Contrastive Learning for Recommendation Systems using Graph Neural Networks} by May 15.
+\end{thebibliography}
+\endgroup
+% \resumeItem{\textbullet \enskip Have submitted @\href{https://www.ic2s2.org/submit_abstract.html}{\underline{IC2S2}} as \textbf{first} author on \textbf{Fairness Aware Recommendation System and Graph ML}, pending decision notification}
+% \resumeItemListEnd
+%
+%-----------EDUCATION-----------
+\section{Education}
+  \resumeSubHeadingListStart
+    \resumeSubheading
+{Indiana University, Bloomington}{Bloomington, IN}
+      {Master of Science in Computational Data Science  3.87/4.0} {Aug. 2021 -- May 2023}
+    \resumeSubheading
+      {National Institute of Technology}{Patna, India}
+      {Bachelor of Science in Computer Science  8.32/10.0} {Aug. 2011 -- May 2015}
+  \resumeSubHeadingListEnd
+% https://www.linkedin.com/company/iuni/
+%  Modelling research problems through networks
+%
+%Working on two projects:
+%1. Working on embedding de-biasing novel training methods with Prof. YY Ahn and Prof. Sadamori Kojaku (as part of independent study for Fall '22)
+%2. Working on user intent as a network and how that intent can be quantified. Working with Prof YY Ahn, Prof Preetesh Kantak and Prof Fahiz Baba Yara.  Project is funded by Kelly Businees School.
+% \section{Publications}
+% % \resumeItemListStart
+% \resumeItem {Have submitted at \underline{\href{https://www2023.thewebconf.org/calls/research-tracks/fair-account-trans-ethic/}{WWW 23 Fairness Track}} as first author. Waiting for Acceptance Notification (Jan 2023)}.
+% \resumeItemListEnd
+
+
+
+\section{Research Experience / Independent Study}
+
+
+    \resumeItemListStart
+        \resumeItem {Implementing novel training frameworks that result in unbiased (or fair) recommendation systems from "biased" datasets at \href{https://iuni.iu.edu/}{\underline{IUNI}} with Prof. YY Ahn and  Prof. S Kojaku as part of my Independent Study. \hfill Summer 2022 - Summer 2023}
+    \resumeItem {Working as a paid RA for, \textbf{"User Intent as a Network"} with Prof. YY Ahn, P Kantak and FB Yara. Project is funded by Kelly Business School. Goal is to be able to quantify and thus act upon that "intent" network.\hfill Summer 2022 - Fall 2022}
+
+    \resumeItem {Was part of \href{https://nlp-lab.org/}{\underline{NLP Lab}}@IUB with Prof. D Cavar. Contributed to design of \href{https://github.com/dcavar/tieml}{\underline{TieML}} and Events' Timeline modelling using different fine-tuned Large Language Models (LLMs). \hfill Fall 2021}
+     \resumeItemListEnd
+
+\section{Teaching Experience}
+    \resumeItemListStart
+     \resumeItem {
+     Teaching Assistant for \underline{\href{http://yongyeol.com/teaching/2023SP_netsci_syllabus.pdf}{Network Science}} (INFO-I 606) with Prof. YY Ahn}\hfill Spring 2023
+     \resumeItem {
+     Teaching Assistant for \underline{\href{https://cgi.luddy.indiana.edu/~rkhardon/B555-info.txt}{Machine Learning} }(CSCI-B 555) with Prof. R Khardon} \hfill Fall 2022
+
+     \resumeItem {
+     Teaching Assistant for \underline{\href{http://yongyeol.com/teaching/2022SP_netsci_syllabus.pdf}{Network Science}} (INFO-I 606) with Prof. YY Ahn}\hfill Spring 2022
+     \resumeItemListEnd
+%-----------PROJECTS-----------
+\section{Selected Projects}
+    \resumeSubHeadingListStart
+
+          \resumeProjectHeading
+          {\textbf{BiasNet} $|$ \emph{Deep Reinforcement Learning, PyTorch, Actor Critic Algorithm, On-policy Model Free}}{\href{https://github.com/thunderock/BiasNet/blob/master/report/RL_PROJECT_REPORT.pdf}{\underline{Code/Report}}}
+          \resumeItemListStart
+            \resumeItem{Learning to fight in \href{https://www.youtube.com/watch?v=-We5GlqeLnQ&list=PLa0rHPMFIXsYRRGGrKXc1NO-F6KgBLHhx}{\underline{Street Fighter II}} with induced relational bias from differential game scenes.}
+          \resumeItemListEnd
+      \resumeProjectHeading
+          {\textbf{DeepFoodie} $|$ \emph{Python, Tensorflow, Self Supervised Deep Clustering, Deep Learning, Transfer Learning}}{\href{https://github.com/thunderock/DeepFoodie/blob/master/DLS_ProjectReport.pdf}{\underline{Code/Report}}}
+          \resumeItemListStart
+            \resumeItem{Clustering dishes on basis of their ingredient embeddings. These ingredient embeddings are generated by a NN.}
+          \resumeItemListEnd
+                    \resumeProjectHeading
+          {\textbf{BlindNet} $|$ \emph{Python, Pytorch, Deep Learning, Transfer Learning}}{\href{https://github.com/thunderock/BlindNet/blob/master/CV_report.pdf}{\underline{Code/Report}}}
+          \resumeItemListStart
+            \resumeItem{Image to vector generation on Coco dataset.}
+          \resumeItemListEnd
+
+      \resumeProjectHeading
+          {\textbf{Continuous Dominant Set Repair} $|$ \emph{C++, Graph Algorithms, Guha and Khuller's Algo., Greedy}}{\href{https://github.com/thunderock/CDSproject}{\underline{Code}}}
+          \resumeItemListStart
+            \resumeItem{Repairs a broken link in Continuous Dominant Set in \textbf{$O(\Delta^2)$}, where $\Delta$ being the avg cardinality of connected graph.}
+          \resumeItemListEnd
+      \resumeProjectHeading
+          {\textbf{Humana Mays Healthcare Analytics Case Competition} $|$ \emph{Boosted Trees, Feature Engineering}}{\href{https://github.com/thunderock/Humana-Mays-Healthcare-Analytics-Case-Competition}{\underline{Code}}}
+          \resumeItemListStart
+            \resumeItem{11th \href{http://mays.tamu.edu/humana-tamu-analytics/wp-content/uploads/sites/113/2021/10/Corrected_Leaderboard_Results_10082021.pdf}{\underline{rank}} on leaderboard. Hosted by TAMU and Humana Mays, 2021.}
+          \resumeItemListEnd
+    \resumeProjectHeading
+         {\textbf{AnalyticsVidhya Solutions} $|$ \emph{Python, Tensorflow, Torch, Time Series, Feature Engineering, Catboost}}{\href{https://github.com/thunderock/AnalyticsVidhya_JANATAHACK}{\underline{Code}}}
+         \resumeProjectHeading
+          {\textbf{Investigating Bias Manifolds} $|$ \emph{Bias Manifolds, Bias Progression, Measuring Bias, Python, Word2vec}}{\href{https://github.com/thunderock/bias_manifold/blob/master/paper/report.pdf}{\underline{Code/Report}}}
+    \resumeSubHeadingListEnd
+
+%
+%-----------PROGRAMMING SKILLS-----------
+\section{Technical Skills}
+ \begin{itemize}[leftmargin=0.15in, label={}]
+    \small{\item{
+     Search Relevance, Recommendations, Graph Neural Networks, Fairness Aware Modeling, Computational ML, NLP, Computer Vision, DL, Spark, Python, Scala, C++, Contrastive Learning, Large Language Models \\
+     \textbf{Frameworks/Libraries/Tools}{: Ray, Pytorch Geometric, Pytorch Lightning, Pytorch, Tensorflow, Sklearn, Numpy, Pandas, Matplotlib, HDFS, Spark, Kafka, Flink, AWS Sagemaker, DynamoDB, Faiss, vLLM, Django}\\
+    }}
+ \end{itemize}
+ % \section{Relevant Courses}}
+ %  \begin{itemize}[leftmargin=0.15in, label={}]
+ %     \small{\item{
+ %      \textbf{Computational ML(B555), Deep Learning(E533), Reinforcement Learning(B659), Computer Vision(B657), Statistics(S520), Independent Study, Working on Fairness Aware AI and Bias manifolds in Graph ML (B669), Advanced Database Systems(B561)
+ %      %\textbf{Computational Machine Learning(CSCI-B555), Deep Learning Systems(ENGR-E533), Applied ML(CSCI-P556), Computer Vision(CSCI-B657)
+ % }{}
+ %     }}
+ %  \end{itemize}
+
+%-------------------------------------------
+\end{document}
+
+
+
+
+
