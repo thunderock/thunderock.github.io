@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1777525587.24008 "main.tex" "AshutoshTiwari.pdf" "AshutoshTiwari" 1777525587.74973 0
+["pdflatex"] 1779763893.79639 "main.tex" "AshutoshTiwari.pdf" "AshutoshTiwari" 1779763894.2898 0
   "/usr/local/texlive/2025/texmf-dist/fonts/enc/dvips/sourcesanspro/a_4jropk.enc" 1587936753 3267 177411e539fcc6ace86309ff03b22da6 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/enc/dvips/sourcesanspro/a_5ponh6.enc" 1587936753 3344 37c976a8b2fa4b8f132a488735054f7d ""
   "/usr/local/texlive/2025/texmf-dist/fonts/enc/dvips/sourcesanspro/a_emkxm5.enc" 1587936753 3021 665788e9679767ade2a71155215d25e0 ""
@@ -114,9 +114,9 @@
   "/usr/local/texlive/2025/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1755926464 5467155 19efa205003f9ecad95fbbaa6ff24da1 ""
   "/usr/local/texlive/2025/texmf-var/web2c/pdftex/pdflatex.fmt" 1741450574 3345740 46b66fdb0378f7bf5921b5eabf1762b8 ""
   "/usr/local/texlive/2025/texmf.cnf" 1741450484 577 418a7058ec8e006d8704f60ecd22c938 ""
-  "AshutoshTiwari.aux" 1777525587.68153 298 793c8b57560455ac5065355307cc0130 "pdflatex"
-  "AshutoshTiwari.out" 1777525587.5369 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
-  "main.tex" 1777525047.49069 20639 e06aed2dbd74941bb9f9265059584723 ""
+  "AshutoshTiwari.aux" 1779763894.22744 298 793c8b57560455ac5065355307cc0130 "pdflatex"
+  "AshutoshTiwari.out" 1779763894.08232 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
+  "main.tex" 1779763889.0464 20788 e760902e67d45361c535c8641adc36be ""
   (generated)
   "AshutoshTiwari.aux"
   "AshutoshTiwari.log"
