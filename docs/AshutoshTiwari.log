@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.3.8)  10 JUL 2026 17:12
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.3.8)  10 JUL 2026 17:30
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -482,7 +482,7 @@ File: ly1enc.dfu 2022/06/07 v1.3c UTF-8 support
    defining Unicode char U+FB06 (decimal 64262)
 ))))
 LaTeX Font Info:    Trying to load font information for T1+SourceSansPro-TLF on
- input line 126.
+ input line 127.
 
 (/usr/local/texlive/2025/texmf-dist/tex/latex/sourcesanspro/T1SourceSansPro-TLF
 .fd
@@ -490,9 +490,9 @@ File: T1SourceSansPro-TLF.fd 2020/01/19 (autoinst) Font definitions for T1/Sour
 ceSansPro-TLF.
 )
 LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/m/n' aliased to
-(Font)              `T1/SourceSansPro-TLF/regular/n' on input line 126.
+(Font)              `T1/SourceSansPro-TLF/regular/n' on input line 127.
 LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/regular/n' will be
-(Font)              scaled to size 10.0pt on input line 126.
+(Font)              scaled to size 10.0pt on input line 127.
 
 (/usr/local/texlive/2025/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
 File: l3backend-pdftex.def 2024-05-08 L3 backend support: PDF output (pdfTeX)
@@ -502,32 +502,32 @@ File: l3backend-pdftex.def 2024-05-08 L3 backend support: PDF output (pdfTeX)
 (./AshutoshTiwari.aux)
 \openout1 = `AshutoshTiwari.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 126.
-LaTeX Font Info:    ... okay on input line 126.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 126.
-LaTeX Font Info:    ... okay on input line 126.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 126.
-LaTeX Font Info:    ... okay on input line 126.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 126.
-LaTeX Font Info:    ... okay on input line 126.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 126.
-LaTeX Font Info:    ... okay on input line 126.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 126.
-LaTeX Font Info:    ... okay on input line 126.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 126.
-LaTeX Font Info:    ... okay on input line 126.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 126.
-LaTeX Font Info:    ... okay on input line 126.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 126.
-LaTeX Font Info:    ... okay on input line 126.
-LaTeX Font Info:    Checking defaults for LY1/ptm/m/n on input line 126.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 127.
+LaTeX Font Info:    ... okay on input line 127.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 127.
+LaTeX Font Info:    ... okay on input line 127.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 127.
+LaTeX Font Info:    ... okay on input line 127.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 127.
+LaTeX Font Info:    ... okay on input line 127.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 127.
+LaTeX Font Info:    ... okay on input line 127.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 127.
+LaTeX Font Info:    ... okay on input line 127.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 127.
+LaTeX Font Info:    ... okay on input line 127.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 127.
+LaTeX Font Info:    ... okay on input line 127.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 127.
+LaTeX Font Info:    ... okay on input line 127.
+LaTeX Font Info:    Checking defaults for LY1/ptm/m/n on input line 127.
 LaTeX Font Info:    Trying to load font information for LY1+ptm on input line 1
-26.
+27.
 
 (/usr/local/texlive/2025/texmf-dist/tex/latex/ly1/ly1ptm.fd
 File: ly1ptm.fd 2001/02/01 font definitions for LY1/ptm using Berry names.
 )
-LaTeX Font Info:    ... okay on input line 126.
+LaTeX Font Info:    ... okay on input line 127.
 
 (/usr/local/texlive/2025/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
@@ -543,61 +543,61 @@ LaTeX Font Info:    ... okay on input line 126.
 \makeMPintoPDFobject=\count294
 \everyMPtoPDFconversion=\toks29
 )
-Package hyperref Info: Link coloring ON on input line 126.
+Package hyperref Info: Link coloring ON on input line 127.
  (./AshutoshTiwari.out) (./AshutoshTiwari.out)
 \@outlinefile=\write3
 \openout3 = `AshutoshTiwari.out'.
 
 LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/b/n' aliased to
-(Font)              `T1/SourceSansPro-TLF/bold/n' on input line 129.
+(Font)              `T1/SourceSansPro-TLF/bold/n' on input line 130.
 LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/bold/n' will be
-(Font)              scaled to size 10.0pt on input line 129.
+(Font)              scaled to size 10.0pt on input line 130.
 LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/b/n' aliased to
-(Font)              `T1/SourceSansPro-TLF/bold/n' on input line 129.
+(Font)              `T1/SourceSansPro-TLF/bold/n' on input line 130.
 LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/bold/n' will be
-(Font)              scaled to size 24.88pt on input line 129.
+(Font)              scaled to size 24.88pt on input line 130.
 LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/b/sc' aliased to
-(Font)              `T1/SourceSansPro-TLF/bold/sc' on input line 129.
+(Font)              `T1/SourceSansPro-TLF/bold/sc' on input line 130.
 LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/bold/sc' will be
-(Font)              scaled to size 24.88pt on input line 129.
+(Font)              scaled to size 24.88pt on input line 130.
 LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/m/n' aliased to
-(Font)              `T1/SourceSansPro-TLF/regular/n' on input line 131.
+(Font)              `T1/SourceSansPro-TLF/regular/n' on input line 132.
 LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/regular/n' will be
-(Font)              scaled to size 9.0pt on input line 131.
+(Font)              scaled to size 9.0pt on input line 132.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <9> on input line 131.
+(Font)              <9> on input line 132.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <6> on input line 131.
+(Font)              <6> on input line 132.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <5> on input line 131.
+(Font)              <5> on input line 132.
 LaTeX Font Info:    Trying to load font information for U+lasy on input line 13
-1.
+2.
 
 (/usr/local/texlive/2025/texmf-dist/tex/latex/base/ulasy.fd
 File: ulasy.fd 1998/08/17 v2.2e LaTeX symbol font definitions
 )
 LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/m/n' aliased to
-(Font)              `T1/SourceSansPro-TLF/regular/n' on input line 143.
+(Font)              `T1/SourceSansPro-TLF/regular/n' on input line 144.
 LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/regular/n' will be
-(Font)              scaled to size 12.0pt on input line 143.
+(Font)              scaled to size 12.0pt on input line 144.
 LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/m/sc' aliased to
-(Font)              `T1/SourceSansPro-TLF/regular/sc' on input line 143.
+(Font)              `T1/SourceSansPro-TLF/regular/sc' on input line 144.
 LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/regular/sc' will be
-(Font)              scaled to size 12.0pt on input line 143.
+(Font)              scaled to size 12.0pt on input line 144.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <7> on input line 143.
+(Font)              <7> on input line 149.
 LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/m/it' aliased to
-(Font)              `T1/SourceSansPro-TLF/regular/it' on input line 148.
+(Font)              `T1/SourceSansPro-TLF/regular/it' on input line 149.
 LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/regular/it' will be
-(Font)              scaled to size 10.0pt on input line 148.
+(Font)              scaled to size 10.0pt on input line 149.
 LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/m/it' aliased to
-(Font)              `T1/SourceSansPro-TLF/regular/it' on input line 148.
+(Font)              `T1/SourceSansPro-TLF/regular/it' on input line 149.
 LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/regular/it' will be
-(Font)              scaled to size 9.0pt on input line 148.
+(Font)              scaled to size 9.0pt on input line 149.
 LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/b/n' aliased to
-(Font)              `T1/SourceSansPro-TLF/bold/n' on input line 151.
+(Font)              `T1/SourceSansPro-TLF/bold/n' on input line 152.
 LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/bold/n' will be
-(Font)              scaled to size 9.0pt on input line 151.
+(Font)              scaled to size 9.0pt on input line 152.
 
 
 
@@ -611,7 +611,7 @@ Package fancyhdr Warning: \footskip is too small (0.0pt):
 al/texlive/2025/texmf-dist/fonts/enc/dvips/sourcesanspro/a_4jropk.enc}{/usr/loc
 al/texlive/2025/texmf-dist/fonts/enc/dvips/sourcesanspro/a_emkxm5.enc}]
 LaTeX Font Info:    Trying to load font information for TS1+SourceSansPro-TLF o
-n input line 263.
+n input line 264.
 
 (/usr/local/texlive/2025/texmf-dist/tex/latex/sourcesanspro/TS1SourceSansPro-TL
 F.fd
@@ -619,13 +619,13 @@ File: TS1SourceSansPro-TLF.fd 2020/01/19 (autoinst) Font definitions for TS1/So
 urceSansPro-TLF.
 )
 LaTeX Font Info:    Font shape `TS1/SourceSansPro-TLF/m/n' aliased to
-(Font)              `TS1/SourceSansPro-TLF/regular/n' on input line 263.
-LaTeX Font Info:    Font shape `TS1/SourceSansPro-TLF/regular/n' will be
-(Font)              scaled to size 10.0pt on input line 263.
-LaTeX Font Info:    Font shape `TS1/SourceSansPro-TLF/m/n' aliased to
 (Font)              `TS1/SourceSansPro-TLF/regular/n' on input line 264.
 LaTeX Font Info:    Font shape `TS1/SourceSansPro-TLF/regular/n' will be
-(Font)              scaled to size 9.0pt on input line 264.
+(Font)              scaled to size 10.0pt on input line 264.
+LaTeX Font Info:    Font shape `TS1/SourceSansPro-TLF/m/n' aliased to
+(Font)              `TS1/SourceSansPro-TLF/regular/n' on input line 265.
+LaTeX Font Info:    Font shape `TS1/SourceSansPro-TLF/regular/n' will be
+(Font)              scaled to size 9.0pt on input line 265.
 
 
 
@@ -645,7 +645,7 @@ Package rerunfilecheck Info: File `AshutoshTiwari.out' has not changed.
 Here is how much of TeX's memory you used:
  12355 strings out of 473190
  198694 string characters out of 5715801
- 642121 words of memory out of 5000000
+ 642133 words of memory out of 5000000
  35425 multiletter control sequences out of 15000+600000
  656734 words of font info for 70 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
@@ -658,7 +658,7 @@ s/type1/public/amsfonts/cm/cmmi9.pfb></usr/local/texlive/2025/texmf-dist/fonts/
 type1/public/amsfonts/cm/cmr6.pfb></usr/local/texlive/2025/texmf-dist/fonts/typ
 e1/public/amsfonts/cm/cmr9.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/
 public/amsfonts/cm/cmsy9.pfb>
-Output written on AshutoshTiwari.pdf (2 pages, 225483 bytes).
+Output written on AshutoshTiwari.pdf (2 pages, 225435 bytes).
 PDF statistics:
  92 PDF objects out of 1000 (max. 8388607)
  70 compressed objects within 1 object stream
