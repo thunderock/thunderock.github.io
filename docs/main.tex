@@ -147,7 +147,7 @@
     {Senior Machine Learning Engineer (ML Platform \& Frameworks)}{Jul. 2024 -- Present}
     {{\href{https://www.linkedin.com/company/adobe/}{\textcolor{accentdark}{\underline{ADOBE FIREFLY}}}}}{GENERATIVE AI, COMPUTER VISION, LARGE LANGUAGE MODELS}
     \resumeItemListStart
-      \resumeItem{Leading parts of the org's MLOps platform for building, packaging, deploying, and monitoring GPU-accelerated data pipelines and model inference on Kubernetes---spanning the full ML lifecycle from data ingestion and dataset management through inference and data provenance.}
+      \resumeItem{Leading parts of the org's MLOps platform for building, deploying, and monitoring GPU-accelerated data pipelines and model inference on Kubernetes, spanning the full ML lifecycle from data ingestion to inference.}
       \resumeTopic{Distributed Inference Frameworks}{Designed and led engineering for the org's online and offline inference systems powering experimentation and production at scale.}
         \resumeItemListStart
           \resumeItem{Built online inference on vLLM + Ray for rapid experimentation with LLMs such as Falcon-40B and Llama~2~70B.}
@@ -159,11 +159,9 @@
           \resumeItem{Designed a plugin-based strategy pattern over FSDP/FSDP2 to make distributed training strategies pluggable.}
           \resumeItem{Integrated Flash Attention 2/3, context parallelism, and distributed attention for DiT text-to-image and text-to-video training.}
         \resumeItemListEnd
-      \resumeTopic{Build \& Deployment System}{Built a CLI-driven build system that packages plugin code into Docker contexts, builds images with BuildKit on KEDA-scaled Kubernetes jobs, and pushes to ECR; links built environments to autoscaling inference deployments.}
-      \resumeTopic{Data Lineage \& Provenance}{Modeled a provenance graph over derived-from relationships across datasets, assets, builds, and inferences, backed by a Rust (Axum + Diesel + PostgreSQL) control plane serving as the authoritative platform state.}
+      \resumeTopic{Build \& Deployment System}{Built a CLI-driven build system (BuildKit images on KEDA-scaled Kubernetes jobs, pushed to ECR), fronted by a Rust control plane and an MCP interface for AI-agent-driven builds, deployments, and inference.}
       \resumeTopic{Enrichment Service}{Orchestration and abstraction layer over the inference framework and other ML Platform offerings; runs fire-and-forget pipelines on datasets of billions of images and videos.}
       \resumeTopic{Data Quality Framework}{Wrote the org's first data quality framework on Cerberus, used across enrichment pipelines to validate the correctness of feature-generation outputs.}
-      \resumeTopic{MCP Interface for AI Agents}{Exposed the platform API as Model Context Protocol (MCP) tools so AI agents can drive builds, deployments, and inference programmatically.}
     \resumeItemListEnd
 
 
