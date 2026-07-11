@@ -47,11 +47,12 @@
 \raggedright
 \setlength{\tabcolsep}{0in}
 
-% Sections formatting - colored background bar
+% Sections formatting - small-caps heading with a thin underline rule
 \let\oldsection\section
 \renewcommand{\section}[1]{%
-  \vspace{3pt}\noindent%
-  \colorbox{accent}{\parbox{\dimexpr\textwidth-2\fboxsep\relax}{\strut\textcolor{white}{\large\scshape #1}}}%
+  \vspace{6pt}\noindent%
+  {\large\scshape\textcolor{accentdark}{#1}}\par\vspace{-5pt}%
+  {\color{accent}\rule{\textwidth}{1pt}}%
   \vspace{2pt}\par%
 }
 
