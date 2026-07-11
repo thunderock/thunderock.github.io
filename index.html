@@ -197,6 +197,8 @@ I am a Senior Machine Learning Engineer at <b>Adobe Firefly</b>, with a Master's
                                         <li>Leading development of a PyTorch-based foundation model training framework adopted across the org — plugin-based FSDP/FSDP2 strategies, Flash Attention 2/3, and context/distributed attention for DiT text-to-image and text-to-video training.</li>
                                         <li>Co-built the underlying Kubernetes platform: plugin pipelines (KEDA-autoscaled on SQS), BuildKit/ECR image builds, a Rust control plane, and an MCP interface so AI agents can drive build/deploy/inference end-to-end.</li>
                                         <li>Built the org's first data quality framework on Cerberus, used across enrichment pipelines to validate the correctness of feature-generation outputs.</li>
+                                        <li>Built a CLI-driven build system (BuildKit → ECR on KEDA-scaled Kubernetes jobs) and modeled data pipelines as horizontally-scaling Source → Transform → Sink plugins with no pod-to-pod communication.</li>
+                                        <li>Modeled a data lineage/provenance graph across datasets, assets, builds, and inferences, backed by the Rust control plane serving as the platform's authoritative state.</li>
                                     </ul>
                                 </div>
                             </div>
