@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.3.8)  22 AUG 2026 11:32
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.3.8)  22 AUG 2026 11:34
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -611,7 +611,7 @@ Package fancyhdr Warning: \footskip is too small (0.0pt):
 al/texlive/2025/texmf-dist/fonts/enc/dvips/sourcesanspro/a_4jropk.enc}{/usr/loc
 al/texlive/2025/texmf-dist/fonts/enc/dvips/sourcesanspro/a_emkxm5.enc}]
 LaTeX Font Info:    Trying to load font information for TS1+SourceSansPro-TLF o
-n input line 264.
+n input line 256.
 
 (/usr/local/texlive/2025/texmf-dist/tex/latex/sourcesanspro/TS1SourceSansPro-TL
 F.fd
@@ -619,13 +619,13 @@ File: TS1SourceSansPro-TLF.fd 2020/01/19 (autoinst) Font definitions for TS1/So
 urceSansPro-TLF.
 )
 LaTeX Font Info:    Font shape `TS1/SourceSansPro-TLF/m/n' aliased to
-(Font)              `TS1/SourceSansPro-TLF/regular/n' on input line 264.
+(Font)              `TS1/SourceSansPro-TLF/regular/n' on input line 256.
 LaTeX Font Info:    Font shape `TS1/SourceSansPro-TLF/regular/n' will be
-(Font)              scaled to size 10.0pt on input line 264.
+(Font)              scaled to size 10.0pt on input line 256.
 LaTeX Font Info:    Font shape `TS1/SourceSansPro-TLF/m/n' aliased to
-(Font)              `TS1/SourceSansPro-TLF/regular/n' on input line 265.
+(Font)              `TS1/SourceSansPro-TLF/regular/n' on input line 257.
 LaTeX Font Info:    Font shape `TS1/SourceSansPro-TLF/regular/n' will be
-(Font)              scaled to size 9.0pt on input line 265.
+(Font)              scaled to size 9.0pt on input line 257.
 
 
 
@@ -645,7 +645,7 @@ Package rerunfilecheck Info: File `AshutoshTiwari.out' has not changed.
 Here is how much of TeX's memory you used:
  12355 strings out of 473190
  198694 string characters out of 5715801
- 642148 words of memory out of 5000000
+ 640148 words of memory out of 5000000
  35425 multiletter control sequences out of 15000+600000
  656734 words of font info for 70 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
@@ -658,7 +658,7 @@ s/type1/public/amsfonts/cm/cmmi9.pfb></usr/local/texlive/2025/texmf-dist/fonts/
 type1/public/amsfonts/cm/cmr6.pfb></usr/local/texlive/2025/texmf-dist/fonts/typ
 e1/public/amsfonts/cm/cmr9.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/
 public/amsfonts/cm/cmsy9.pfb>
-Output written on AshutoshTiwari.pdf (2 pages, 225457 bytes).
+Output written on AshutoshTiwari.pdf (2 pages, 225154 bytes).
 PDF statistics:
  92 PDF objects out of 1000 (max. 8388607)
  70 compressed objects within 1 object stream
