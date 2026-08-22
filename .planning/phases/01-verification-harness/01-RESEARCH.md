@@ -686,7 +686,7 @@ fdb_md5=$(awk '/^  "main\.tex"/{print $4; exit}' docs/AshutoshTiwari.fdb_latexmk
 
 **What goes wrong:** the implementer sees three failures, assumes a bug, and either weakens the assertion (`grep -F` instead of `-Fx`, `>= 1` instead of `== 1`) or adds a suppression list.
 **Why it happens:** "tests should pass" is a deep reflex, and it directly contradicts ROADMAP criterion 5.
-**How to avoid:** state Phase 1 acceptance as `make verify; test $? -eq 1` plus the three named messages. Put it in the plan's must-haves verbatim.
+**How to avoid:** state Phase 1 acceptance as an exit-1 assertion plus the three named messages, and put it in the plan's must-haves verbatim. **CORRECTED during planning:** assert it as `bash scripts/verify-resume.sh; test $? -eq 1`, NOT `make verify; test $? -eq 1` — GNU Make 3.81 exits 2 for any failed recipe regardless of what the recipe returned (measured both ways), so the Make-level form can never pass and also erases the exit-1 vs exit-2 distinction ROADMAP criterion 5 depends on. `make verify` is assertable only as "exits non-zero". See `01-01-PLAN.md` note 1 and `01-03-PLAN.md`'s notes.
 **Warning signs:** an `EXPECTED_FAILURES` variable; any assertion whose message says "will be fixed later" without an owner; `|| true` on a BLOCKER.
 
 ### Pitfall 2: Making the harness so strict Phase 2 cannot turn it green
@@ -970,7 +970,7 @@ Note `verify: $(PDF)` makes `make verify` build the PDF if it is missing, but **
 | VERIFY-03 | date/title byte-difference ⇒ non-zero | unit (negative control) | mutate one manifest date by one byte in a temp copy; assert `RESULT G5.1 FAIL` | ❌ Wave 0 |
 | VERIFY-03 | geometry / `\setlist` drift ⇒ non-zero | unit (negative control) | temp `main.tex` with `\textheight` `1.2in`→`1.3in`; assert `RESULT G4.1 FAIL` | ❌ Wave 0 |
 | VERIFY-03 | stale PDF ⇒ refuse (exit 2) | unit (negative control) | temp copy with a mutated `main.tex`; assert exit 2 and `RESULT G0.3 FAIL` | ❌ Wave 0 |
-| ROADMAP crit 5 | fails today naming each live defect | acceptance (**inverted**) | `make verify; test $? -eq 1` **and** output contains `G6.9`, `G6.10`, `G6.12` | ❌ Wave 0 |
+| ROADMAP crit 5 | fails today naming each live defect | acceptance (**inverted**) | `bash scripts/verify-resume.sh; test $? -eq 1` **and** output contains `G6.9`, `G6.10`, `G6.12` — **CORRECTED during planning:** script-level, not `make verify; test $? -eq 1`, which GNU Make 3.81 makes unsatisfiable (any failed recipe ⇒ make exit 2) | ❌ Wave 0 |
 | ROADMAP crit 1 premise | today's build accepts +5 lines warning-free | self-test | `make verify-selftest \| grep 'RESULT G7.1 PASS'` (measured: exit 0, 0 warnings) | ❌ Wave 0 |
 | — | self-test never dirties the repo | self-test | `make verify-selftest && test -z "$(git status --porcelain)"` (measured clean) | ❌ Wave 0 |
 
@@ -1045,32 +1045,34 @@ No secrets, tokens, network calls, or third-party services are involved. Nothing
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **Which phase fixes the Education parse order?**
+> All six were resolved during planning (2026-08-21). Each carries an inline **RESOLVED** marker naming the plan note that binds the answer. Nothing here is still open; do not re-litigate during execution.
+
+1. **Which phase fixes the Education parse order?** — **RESOLVED: G6.12 ships as a BLOCKER in Phase 1 and Phase 2 lands the fix.** Binding note: `01-01-PLAN.md` notes 4 and 5; implemented by `01-02-PLAN.md` Task 4 (G6.12), which requires the FAIL message to name `Owner: Phase 2 (EXP-01 already edits Education; re-asserted by Phase 4 / PG2-03)`.
    - Known: it is a live defect (measured — `Bloomington, IN` before the institution, date range 3 lines detached). ROADMAP Phase 1 crit 5 names it as a defect the harness must *fail* on. `REQUIREMENTS.md` assigns the fix to Phase 4 (PG2-03). ROADMAP Phase 2 crit 5 requires `make verify` to pass end-to-end.
-   - Unclear: those three statements cannot all hold if the assertion is a BLOCKER and the fix waits for Phase 4.
-   - **Recommendation:** make G6.12 a BLOCKER and land the fix in Phase 2 — Phase 2 already rewrites Education under EXP-01, and the fix is a `\resumeSubheading` argument reorder at `main.tex:240-242` with zero page-1 cost. Phase 4/PG2-03 then re-asserts rather than introduces it. Record the decision in the plan.
+   - Unclear at research time: those three statements cannot all hold if the assertion is a BLOCKER and the fix waits for Phase 4.
+   - **Recommendation, adopted:** make G6.12 a BLOCKER and land the fix in Phase 2 — Phase 2 already rewrites Education under EXP-01, and the fix is a `\resumeSubheading` argument reorder at `main.tex:240-242` with zero page-1 cost. Phase 4/PG2-03 then re-asserts rather than introduces it. This is the only assignment under which Phase 1 crit 5 and Phase 2 crit 5 are simultaneously satisfiable.
 
-2. **Are `Technical Skills` → `Skills` and `Selected Projects` → `Projects` in scope?**
+2. **Are `Technical Skills` → `Skills` and `Selected Projects` → `Projects` in scope?** — **RESOLVED: out of scope this milestone.** Binding note: `01-01-PLAN.md` note 6; the headings are seeded into `SECTIONS` in `01-01-PLAN.md` Task 2, so a future rename is a one-line manifest edit.
    - Known: recommended by `PITFALLS.md` Pitfall 9 and `SUMMARY.md:69`; **absent** from `REQUIREMENTS.md` and from every ROADMAP criterion.
-   - **Recommendation:** out of scope; seed the manifest with today's strings. The design already absorbs a later rename via one manifest line.
+   - **Recommendation, adopted:** out of scope; seed the manifest with today's strings. The design already absorbs a later rename via one manifest line.
 
-3. **Should the Skills ≤3-line assertion ship as WARN in Phase 1 or be omitted entirely?**
+3. **Should the Skills ≤3-line assertion ship as WARN in Phase 1 or be omitted entirely?** — **RESOLVED: ships as WARN owned by Phase 5.** Binding note: `01-01-PLAN.md` Task 2 writes `WARN_OWNERS=…|G6.14:5|…` and annotates `SKILLS_MAX_LINES` as measuring 4 today; asserted by `01-02-PLAN.md` Task 4 (G6.14), whose criterion requires the line to print `owner: Phase 5`.
    - Known: measured 4 rendered lines today; ROADMAP Phase 5 crit 1 requires ≤3.
-   - **Recommendation:** ship as WARN with `owner: Phase 5`, and have Phase 5 promote it. It costs three lines of script, keeps the target visible from Phase 1, and cannot break Phases 2–4.
+   - **Recommendation, adopted:** ship as WARN with `owner: Phase 5`, and have Phase 5 promote it. It costs three lines of script, keeps the target visible from Phase 1, and cannot break Phases 2–4.
 
-4. **How should G6.15 treat `accentlight`?**
+4. **How should G6.15 treat `accentlight`?** — **RESOLVED: assert usage, not definition.** Binding note: `01-02-PLAN.md` Task 4 (G6.15), whose criteria require G6.15 to PASS today, an INFO line to report the unused definition, and the string `accentlight` to be absent from the script so the rule stays generic.
    - Known: `#E4EFEC` is 92.3% gray and **defined but unused** (0 use sites, `main.tex:19`). A naive "no near-white colour definition" rule fails today on a definition that renders nothing.
-   - **Recommendation:** assert *usage* — flag a near-white colour only when it appears in a `\textcolor{…}`/`\color{…}` call site. Separately report the unused definition as INFO (Phase 6/VIS-01 must "use it or delete it").
+   - **Recommendation, adopted:** assert *usage* — flag a near-white colour only when it appears in a `\textcolor{…}`/`\color{…}` call site. Separately report the unused definition as INFO (Phase 6/VIS-01 must "use it or delete it").
 
-5. **Do the global Makefile conventions (`setup`/`setup-dev`/`run_tests`/`lint`) apply here?**
+5. **Do the global Makefile conventions (`setup`/`setup-dev`/`run_tests`/`lint`) apply here?** — **RESOLVED: no rename; add the three `verify*` targets only.** Binding note: `01-03-PLAN.md` Task 3 action and its notes; the optional `run_tests` alias is explicitly left as a follow-up to raise with the user, not added unilaterally.
    - Known: this repo uses `install`/`check`/`build`/`view`/`watch`/`clean`. `make verify` is the name every roadmap criterion uses.
-   - **Recommendation:** add `verify` / `verify-selftest` / `verify-baseline` and change nothing else. Optionally alias `run_tests: verify verify-selftest`. Confirm with the user rather than silently renaming existing targets.
+   - **Recommendation, adopted:** add `verify` / `verify-selftest` / `verify-baseline` and change nothing else.
 
-6. **Should `make verify` ever rebuild, or only refuse?**
+6. **Should `make verify` ever rebuild, or only refuse?** — **RESOLVED: refuse, exit 2, never rebuild.** Binding note: `01-01-PLAN.md` Task 3 (G0.3's four outcomes, `die2`, and the `--skip-freshness` override) plus `01-03-PLAN.md`'s `verify: $(PDF)` comment and G8.3 control. `verify-rebuild` is recorded as out of scope.
    - Known: ROADMAP crit 5 says *refuse* a stale PDF. `ARCHITECTURE.md:440` instead `touch`es and rebuilds.
-   - **Recommendation:** refuse (exit 2) with the remedy `run 'make build'`. Read-only keeps the gate safe on a clean checkout and in CI, and preserves the distinction between "artifact wrong" (1) and "cannot verify" (2). Offer `make verify-rebuild` as an explicit convenience if the user wants one.
+   - **Recommendation, adopted:** refuse (exit 2) with the remedy `run 'make build'`. Read-only keeps the gate safe on a clean checkout and in CI, and preserves the distinction between "artifact wrong" (1) and "cannot verify" (2). Planning follow-on: because GNU Make 3.81 exits 2 for *any* failed recipe, that 1-vs-2 distinction is only observable when the script is invoked directly — see `01-03-PLAN.md`'s notes. Offer `make verify-rebuild` as an explicit convenience only if the user asks.
 
 ---
 
