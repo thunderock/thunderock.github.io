@@ -36,7 +36,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. `make verify` exits non-zero if any of the five employment date strings or printed titles differs by a single byte from the recorded baseline, or if page geometry / `\setlist` values have drifted
   5. `make verify` run against today's committed PDF **FAILS and names each live defect** (en-dash handle, zero literal URLs, Education parse order) — and refuses to verify a PDF older than `docs/main.tex` instead of greenlighting a stale artifact
 **Plans**: 3 plans (sequential, waves 1→2→3)
-- [ ] 01-01-PLAN.md — Baseline manifests, harness scaffolding, G0 preconditions + freshness proof
+- [x] 01-01-PLAN.md — Baseline manifests, harness scaffolding, G0 preconditions + freshness proof
 - [ ] 01-02-PLAN.md — Structure gates (G1–G3), geometry + honesty freezes (G4–G5), ATS text layer (G6)
 - [ ] 01-03-PLAN.md — Overflow self-test (G7), negative controls, Makefile integration
 
@@ -108,7 +108,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 (Phase 4 may ru
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Verification Harness | 0/3 | Planned | - |
+| 1. Verification Harness | 1/3 | In Progress | - |
 | 2. Page-1 Budget & Text-Layer Defects | 0/TBD | Not started | - |
 | 3. Adobe Rebuild & Staff-Signal Bullets | 0/TBD | Not started | - |
 | 4. Page-2 Restructure & GitHub Presence | 0/TBD | Not started | - |

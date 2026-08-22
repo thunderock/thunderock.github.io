@@ -9,9 +9,9 @@ Requirements for milestone v1.0. Each maps to roadmap phases.
 
 ### Verification Harness
 
-- [ ] **VERIFY-01**: `make verify` fails when the PDF ≠ 2 pages or Experience content crosses the page-1 boundary (the LaTeX build is otherwise silent on overflow — page count is the only reliable gate)
-- [ ] **VERIFY-02**: `make verify` asserts ATS text-layer integrity via pdftotext round-trip — required keywords present, LinkedIn handle extracts correctly, no glyph/ligature corruption
-- [ ] **VERIFY-03**: `make verify` asserts honesty gates — all employment date strings and titles byte-identical to the recorded baseline
+- [x] **VERIFY-01**: `make verify` fails when the PDF ≠ 2 pages or Experience content crosses the page-1 boundary (the LaTeX build is otherwise silent on overflow — page count is the only reliable gate)
+- [x] **VERIFY-02**: `make verify` asserts ATS text-layer integrity via pdftotext round-trip — required keywords present, LinkedIn handle extracts correctly, no glyph/ligature corruption
+- [x] **VERIFY-03**: `make verify` asserts honesty gates — all employment date strings and titles byte-identical to the recorded baseline
 
 ### Experience (Page 1)
 
@@ -79,9 +79,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| VERIFY-01 | Phase 1 | Pending |
-| VERIFY-02 | Phase 1 | Pending |
-| VERIFY-03 | Phase 1 | Pending |
+| VERIFY-01 | Phase 1 | Complete |
+| VERIFY-02 | Phase 1 | Complete |
+| VERIFY-03 | Phase 1 | Complete |
 | EXP-01 | Phase 2 | Pending |
 | EXP-05 | Phase 2 | Pending |
 | EXP-06 | Phase 2 | Pending |
