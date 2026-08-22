@@ -50,7 +50,14 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. `pdftotext` output contains `ashutosh-tiwari` (correct hyphenated handle) and zero occurrences of `ashutosh–tiwari` (en dash)
   4. The text layer carries the portfolio, GitHub, and LinkedIn URLs as literal strings a text-only parser can read — not as masked anchors
   5. `make verify` passes end-to-end, and the harness's headroom report shows **≥12 lines** of page-1 space recovered vs baseline (≈4.25 from the career-break row + ≈8 from the fold)
-**Plans**: TBD
+
+**Superseded literals** (bind these; a verification pass must not correct them backwards):
+  - Criterion 3's `ashutosh-tiwari` (single hyphen) is a transcription error. The handle is **`ashutosh--tiwari`** (two ASCII hyphens), user-confirmed against a live LinkedIn probe and frozen in `docs/verify/manifest.txt` `CONTACT_LITERALS` — see STATE.md `[Phase 1 / A1]`.
+  - Criterion 5's "**≥12 lines**" is superseded by decision **D-08** (`02-CONTEXT.md`): the fold keeps one descriptor line per role, so the assertion is the **measured** post-change headroom, recorded at phase close — not a hardcoded 12. Planning measurement (`02-01-PLAN.md` §measured_width_budget) puts the realistic recovery near the career-break's **4.25 lines**: `\resumeSubheading`'s two-row header must survive for `G5`'s whole-line matching of the frozen title/date/employer, so the fold itself is worth at most one rendered line per role. Measured figure: _recorded by 02-02 Task 3_.
+
+**Plans**: 2 plans (sequential, waves 1→2)
+- [ ] 02-01-PLAN.md — Contact line bare-URL rewrite + ligature break, career-break deletion, Groupon/NetSpeed fold, measured budget
+- [ ] 02-02-PLAN.md — Education city-cell drop, `EDU_CITY`/`PROBE_LINES` harness reconciliation with negative control, green gate + artifact
 
 ### Phase 3: Adobe Rebuild & Staff-Signal Bullets
 **Goal**: Page-1 Experience carries the evidenced staff signal — fault tolerance, distributed GPU inference, the Rust governance subsystem, `torch.compile` — with every number traceable and no unapproved claim shipped
