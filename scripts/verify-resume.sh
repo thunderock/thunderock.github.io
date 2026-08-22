@@ -560,13 +560,44 @@ tex_md5() {
     return 0
 }
 
+# arb_normalize <bbox xml> <outfile> -- strip the two nondeterministic lines and
+# the document filename from one bbox dump, so two builds of identical source
+# compare equal. Returns non-zero when the input is unusable or the RESULT IS
+# EMPTY, and that emptiness check is the load-bearing part: two empty files
+# compare equal, so an unvalidated pipeline reports FRESH from a measurement that
+# never happened.
+#
+# The substitution delimiter is '/', which a basename can never contain. The
+# previous '@' delimiter was breakable by the very data it interpolates: measured,
+# a --pdf whose basename contains '@' made BOTH seds fail, left both
+# normalizations empty, and reported an entirely unrelated document
+# (docs/transcript.pdf) as "L2 scratch rebuild proves the PDF matches the current
+# source" -- while the same bytes under a plain name were correctly refused.
+# Escaping the regex metacharacters is still required; a delimiter that cannot
+# occur is what makes the escape set complete.
+arb_normalize() {
+    [ -s "$1" ] || return 1
+    _an_name=$(basename "$PDF" | sed 's/[.[\*^$]/\\&/g')
+    sed -e 's/fresh\.pdf/X/' -e 's/arb\.pdf/X/' -e "s/$_an_name/X/" "$1" > "$2.sed" || return 1
+    [ -s "$2.sed" ] || return 1
+    LC_ALL=C grep -v 'name="\(Creation\|Mod\)Date"' "$2.sed" > "$2"
+    [ -s "$2" ] || return 1
+    return 0
+}
+
 # L2 arbiter -- escalation only, never the default path. Rebuilds the current
 # source in the scratch dir under a different jobname (so the committed artifact
 # is unreachable by both directory and jobname) and compares the two documents
 # through pdftotext -bbox with the only two nondeterministic lines filtered out.
 # PDF bytes always differ between builds of identical source (embedded
 # CreationDate and /ID), so comparing the files themselves is not a freshness
-# test. Prints FRESH, STALE, or SKIP when latexmk is unavailable.
+# test. Prints FRESH, STALE, SKIP when latexmk is unavailable, or "ERROR <why>"
+# when its own measurement pipeline failed.
+#
+# ERROR exists because the alternative is a false pass: every step below that can
+# fail is checked, and a failed step reports ERROR rather than falling through to
+# a comparison of two files it never wrote. The caller turns ERROR into exit 2 --
+# a broken arbiter means freshness is UNKNOWN, and UNKNOWN is never FRESH.
 l2_arbiter() {
     if ! command -v latexmk >/dev/null 2>&1; then
         printf 'SKIP\n'
@@ -578,12 +609,22 @@ l2_arbiter() {
         printf 'SKIP\n'
         return 0
     fi
-    pdftotext -bbox "$WORK/fresh.pdf" "$WORK/a.xml" 2>/dev/null
-    pdftotext -bbox "$PDF" "$WORK/b.xml" 2>/dev/null
-    sed -e 's/fresh\.pdf/X/' -e 's/arb\.pdf/X/' -e "s@$(basename "$PDF" | sed 's/[.[\*^$]/\\&/g')@X@" "$WORK/a.xml" \
-        | grep -v 'name="\(Creation\|Mod\)Date"' > "$WORK/a.n"
-    sed -e 's/fresh\.pdf/X/' -e 's/arb\.pdf/X/' -e "s@$(basename "$PDF" | sed 's/[.[\*^$]/\\&/g')@X@" "$WORK/b.xml" \
-        | grep -v 'name="\(Creation\|Mod\)Date"' > "$WORK/b.n"
+    if ! pdftotext -bbox "$WORK/fresh.pdf" "$WORK/a.xml" 2>/dev/null; then
+        printf 'ERROR pdftotext -bbox could not measure the scratch rebuild\n'
+        return 0
+    fi
+    if ! pdftotext -bbox "$PDF" "$WORK/b.xml" 2>/dev/null; then
+        printf 'ERROR pdftotext -bbox could not measure %s\n' "$PDF"
+        return 0
+    fi
+    if ! arb_normalize "$WORK/a.xml" "$WORK/a.n"; then
+        printf 'ERROR the scratch rebuild measurement normalized to nothing\n'
+        return 0
+    fi
+    if ! arb_normalize "$WORK/b.xml" "$WORK/b.n"; then
+        printf 'ERROR the measurement of %s normalized to nothing\n' "$PDF"
+        return 0
+    fi
     if cmp -s "$WORK/a.n" "$WORK/b.n"; then
         printf 'FRESH\n'
     else
@@ -624,6 +665,14 @@ else
             STALE)
                 result G0.3 FAIL "no latexmk record for $TEX_BASE and the L2 scratch rebuild DIVERGES from $PDF -> run 'make build'"
                 die2 "PDF does not match the current source (L2 arbiter) -> run 'make build'"
+                ;;
+            ERROR*)
+                # A broken arbiter is "cannot verify", never FRESH: the whole point
+                # of the L2 path is that an absent L1 record leaves freshness
+                # UNKNOWN, and an arbiter that could not measure has not changed
+                # that. Reported as exit 2 for the same reason a stale artifact is.
+                result G0.3 FAIL "no latexmk record for $TEX_BASE and the L2 scratch rebuild arbiter could not measure: ${ARB#ERROR } -- freshness is UNKNOWN, so this run certifies nothing -> run 'make build' to restore the record"
+                die2 "L2 freshness arbiter failed (${ARB#ERROR }) -- refusing to treat an unmeasurable rebuild as proof of freshness -> run 'make build'"
                 ;;
             *)
                 result G0.3 SKIP "no latexmk record for $TEX_BASE and latexmk is unavailable, so freshness degrades to L1-only and could not be proven"
