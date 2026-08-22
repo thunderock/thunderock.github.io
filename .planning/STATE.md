@@ -41,6 +41,7 @@ Decisions are logged in PROJECT.md Key Decisions table. Affecting current work:
 - [Roadmap]: Phase 1 is **expected to FAIL** on today's committed PDF (5 live defects) — that is the harness working, not a regression
 - [Roadmap]: Summary/headline section stays Out of Scope (user chose fold-only) despite the research recommending it — do not re-add during planning
 - [Spike 002]: Projects section = `rollout` + `graph_ml` (Variant A); `random_walk` privatized during the build
+- [Phase 1 / A1]: LinkedIn vanity handle is **`ashutosh--tiwari`** (two ASCII hyphens) — user-confirmed at the Plan 01-01 Task 1 checkpoint against a live probe (HTTP 200; LinkedIn canonical `og:url` = `ashutosh--tiwari`; the single-hyphen URL returned 999). This resolves Assumption A1 and **supersedes the single-hyphen literal `ashutosh-tiwari` in ROADMAP.md Phase 2 criterion 3** (cited in planning as ROADMAP:47; the literal actually sits at ROADMAP.md line 50) — that spelling is a roadmapping transcription error and a later verification pass must NOT correct `docs/verify/manifest.txt` backwards to it. `docs/verify/manifest.txt` therefore freezes `ashutosh--tiwari` in `CONTACT_LITERALS` and the EN DASH form `ashutosh–tiwari` (U+2013) in `FORBIDDEN_LITERAL`. **`docs/main.tex:134` needs NO Phase 2 `\href` correction** — its link target and anchor text already read `ashutosh--tiwari` correctly; the only Phase 2 (EXP-06) defect is that the rendered text layer emits the en dash because LaTeX converts the source `--`.
 
 ### Pending Todos
 
