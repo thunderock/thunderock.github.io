@@ -25,13 +25,13 @@ The resume gets past ATS keyword screens and recruiter scans for Staff MLE / inf
 <!-- Milestone v1.0 scope. -->
 
 - [x] Verification harness: page-1 fit, ATS text-layer, honesty invariants machine-enforced (`make verify` / `verify-selftest`) — Validated in Phase 1: Verification Harness
-- [ ] Career-break entry removed from Experience (Swiggy → Adobe; Education carries the master's)
+- [x] Career-break entry removed from Experience (Swiggy → Adobe; Education carries the master's) — Validated in Phase 2
 - [ ] Adobe Firefly section rebuilt on commit-verified evidence, positioned for inference-framework/optimization roles
 - [ ] Language keyword-optimized against Staff MLE / inference-framework job postings (research-driven)
 - [ ] Skills section stretched only to interview-defensible adjacent tech (user approves final list)
 - [ ] 2–3 accent palette proposals rendered as PDF samples; user picks (teal stays if none win)
 - [ ] `index.html` hero/about synced with new resume positioning
-- [ ] Experience section still fits page 1 exactly; PDF stays ATS-parsable
+- [ ] Experience section still fits page 1 exactly; PDF stays ATS-parsable (Phase 2: text-layer defects cleared, `make verify` green, 50.4pt page-1 budget freed; Phases 3-6 spend it)
 
 ### Out of Scope
 
@@ -102,4 +102,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-08-22 after Phase 1 (Verification Harness) completion*
+*Last updated: 2026-08-22 after Phase 2 (Page-1 Budget & Text-Layer Defects) completion*
