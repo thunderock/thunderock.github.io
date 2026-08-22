@@ -7,7 +7,9 @@
 # Exit vocabulary (load-bearing -- Plan 03 asserts on it):
 #   0 = every BLOCKER passed
 #   1 = at least one BLOCKER failed (the document is wrong)
-#   2 = the harness could not run (missing tool, missing artifact, stale PDF)
+#   2 = the harness could not run (missing tool, missing artifact, stale PDF, or a
+#       measurement block that failed -- see die_group: an assertion group that could
+#       not RUN is UNKNOWN, and UNKNOWN is never reported as a pass)
 # Note: GNU Make 3.81 exits 2 for ANY failed recipe, so the 1-vs-2 distinction is
 # observable only when this script is invoked directly, not through a Make target.
 #
@@ -146,6 +148,33 @@ die2() {
     exit 2
 }
 
+# die_group <first-id> <group label> <exit status> <stderr file> -- an assertion
+# GROUP that could not RUN, which is the harness's one false-PASS channel and the
+# reason every inlined measurement block below is exit-status checked.
+#
+# Measured: a crashed python block emits NO rows, so every ID in its group
+# silently disappears from the RESULT stream while BLOCKERS stays untouched -- a
+# malformed NONASCII_ALLOW deletes G6.1-G6.4, an empty CEILING_PT deletes
+# G3.1-G3.4, and on a document with no other defect the run then exits 0. A run
+# that reports success because an assertion never executed is worse than no
+# assertion at all.
+#
+# So a failed measurement block is INFRASTRUCTURE failure -- "cannot verify",
+# exit 2 -- never "the document is wrong" (exit 1) and never silence. Same
+# ordering rule as G0.3: the machine-readable RESULT line is emitted FIRST,
+# because die2's banner is only a human banner. The block's own stderr is echoed
+# verbatim so the python traceback survives into the operator's terminal.
+die_group() {
+    _dg_err=$(LC_ALL=C grep -v '^[[:space:]]*$' "$4" 2>/dev/null \
+        | tail -3 | tr '\n' ' ' | sed -e 's/  */ /g' -e 's/^ *//' -e 's/ *$//')
+    [ -n "$_dg_err" ] || _dg_err="no diagnostic on stderr"
+    result "$1" FAIL "the $2 assertion group could NOT RUN: its measurement block exited $3 -- $_dg_err. The group's verdict is UNKNOWN, which is never a pass"
+    if [ -s "$4" ]; then
+        sed 's/^/!!   /' "$4" >&2
+    fi
+    die2 "$2 could not be measured (measurement block exit $3): $_dg_err -- refusing to report a verdict for an assertion group that never ran"
+}
+
 # ---------------------------------------------------------------------------
 # Manifest readers. V5 control: the manifest is DATA, never code. It is read
 # line-wise with grep and never sourced, never eval'd, and no command string is
@@ -197,8 +226,18 @@ emit_row() {
 
 # emit_rows <ID> <rowfile> -- emit every row in <rowfile> whose ID field is <ID>.
 # Lets a single parse pass buffer rows and still print them in stable ID order.
+#
+# Zero matching rows is a FAILURE, not an empty loop: every call site expects at
+# least one row for the ID it asks for, so an empty selection means the producing
+# block emitted nothing for it. This closes the same channel die_group closes,
+# from the other side -- die_group catches a block that exited non-zero, this
+# catches a block that exited 0 without producing the row it owes.
 emit_rows() {
     LC_ALL=C grep "^$1|" "$2" > "$2.sel" 2>/dev/null
+    if [ ! -s "$2.sel" ]; then
+        result "$1" FAIL "no $1 row was produced by its measurement block (row file $2) -- the assertion did not run, so its verdict is UNKNOWN, which is never a pass"
+        die2 "$1 produced no result row -- refusing to report a verdict for an assertion that never ran"
+    fi
     while IFS='|' read -r _ri _rs _rm; do
         [ -n "$_ri" ] || continue
         emit_row "$_ri" "$_rs" "$_rm"
@@ -221,8 +260,15 @@ emit_rows() {
 # Four classes, not the five ligature glyphs: private-use and replacement
 # characters are the classes that actually appear when the ToUnicode mapping
 # breaks, and neither is caught by looking for ligature glyphs.
+#
+# The block's exit status is the function's exit status, deliberately NOT masked
+# with a trailing `return 0`: every caller redirects this stdout into a rows file,
+# so a crash here produces an EMPTY rows file and would delete G6.1-G6.4 from the
+# run. stderr is captured rather than discarded so the caller's die_group can name
+# the python error. The function itself never emits a RESULT line -- its stdout
+# belongs to the rows file, so the emitter has to stay at the call site.
 glyph_census() {
-    python3 - "$1" "$(manifest_get NONASCII_ALLOW)" <<'PY'
+    python3 - "$1" "$(manifest_get NONASCII_ALLOW)" 2>"$WORK/census.err" <<'PY'
 import collections
 import sys
 import unicodedata
@@ -260,7 +306,6 @@ else:
 for row in rows:
     print('%s|%s|%s' % row)
 PY
-    return 0
 }
 
 # gate_line_of <string> -> the first line number in gate.txt whose WHOLE content
@@ -356,13 +401,19 @@ frozen_section() {
 # writer runs from a mode short-circuit above the content assertions and needs
 # the SAME implementation -- a second copy of the hash rule is how a writer and
 # a gate silently drift apart.
+#
+# The exit status is NOT masked (see die_group): under pipefail a failed python
+# block makes the whole pipeline non-zero, and both callers check it. Unchecked,
+# a crashed block would hash the grep stream alone -- which makes G4.1 FAIL for a
+# fabricated reason, and would let --write-baseline freeze a hash covering half
+# the geometry contract.
 geom_hash() {
     _gk=$(manifest_get GEOMETRY_KEYS)
     # Matched inside the braces so trailing content on the line cannot leak in.
     _gre='\\addtolength\{\\('"$_gk"')\}\{[^}]*\}'
     {
         LC_ALL=C grep -hoE "$_gre" "$1" | sort
-        python3 - "$1" <<'PY'
+        python3 - "$1" 2>"$WORK/geom.err" <<'PY'
 import re
 import sys
 
@@ -374,7 +425,6 @@ pattern = r"\\setlist(\[[^\]]*\])?\{(?:[^{}]|\{[^{}]*\})*\}"
 print("\n".join(sorted(" ".join(m.group(0).split()) for m in re.finditer(pattern, source))))
 PY
     } | shasum -a 256 | awk '{print $1}'
-    return 0
 }
 
 # ---------------------------------------------------------------------------
@@ -430,6 +480,8 @@ if [ "$MODE" = census ]; then
     # exactly one implementation of the rules, so the control cannot drift away
     # from the assertion it is validating.
     glyph_census "$CENSUS_FILE" > "$WORK/census.rows"
+    CENSUS_EC=$?
+    [ "$CENSUS_EC" -eq 0 ] || die_group G6.1 "glyph census (G6.1-G6.4)" "$CENSUS_EC" "$WORK/census.err"
     emit_rows G6.1 "$WORK/census.rows"
     emit_rows G6.2 "$WORK/census.rows"
     emit_rows G6.3 "$WORK/census.rows"
@@ -635,7 +687,7 @@ fi
 # the remedy carries the number that explains why the probe stopped overflowing.
 p1_headroom() {
     pdftotext -bbox "$PDF" "$WORK/headroom.xml" 2>/dev/null
-    python3 - "$WORK/headroom.xml" "$(manifest_get CEILING_PT)" <<'PY'
+    python3 - "$WORK/headroom.xml" "$(manifest_get CEILING_PT)" 2>/dev/null <<'PY' > "$WORK/headroom.pt"
 import sys
 import xml.etree.ElementTree as ET
 
@@ -655,6 +707,13 @@ for page in [p for p in root.iter() if localname(p) == 'page']:
 else:
     print('unknown')
 PY
+    # This one feeds a remedy MESSAGE, never a gate, so a failed measurement
+    # degrades to the same 'unknown' token the block prints when no page carries
+    # positioned words -- an empty rows file yields no first line and grep falls
+    # through. It must not die2: this runs inside a command substitution in a
+    # message argument, where an exit would end only the subshell and leave the
+    # caller printing a truncated remedy.
+    grep -m1 . "$WORK/headroom.pt" 2>/dev/null || printf 'unknown\n'
     return 0
 }
 
@@ -1035,7 +1094,7 @@ if [ "$MODE" = write-baseline ]; then
 
     # Same %.1f formatting as G3.3 and G4.3, so a re-measured value is
     # byte-identical to the one those assertions print.
-    WB_MEASURED=$(python3 - "$WORK/wb.xml" <<'PY'
+    WB_MEASURED=$(python3 - "$WORK/wb.xml" 2>"$WORK/wb.err" <<'PY'
 import sys
 import xml.etree.ElementTree as ET
 
@@ -1056,6 +1115,15 @@ else:
     print('unknown unknown')
 PY
     )
+    WB_EC=$?
+    # A crashed measurement leaves WB_MEASURED empty, which is NOT the 'unknown'
+    # sentinel the block prints for an unmeasurable page -- so without this check
+    # the writer would stage "P1_TOP_PT=" into the manifest and every later run
+    # would read an empty threshold.
+    if [ "$WB_EC" -ne 0 ]; then
+        [ -s "$WORK/wb.err" ] && sed 's/^/!!   /' "$WORK/wb.err" >&2
+        die2 "the page-1 bbox measurement block failed (exit $WB_EC), so $MANIFEST cannot be regenerated -- nothing was written"
+    fi
     WB_P1TOP=${WB_MEASURED%% *}
     WB_P1WS=${WB_MEASURED##* }
     WB_PAGES=$(pdfinfo "$PDF" 2>/dev/null | awk '/^Pages:/ {print $2; exit}')
@@ -1142,6 +1210,15 @@ PY
     # because a generated honesty baseline re-freezes whatever the document now
     # says -- which is the milestone's highest-consequence failure mode.
     WB_GEOM=$(geom_hash "$TEX")
+    WB_GEOM_EC=$?
+    if [ "$WB_GEOM_EC" -ne 0 ] || [ -z "$WB_GEOM" ]; then
+        # Never fall through to the awk rewrite below on a failed measurement: it
+        # would freeze a hash covering only part of the geometry contract, and a
+        # frozen wrong hash makes G4.1 PASS forever on a gate that stopped
+        # covering what it claims.
+        [ -s "$WORK/geom.err" ] && sed 's/^/!!   /' "$WORK/geom.err" >&2
+        die2 "the geometry hash could not be computed from $TEX (exit $WB_GEOM_EC), so the honesty freeze cannot be evaluated -- refusing to touch $FROZEN"
+    fi
     awk -v want='[geometry-sha256]' -v hash="$WB_GEOM" '
         /^[[:space:]]*#/ { print; next }
         /^\[/            { inside = ($0 == want) ? 1 : 0; print; next }
@@ -1304,7 +1381,7 @@ CEILING_PT=$(manifest_get CEILING_PT)
 LINE_PT=$(manifest_get LINE_PT)
 P1_WS_PT=$(manifest_get P1_BOTTOM_WS_PT)
 
-python3 - "$WORK/bbox.xml" "$CEILING_PT" "$LINE_PT" "$P1_WS_PT" <<'PY' > "$WORK/bbox.rows"
+python3 - "$WORK/bbox.xml" "$CEILING_PT" "$LINE_PT" "$P1_WS_PT" 2>"$WORK/bbox.err" <<'PY' > "$WORK/bbox.rows"
 import sys
 import xml.etree.ElementTree as ET
 
@@ -1368,6 +1445,14 @@ else:
 for row in rows:
     print('%s|%s|%s' % row)
 PY
+BBOX_EC=$?
+# Measured: an empty or missing CEILING_PT makes float('') raise, the rows file
+# comes out empty, and G3.1-G3.4 vanish from the run with BLOCKERS untouched.
+[ "$BBOX_EC" -eq 0 ] || die_group G3.1 "page fill and page box (G3.1-G3.4)" "$BBOX_EC" "$WORK/bbox.err"
+# This group is read by the loop below rather than by emit_rows, so it needs the
+# same zero-row guard emit_rows carries: a block that exits 0 without emitting a
+# row still deletes its assertions from the RESULT stream.
+[ -s "$WORK/bbox.rows" ] || die_group G3.1 "page fill and page box (G3.1-G3.4)" "$BBOX_EC (no rows emitted)" "$WORK/bbox.err"
 
 # Read the rows from a FILE, not a pipe: result() must run in this shell or the
 # BLOCKERS tally silently stays at zero.
@@ -1404,6 +1489,8 @@ done < "$WORK/bbox.rows"
 
 GEOM_WANT=$(frozen_section '[geometry-sha256]' | grep -m1 .)
 GEOM_GOT=$(geom_hash "$TEX")
+GEOM_EC=$?
+[ "$GEOM_EC" -eq 0 ] || die_group G4.1 "geometry and spacing freeze (G4.1)" "$GEOM_EC" "$WORK/geom.err"
 
 if [ -z "$GEOM_WANT" ]; then
     result G4.1 FAIL "no [geometry-sha256] value in $FROZEN, so margin and list-spacing drift cannot be detected"
@@ -1524,6 +1611,8 @@ emit_rows G5.5 "$WORK/frozen.rows"
 # ---------------------------------------------------------------------------
 
 glyph_census "$WORK/gate.txt" > "$WORK/census.rows"
+CENSUS_EC=$?
+[ "$CENSUS_EC" -eq 0 ] || die_group G6.1 "glyph census (G6.1-G6.4)" "$CENSUS_EC" "$WORK/census.err"
 emit_rows G6.1 "$WORK/census.rows"
 emit_rows G6.2 "$WORK/census.rows"
 emit_rows G6.3 "$WORK/census.rows"
@@ -1797,7 +1886,7 @@ fi
 # an unused definition is reported separately as INFO.
 # ---------------------------------------------------------------------------
 
-python3 - "$TEX" <<'PY' > "$WORK/invisible.rows"
+python3 - "$TEX" 2>"$WORK/invisible.err" <<'PY' > "$WORK/invisible.rows"
 import re
 import sys
 
@@ -1851,6 +1940,8 @@ if unused:
     print('G6.15|INFO|near-white colour(s) defined but never applied: %s -- renders nothing today so it is '
           'not an invisible-text defect; Phase 6 / VIS-01 must use it or delete it' % ', '.join(unused))
 PY
+INVISIBLE_EC=$?
+[ "$INVISIBLE_EC" -eq 0 ] || die_group G6.15 "invisible-text scan (G6.15)" "$INVISIBLE_EC" "$WORK/invisible.err"
 emit_rows G6.15 "$WORK/invisible.rows"
 
 # ---------------------------------------------------------------------------
