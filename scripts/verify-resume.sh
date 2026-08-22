@@ -349,6 +349,34 @@ frozen_section() {
     return 0
 }
 
+# geom_hash <texfile> -> normalized sha256 over two sorted streams. shasum is
+# preferred over a BSD-only hash tool so the check also works on Linux.
+#
+# Defined here in the helper block rather than beside G4.1 because the baseline
+# writer runs from a mode short-circuit above the content assertions and needs
+# the SAME implementation -- a second copy of the hash rule is how a writer and
+# a gate silently drift apart.
+geom_hash() {
+    _gk=$(manifest_get GEOMETRY_KEYS)
+    # Matched inside the braces so trailing content on the line cannot leak in.
+    _gre='\\addtolength\{\\('"$_gk"')\}\{[^}]*\}'
+    {
+        LC_ALL=C grep -hoE "$_gre" "$1" | sort
+        python3 - "$1" <<'PY'
+import re
+import sys
+
+source = open(sys.argv[1], encoding='utf-8').read()
+# Brace-balanced on purpose: the \setlist[itemize] declaration spans two source
+# lines, and a per-line grep would capture only half of it -- silently dropping
+# half the list-spacing contract out of the hash.
+pattern = r"\\setlist(\[[^\]]*\])?\{(?:[^{}]|\{[^{}]*\})*\}"
+print("\n".join(sorted(" ".join(m.group(0).split()) for m in re.finditer(pattern, source))))
+PY
+    } | shasum -a 256 | awk '{print $1}'
+    return 0
+}
+
 # ---------------------------------------------------------------------------
 # Scratch workspace. V12 control: always from mktemp -d, never from user input,
 # and removed only after proving the variable is non-empty and is a directory.
@@ -976,9 +1004,177 @@ PY
     exit 1
 fi
 
+# ---------------------------------------------------------------------------
+# --write-baseline -- the V14 configuration control, and the ONLY code path in
+# this milestone that writes a baseline file.
+#
+# It regenerates docs/verify/manifest.txt only. Two classes of key, and the
+# distinction is the whole point:
+#
+#   RE-MEASURED  observation-only keys that nothing gates as a BLOCKER. Their
+#                purpose IS to record what the current artifact measures, so
+#                regenerating them is maintenance.
+#   PRESERVED    every key a BLOCKER gates on, plus every policy and contract
+#                key. These are measured and REPORTED but never written. A
+#                generator that quietly raised the page budget to match a
+#                three-page document, or moved the page-2 opening heading to
+#                match a spilled boundary, would defeat the gate exactly the way
+#                re-freezing a changed employment date defeats the honesty
+#                freeze. Raising a threshold is a reviewed edit, not a
+#                regeneration.
+#
+# The honesty freeze is refused outright without ALLOW_FROZEN_UPDATE=1, and even
+# with it only the mechanically derivable geometry hash is regenerated -- the 15
+# strings are hand-authored by design -- and a unified diff is printed first.
+# ---------------------------------------------------------------------------
+
 if [ "$MODE" = write-baseline ]; then
-    result G7.5 SKIP "manifest regeneration (and the ALLOW_FROZEN_UPDATE guard on the honesty freeze) is implemented in Plan 03"
-    printf '>> Baseline writer argument surface only in this plan; writer lands in Plan 03.\n'
+    pdftotext -bbox "$PDF" "$WORK/wb.xml" 2>/dev/null || die2 "pdftotext -bbox failed to measure $PDF"
+    pdftotext -f 2 -l 2 "$PDF" "$WORK/wb.p2" 2>/dev/null
+    [ -f "$WORK/wb.p2" ] || : > "$WORK/wb.p2"
+
+    # Same %.1f formatting as G3.3 and G4.3, so a re-measured value is
+    # byte-identical to the one those assertions print.
+    WB_MEASURED=$(python3 - "$WORK/wb.xml" <<'PY'
+import sys
+import xml.etree.ElementTree as ET
+
+
+def localname(elem):
+    return elem.tag.split('}')[-1]
+
+
+root = ET.parse(sys.argv[1]).getroot()
+for page in [p for p in root.iter() if localname(p) == 'page']:
+    words = [w for w in page.iter() if localname(w) == 'word']
+    if not words:
+        continue
+    print('%.1f %.1f' % (min(float(w.get('yMin')) for w in words),
+                         float(page.get('height')) - max(float(w.get('yMax')) for w in words)))
+    break
+else:
+    print('unknown unknown')
+PY
+    )
+    WB_P1TOP=${WB_MEASURED%% *}
+    WB_P1WS=${WB_MEASURED##* }
+    WB_PAGES=$(pdfinfo "$PDF" 2>/dev/null | awk '/^Pages:/ {print $2; exit}')
+    WB_SIZE=$(pdfinfo "$PDF" 2>/dev/null | sed -n 's/^Page size:[[:space:]]*//p' | head -1)
+    WB_P2OPEN=$(tr '\f' '\n' < "$WORK/wb.p2" | grep -m1 .)
+
+    if [ "$WB_P1TOP" = unknown ] || [ "$WB_P1WS" = unknown ]; then
+        die2 "cannot measure page-1 extents from $PDF, so the manifest cannot be regenerated"
+    fi
+
+    # Rewrite line-wise, so key ORDER, blank lines, group comments and trailing
+    # "#" annotations all survive untouched. The annotation column is preserved
+    # explicitly rather than by luck, so a value whose length changed does not
+    # shift the comment.
+    : > "$WORK/manifest.new"
+    while IFS= read -r WB_LINE || [ -n "$WB_LINE" ]; do
+        WB_KEY=""
+        case "$WB_LINE" in
+            [A-Z]*=*) WB_KEY=${WB_LINE%%=*} ;;
+        esac
+        WB_NEW=""
+        case "$WB_KEY" in
+            P1_TOP_PT)       WB_NEW="$WB_P1TOP" ;;
+            P1_BOTTOM_WS_PT) WB_NEW="$WB_P1WS" ;;
+        esac
+        if [ -z "$WB_NEW" ]; then
+            printf '%s\n' "$WB_LINE" >> "$WORK/manifest.new"
+            continue
+        fi
+        WB_ANNOT=$(printf '%s\n' "$WB_LINE" | awk '{i = index($0, "#"); if (i > 0) print substr($0, i)}')
+        WB_HEAD=$(printf '%s=%s' "$WB_KEY" "$WB_NEW")
+        if [ -z "$WB_ANNOT" ]; then
+            printf '%s\n' "$WB_HEAD" >> "$WORK/manifest.new"
+        else
+            WB_COL=$(printf '%s' "$WB_LINE" | awk '{print index($0, "#")}')
+            WB_PAD=$((WB_COL - 1 - ${#WB_HEAD}))
+            [ "$WB_PAD" -lt 1 ] && WB_PAD=1
+            printf '%s%*s%s\n' "$WB_HEAD" "$WB_PAD" "" "$WB_ANNOT" >> "$WORK/manifest.new"
+        fi
+    done < "$MANIFEST"
+
+    printf '>> Re-measured (observation-only keys): P1_TOP_PT=%s P1_BOTTOM_WS_PT=%s\n' \
+        "$WB_P1TOP" "$WB_P1WS"
+
+    # Gated thresholds: reported, never written.
+    WB_DRIFT=0
+    for WB_PAIR in "PAGES:$WB_PAGES:G1.1" "PAGE_SIZE:$WB_SIZE:G4.2" "PAGE2_OPENS_WITH:$WB_P2OPEN:G2.1"; do
+        WB_K=${WB_PAIR%%:*}
+        WB_REST=${WB_PAIR#*:}
+        WB_LIVE=${WB_REST%:*}
+        WB_GATE=${WB_REST##*:}
+        WB_HAVE=$(manifest_get "$WB_K")
+        if [ "$WB_LIVE" != "$WB_HAVE" ]; then
+            WB_DRIFT=$((WB_DRIFT + 1))
+            printf '!! %s: the artifact now measures "%s" but the manifest records "%s". NOT rewritten -- %s gates on this key, and matching a threshold to a document that moved away from it deletes the gate. Change it only as a reviewed edit to %s.\n' \
+                "$WB_K" "$WB_LIVE" "$WB_HAVE" "$WB_GATE" "$MANIFEST"
+        fi
+    done
+    if [ "$WB_DRIFT" -eq 0 ]; then
+        printf '>> Preserved (BLOCKER-gated thresholds, all still matching the artifact): PAGES, CEILING_PT, PAGE_SIZE, PAGE2_OPENS_WITH.\n'
+    fi
+    printf '>> Preserved verbatim (policy and contract): section structure, Education binding, geometry keys, contact literals, text-layer rules, keyword tiers, WARN owners, PROBE_LINES.\n'
+
+    if cmp -s "$MANIFEST" "$WORK/manifest.new"; then
+        printf '>> %s already matches live measurement; nothing written.\n' "$MANIFEST"
+    else
+        printf '>> Proposed change to %s (unified diff):\n' "$MANIFEST"
+        diff -u "$MANIFEST" "$WORK/manifest.new"
+        # The staging copy is a SIBLING of the target on purpose: mv is only a
+        # true atomic rename within one filesystem, and $WORK lives under the
+        # system temp directory. An interrupted run therefore cannot leave a
+        # half-written manifest behind, only an unreferenced sibling.
+        WB_TMP="$MANIFEST.regen.$$"
+        if cp "$WORK/manifest.new" "$WB_TMP" && mv "$WB_TMP" "$MANIFEST"; then
+            printf '>> Rewrote %s.\n' "$MANIFEST"
+        else
+            rm -f "$WB_TMP"
+            die2 "could not write $MANIFEST"
+        fi
+    fi
+
+    # The honesty freeze. Only the [geometry-sha256] value is derivable; the 15
+    # frozen strings are hand-authored and are never generated from the artifact,
+    # because a generated honesty baseline re-freezes whatever the document now
+    # says -- which is the milestone's highest-consequence failure mode.
+    WB_GEOM=$(geom_hash "$TEX")
+    awk -v want='[geometry-sha256]' -v hash="$WB_GEOM" '
+        /^[[:space:]]*#/ { print; next }
+        /^\[/            { inside = ($0 == want) ? 1 : 0; print; next }
+        inside && NF     { print hash; next }
+                         { print }
+    ' "$FROZEN" > "$WORK/frozen.new"
+
+    if [ "${ALLOW_FROZEN_UPDATE:-0}" = 1 ]; then
+        printf '>> ALLOW_FROZEN_UPDATE=1 -- proposed change to %s, geometry hash only (unified diff):\n' "$FROZEN"
+        if diff -u "$FROZEN" "$WORK/frozen.new" > "$WORK/frozen.diff"; then
+            printf -- '--- %s\n' "$FROZEN"
+            printf -- '+++ %s (regenerated)\n' "$FROZEN"
+            printf '@@ no differences @@\n'
+            printf '>> The frozen geometry hash already matches %s; nothing written.\n' "$TEX"
+        else
+            cat "$WORK/frozen.diff"
+            WB_TMP="$FROZEN.regen.$$"
+            if cp "$WORK/frozen.new" "$WB_TMP" && mv "$WB_TMP" "$FROZEN"; then
+                printf '>> Rewrote the geometry hash in %s. The 15 frozen strings were NOT touched -- verify each one by hand.\n' "$FROZEN"
+            else
+                rm -f "$WB_TMP"
+                die2 "could not write $FROZEN"
+            fi
+        fi
+    elif cmp -s "$FROZEN" "$WORK/frozen.new"; then
+        printf '>> %s left untouched (its geometry hash already matches %s). Regenerating it at all requires ALLOW_FROZEN_UPDATE=1.\n' "$FROZEN" "$TEX"
+    else
+        printf '!! REFUSING to write %s: its geometry hash would change from %s to %s.\n' \
+            "$FROZEN" "$(frozen_section '[geometry-sha256]' | grep -m1 .)" "$WB_GEOM"
+        printf '!! The honesty freeze is hand-authored and is never regenerated by accident. Re-run with ALLOW_FROZEN_UPDATE=1 to see the diff and write it, after confirming the geometry change was intended.\n'
+    fi
+
+    printf '>> Baseline pass complete. Run '"'"'make verify'"'"' to gate the document; this mode asserts nothing.\n'
     exit 0
 fi
 
@@ -1202,28 +1398,9 @@ done < "$WORK/bbox.rows"
 # second bypass and do not reorder G0.3 behind G4.
 # ---------------------------------------------------------------------------
 
-# geom_hash <texfile> -> normalized sha256 over two sorted streams. shasum is
-# preferred over a BSD-only hash tool so the check also works on Linux.
-geom_hash() {
-    _gk=$(manifest_get GEOMETRY_KEYS)
-    # Matched inside the braces so trailing content on the line cannot leak in.
-    _gre='\\addtolength\{\\('"$_gk"')\}\{[^}]*\}'
-    {
-        LC_ALL=C grep -hoE "$_gre" "$1" | sort
-        python3 - "$1" <<'PY'
-import re
-import sys
-
-source = open(sys.argv[1], encoding='utf-8').read()
-# Brace-balanced on purpose: the \setlist[itemize] declaration spans two source
-# lines, and a per-line grep would capture only half of it -- silently dropping
-# half the list-spacing contract out of the hash.
-pattern = r"\\setlist(\[[^\]]*\])?\{(?:[^{}]|\{[^{}]*\})*\}"
-print("\n".join(sorted(" ".join(m.group(0).split()) for m in re.finditer(pattern, source))))
-PY
-    } | shasum -a 256 | awk '{print $1}'
-    return 0
-}
+# geom_hash is defined once in the helper block above, because the baseline
+# writer needs the same implementation from a mode that short-circuits before
+# this point.
 
 GEOM_WANT=$(frozen_section '[geometry-sha256]' | grep -m1 .)
 GEOM_GOT=$(geom_hash "$TEX")
