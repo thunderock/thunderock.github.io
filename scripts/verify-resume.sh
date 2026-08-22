@@ -11,8 +11,9 @@
 # Note: GNU Make 3.81 exits 2 for ANY failed recipe, so the 1-vs-2 distinction is
 # observable only when this script is invoked directly, not through a Make target.
 #
-# Implemented here: G0.1-G0.4 (preconditions), G1-G3 (structural page gates).
-# G4-G6 land later in Plan 02; G7-G8 land in Plan 03.
+# Implemented here: G0.1-G0.4 (preconditions), G1-G3 (structural page gates),
+# G4-G5 (geometry and honesty freezes), G6 (ATS text-layer integrity).
+# G7 (probe self-test) and G8 (harness controls) land in Plan 03.
 #
 # Written for bash 3.2.57 (a clean macOS box ships nothing newer). That rules out
 # associative arrays, the bash-4 line-slurp read builtins, case-converting parameter
@@ -40,6 +41,7 @@ SKIP_FRESHNESS=0
 MODE="verify"
 CENSUS_FILE=""
 BLOCKERS=0
+FAILED_IDS=""
 WORK=""
 
 # ---------------------------------------------------------------------------
@@ -108,6 +110,12 @@ result() {  # result <id> <PASS|FAIL|WARN|INFO|SKIP> <message>
     printf 'RESULT %-6s %-5s %s\n' "$1" "$2" "$3"
     if [ "$2" = FAIL ]; then
         BLOCKERS=$((BLOCKERS + 1))
+        # Each failing ID is recorded once so the closing summary can name the
+        # failing assertions without the reader parsing the whole RESULT stream.
+        case " $FAILED_IDS " in
+            *" $1 "*) : ;;
+            *)        FAILED_IDS="$FAILED_IDS $1" ;;
+        esac
     fi
     return 0
 }
@@ -252,6 +260,80 @@ else:
 for row in rows:
     print('%s|%s|%s' % row)
 PY
+    return 0
+}
+
+# gate_line_of <string> -> the first line number in gate.txt whose WHOLE content
+# equals <string>, or empty when absent.
+gate_line_of() {
+    LC_ALL=C grep -n -Fx -m1 -- "$1" "$WORK/gate.txt" 2>/dev/null | cut -d: -f1
+    return 0
+}
+
+# section_region <heading> -> "<start> <end>", the gate.txt line range holding the
+# BODY of one manifest SECTIONS heading. "0 0" when the heading is absent.
+#
+# The end is the smallest line number among all OTHER SECTIONS headings that
+# occur after the located heading, minus one. It is computed over the whole
+# SECTIONS set rather than the manifest's key order, because nothing guarantees
+# the manifest lists headings in document order.
+#
+# The terminal-section fallback is explicit and load-bearing. The Skills heading
+# is the LAST entry in SECTIONS, so no following heading exists to bound it. A
+# helper that returned an empty range there would make G6.14 count 0 rendered
+# lines -- and 0 is under SKILLS_MAX_LINES, so the assertion would report a
+# silent false OK in place of today's real deviation. When no following heading
+# exists the region therefore runs from the line after the heading through EOF.
+#
+# Bounding instead on "the next line that looks like a heading" would be wrong:
+# it would stop at any body line that happens to be written in all caps.
+section_region() {
+    if [ ! -f "$WORK/sections.txt" ]; then
+        manifest_list SECTIONS > "$WORK/sections.txt"
+    fi
+    _sr_head=$(gate_line_of "$1")
+    if [ -z "$_sr_head" ]; then
+        printf '0 0\n'
+        return 0
+    fi
+    _sr_end=$(grep -c '' "$WORK/gate.txt")
+    while IFS= read -r _sr_other; do
+        if [ -z "$_sr_other" ] || [ "$_sr_other" = "$1" ]; then
+            continue
+        fi
+        _sr_at=$(gate_line_of "$_sr_other")
+        if [ -z "$_sr_at" ]; then
+            continue
+        fi
+        if [ "$_sr_at" -gt "$_sr_head" ] && [ "$_sr_at" -le "$_sr_end" ]; then
+            _sr_end=$((_sr_at - 1))
+        fi
+    done < "$WORK/sections.txt"
+    printf '%s %s\n' "$((_sr_head + 1))" "$_sr_end"
+    return 0
+}
+
+# region_line_of <start> <end> <string> -> the absolute gate.txt line number of
+# the first whole-line match INSIDE the range, or empty. Scoping matters: some
+# frozen strings occur more than once in the extraction.
+region_line_of() {
+    if [ "$1" -lt 1 ] || [ "$1" -gt "$2" ]; then
+        return 0
+    fi
+    _rlo=$(sed -n "$1,$2p" "$WORK/gate.txt" | LC_ALL=C grep -n -Fx -m1 -- "$3" | cut -d: -f1)
+    if [ -n "$_rlo" ]; then
+        printf '%s\n' "$(($1 + _rlo - 1))"
+    fi
+    return 0
+}
+
+# region_nonempty_count <start> <end> -> non-blank line count inside the range.
+region_nonempty_count() {
+    if [ "$1" -lt 1 ] || [ "$1" -gt "$2" ]; then
+        printf '0\n'
+        return 0
+    fi
+    sed -n "$1,$2p" "$WORK/gate.txt" | grep -c '[^[:space:]]'
     return 0
 }
 
@@ -1014,6 +1096,196 @@ else
 fi
 
 # ---------------------------------------------------------------------------
+# G6.12 -- Education binding, the third live defect. SCOPED to the Education
+# region, and the scoping is mandatory rather than tidy.
+#
+# Measured: the EDU_INSTITUTION string occurs twice in today's extraction -- once
+# on page 1 inside the Career Break block and once in the Education section. A
+# whole-document ordering comparison would test the page-1 occurrence against the
+# Education city line, conclude the institution comes first, and return a false
+# PASS -- silently un-asserting one of the three defects this harness exists to
+# name. Region scoping is what makes the ordering clause real.
+#
+# Two clauses: the institution line must precede the city line, and the date line
+# must sit within EDU_BIND_WINDOW non-empty lines of the institution line. Either
+# clause failing produces the single G6.12 FAIL.
+# ---------------------------------------------------------------------------
+
+EDU_HEAD=$(manifest_get EDU_HEADING)
+EDU_INST=$(manifest_get EDU_INSTITUTION)
+EDU_CITY=$(manifest_get EDU_CITY)
+EDU_DATE=$(manifest_get EDU_DATE)
+EDU_WINDOW=$(manifest_get EDU_BIND_WINDOW)
+EDU_OWNER="Owner: Phase 2 (EXP-01 already edits Education; re-asserted by Phase 4 / PG2-03)"
+
+EDU_REGION=$(section_region "$EDU_HEAD")
+EDU_START=${EDU_REGION% *}
+EDU_END=${EDU_REGION#* }
+
+if [ "$EDU_START" = 0 ]; then
+    result G6.12 FAIL "Education heading '$EDU_HEAD' does not extract as a whole line, so the Education binding cannot be scoped -- $EDU_OWNER"
+else
+    EDU_INST_AT=$(region_line_of "$EDU_START" "$EDU_END" "$EDU_INST")
+    EDU_CITY_AT=$(region_line_of "$EDU_START" "$EDU_END" "$EDU_CITY")
+    EDU_DATE_AT=$(region_line_of "$EDU_START" "$EDU_END" "$EDU_DATE")
+
+    EDU_PROBLEMS=""
+    if [ -z "$EDU_INST_AT" ] || [ -z "$EDU_CITY_AT" ] || [ -z "$EDU_DATE_AT" ]; then
+        result G6.12 FAIL "Education binding unmeasurable inside the '$EDU_HEAD' region (gate lines $EDU_START-$EDU_END): institution='${EDU_INST_AT:-absent}' city='${EDU_CITY_AT:-absent}' date='${EDU_DATE_AT:-absent}' -- $EDU_OWNER"
+    else
+        if [ "$EDU_INST_AT" -gt "$EDU_CITY_AT" ]; then
+            EDU_PROBLEMS="$EDU_PROBLEMS ordering: the city line '$EDU_CITY' (line $EDU_CITY_AT) extracts BEFORE the institution line '$EDU_INST' (line $EDU_INST_AT), so a parser reads the city as the school;"
+        fi
+        if [ "$EDU_INST_AT" -le "$EDU_DATE_AT" ]; then
+            EDU_LO=$EDU_INST_AT; EDU_HI=$EDU_DATE_AT
+        else
+            EDU_LO=$EDU_DATE_AT; EDU_HI=$EDU_INST_AT
+        fi
+        EDU_SPAN=$(($(region_nonempty_count "$EDU_LO" "$EDU_HI") - 1))
+        if [ "$EDU_SPAN" -gt "$EDU_WINDOW" ]; then
+            EDU_PROBLEMS="$EDU_PROBLEMS window: the date line '$EDU_DATE' (line $EDU_DATE_AT) is $EDU_SPAN non-empty line(s) from the institution line (line $EDU_INST_AT), over EDU_BIND_WINDOW=$EDU_WINDOW;"
+        fi
+        if [ -z "$EDU_PROBLEMS" ]; then
+            result G6.12 PASS "Education binding intact inside the '$EDU_HEAD' region (gate lines $EDU_START-$EDU_END): institution line $EDU_INST_AT precedes city line $EDU_CITY_AT, date line $EDU_DATE_AT is $EDU_SPAN non-empty line(s) away (window $EDU_WINDOW)"
+        else
+            result G6.12 FAIL "Education binding broken inside the '$EDU_HEAD' region (gate lines $EDU_START-$EDU_END) --$EDU_PROBLEMS reorder the \\resumeSubheading arguments at docs/main.tex:240-242. $EDU_OWNER"
+        fi
+    fi
+fi
+
+# ---------------------------------------------------------------------------
+# G6.13 -- role-block adjacency. WARN and staying WARN: no requirement owns the
+# fix, so a BLOCKER here would make 'make verify' permanently red and break every
+# later phase's end-to-end criterion. That is also why the window below is a
+# local constant rather than a manifest key -- promoting this assertion is the
+# commit that would add the key.
+# ---------------------------------------------------------------------------
+
+ROLE_BIND_WINDOW=3
+frozen_section '[titles]' > "$WORK/titles.txt"
+frozen_section '[dates]'  > "$WORK/dates.txt"
+
+ROLE_IDX=0
+while IFS= read -r EMP; do
+    [ -n "$EMP" ] || continue
+    ROLE_IDX=$((ROLE_IDX + 1))
+    ROLE_TITLE=$(sed -n "${ROLE_IDX}p" "$WORK/titles.txt")
+    ROLE_DATE=$(sed -n "${ROLE_IDX}p" "$WORK/dates.txt")
+    EMP_AT=$(gate_line_of "$EMP")
+    TITLE_AT=$(gate_line_of "$ROLE_TITLE")
+    DATE_AT=$(gate_line_of "$ROLE_DATE")
+    if [ -z "$EMP_AT" ] || [ -z "$TITLE_AT" ] || [ -z "$DATE_AT" ]; then
+        warn G6.13 "$(warn_owner G6.13)" "role block '$EMP': one of the employer/title/date lines does not extract as a whole line, so adjacency is unmeasurable"
+        continue
+    fi
+    ROLE_LO=$EMP_AT
+    ROLE_HI=$EMP_AT
+    for AT in "$TITLE_AT" "$DATE_AT"; do
+        if [ "$AT" -lt "$ROLE_LO" ]; then ROLE_LO=$AT; fi
+        if [ "$AT" -gt "$ROLE_HI" ]; then ROLE_HI=$AT; fi
+    done
+    ROLE_SPAN=$((ROLE_HI - ROLE_LO))
+    ROLE_NE=$(($(region_nonempty_count "$ROLE_LO" "$ROLE_HI") - 1))
+    if [ "$ROLE_SPAN" -gt "$ROLE_BIND_WINDOW" ]; then
+        ROLE_VERDICT="split across non-adjacent blocks"
+    else
+        ROLE_VERDICT="bound together"
+    fi
+    warn G6.13 "$(warn_owner G6.13)" "role block '$EMP' $ROLE_VERDICT: employer line $EMP_AT, title line $TITLE_AT, date line $DATE_AT -- line span $ROLE_SPAN against a window of $ROLE_BIND_WINDOW ($ROLE_NE non-empty line(s) apart)"
+done < "$WORK/employers.txt"
+
+# ---------------------------------------------------------------------------
+# G6.14 -- Skills section length. Reuses the same region helper as G6.12 and
+# exercises its terminal-section fallback, because the Skills heading is the last
+# entry in SECTIONS. The manifest carries no dedicated SKILLS_HEADING key, so the
+# heading is resolved by name out of SECTIONS (falling back to the final entry),
+# which keeps a future rename a one-line manifest edit.
+# ---------------------------------------------------------------------------
+
+SKILLS_MAX=$(manifest_get SKILLS_MAX_LINES)
+SKILLS_HEADING=$(manifest_list SECTIONS | LC_ALL=C grep -i -m1 'SKILLS')
+if [ -z "$SKILLS_HEADING" ]; then
+    SKILLS_HEADING=$(manifest_list SECTIONS | grep . | tail -1)
+fi
+SKILLS_REGION=$(section_region "$SKILLS_HEADING")
+SKILLS_START=${SKILLS_REGION% *}
+SKILLS_END=${SKILLS_REGION#* }
+SKILLS_N=$(region_nonempty_count "$SKILLS_START" "$SKILLS_END")
+
+if [ "$SKILLS_START" = 0 ]; then
+    warn G6.14 "$(warn_owner G6.14)" "skills heading '$SKILLS_HEADING' does not extract as a whole line, so its rendered line count is unmeasurable (manifest SKILLS_MAX_LINES=$SKILLS_MAX)"
+elif [ "$SKILLS_N" -gt "$SKILLS_MAX" ]; then
+    warn G6.14 "$(warn_owner G6.14)" "'$SKILLS_HEADING' renders $SKILLS_N non-empty line(s) against a target of $SKILLS_MAX (manifest SKILLS_MAX_LINES; gate lines $SKILLS_START-$SKILLS_END)"
+else
+    warn G6.14 "$(warn_owner G6.14)" "'$SKILLS_HEADING' renders $SKILLS_N non-empty line(s), within the target of $SKILLS_MAX (manifest SKILLS_MAX_LINES; gate lines $SKILLS_START-$SKILLS_END)"
+fi
+
+# ---------------------------------------------------------------------------
+# G6.15 -- invisible-text scan over the LaTeX source. Near-white colours are
+# flagged on USAGE, never on definition: today's source defines a 92.3%-gray
+# colour that is never applied anywhere, and a definition-based rule would fire a
+# false BLOCKER on day one for a colour that renders nothing. The rule stays
+# generic over near-white colours rather than naming today's single instance, and
+# an unused definition is reported separately as INFO.
+# ---------------------------------------------------------------------------
+
+python3 - "$TEX" <<'PY' > "$WORK/invisible.rows"
+import re
+import sys
+
+tex_path = sys.argv[1]
+source = open(tex_path, encoding='utf-8').read()
+
+APPLY = (r'\\(?:text|page)?color\s*(?:\[[^\]]*\])?\{\s*%(n)s\s*\}'
+         r'|\\f?colorbox\s*(?:\[[^\]]*\])?\{\s*%(n)s\s*\}')
+
+hits = []
+white = re.findall(APPLY % {'n': 'white'}, source)
+if white:
+    hits.append('white colour applied at %d call site(s)' % len(white))
+phantom = re.findall(r'\\[hv]?phantom\b', source)
+if phantom:
+    hits.append('phantom construct x%d' % len(phantom))
+negskip = re.findall(r'\\[hv]space\*\s*\{\s*-', source)
+if negskip:
+    hits.append('starred negative skip x%d' % len(negskip))
+
+unused = []
+for match in re.finditer(r'\\definecolor\{([^}]*)\}\{(HTML|gray)\}\{([^}]*)\}', source):
+    name, model, value = match.group(1), match.group(2), match.group(3).strip()
+    if model == 'HTML':
+        if not re.match(r'^[0-9A-Fa-f]{6}$', value):
+            continue
+        red, green, blue = (int(value[i:i + 2], 16) for i in (0, 2, 4))
+        luma = (0.299 * red + 0.587 * green + 0.114 * blue) / 255.0
+        shown = '#%s' % value
+    else:
+        try:
+            luma = float(value)
+        except ValueError:
+            continue
+        shown = 'gray %s' % value
+    if luma <= 0.9:
+        continue
+    if re.search(APPLY % {'n': re.escape(name)}, source):
+        hits.append('near-white colour %s (%s, luma %.3f) applied at a call site' % (name, shown, luma))
+    else:
+        unused.append('%s (%s, luma %.3f)' % (name, shown, luma))
+
+if hits:
+    print('G6.15|FAIL|invisible-text construct(s) in %s: %s -- text hidden from a human reader must not ship'
+          % (tex_path, '; '.join(hits)))
+else:
+    print('G6.15|PASS|no invisible-text construct in %s: no white colour applied, no phantom, '
+          'no starred negative skip, no near-white colour used at a call site' % tex_path)
+
+if unused:
+    print('G6.15|INFO|near-white colour(s) defined but never applied: %s -- renders nothing today so it is '
+          'not an invisible-text defect; Phase 6 / VIS-01 must use it or delete it' % ', '.join(unused))
+PY
+emit_rows G6.15 "$WORK/invisible.rows"
+
+# ---------------------------------------------------------------------------
 # Human summary. Machine-readable RESULT lines come first; this block uses the
 # repo's >> progress and !! error prefixes.
 # ---------------------------------------------------------------------------
@@ -1022,12 +1294,13 @@ printf '>> Manifest: %s (pages=%s, page 2 opens with %s, %s sections)\n' \
     "$MANIFEST" "$(manifest_get PAGES)" "$(manifest_get PAGE2_OPENS_WITH)" \
     "$(manifest_list SECTIONS | grep -c .)"
 printf '>> Honesty freeze: %s\n' "$FROZEN"
-printf '>> G0 preconditions complete. Content assertions G1-G6 land in Plan 02; G7-G8 in Plan 03.\n'
+printf '>> Groups run: G0 preconditions, G1 page count, G2 page-1 boundary, G3 fill, G4 geometry freeze, G5 honesty freeze, G6 ATS text layer. G7-G8 land in Plan 03.\n'
 
 if [ "$BLOCKERS" -eq 0 ]; then
     printf '>> PASS: 0 blocking failures.\n'
     exit 0
 fi
 
-printf '!! FAIL: %s blocking failure(s). The document is wrong; see the RESULT lines above.\n' "$BLOCKERS"
+printf '!! FAIL: %s blocking failure(s) in:%s\n' "$BLOCKERS" "$FAILED_IDS"
+printf '!! The document is wrong. Every RESULT ... FAIL line above names its fix owner.\n'
 exit 1
