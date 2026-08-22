@@ -573,16 +573,220 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-# Deferred modes. The argument surface is stable now so later plans can fill in
-# behaviour without restructuring the entry path. These short-circuit BEFORE the
-# content assertions so a --selftest or --write-baseline run never pays for the
-# extra extractions.
+# Self-test and baseline modes. Both short-circuit BEFORE the content
+# assertions so neither pays for the extra extractions.
+#
+# G7 -- the overflow self-test. Its success condition is INVERTED relative to
+# intuition: --selftest passes when the harness FAILS on the probe. A self-test
+# that reported success because verification of a deliberately broken document
+# came back clean would be worse than no self-test at all.
+#
+# An assertion that has never been observed failing is not a gate. G7 builds a
+# document that today's build accepts warning-free, proves that premise
+# numerically, proves the probe is a genuine overflow, and only then proves the
+# page gates catch it -- naming the specific assertion IDs, because a probe that
+# failed only on a pre-existing defect would otherwise count as a pass.
 # ---------------------------------------------------------------------------
 
+# p1_headroom -> page-1 headroom in pt against the manifest ceiling, measured on
+# the artifact under test. Used only by the G7.2 rot guard's failure message, so
+# the remedy carries the number that explains why the probe stopped overflowing.
+p1_headroom() {
+    pdftotext -bbox "$PDF" "$WORK/headroom.xml" 2>/dev/null
+    python3 - "$WORK/headroom.xml" "$(manifest_get CEILING_PT)" <<'PY'
+import sys
+import xml.etree.ElementTree as ET
+
+
+def localname(elem):
+    return elem.tag.split('}')[-1]
+
+
+root = ET.parse(sys.argv[1]).getroot()
+ceiling = float(sys.argv[2])
+for page in [p for p in root.iter() if localname(p) == 'page']:
+    words = [w for w in page.iter() if localname(w) == 'word']
+    if not words:
+        continue
+    print('%+.1f' % (ceiling - max(float(w.get('yMax')) for w in words)))
+    break
+else:
+    print('unknown')
+PY
+    return 0
+}
+
 if [ "$MODE" = selftest ]; then
-    result G7.1 SKIP "probe-build self-test is implemented in Plan 03 (G7.1-G7.4)"
-    printf '>> Self-test argument surface only in this plan; probe build lands in Plan 03.\n'
-    exit 0
+    # Re-invocation path. Resolved to an absolute path so the inner runs do not
+    # depend on the caller's working directory.
+    SELF="$0"
+    case "$SELF" in
+        /*) : ;;
+        *)  SELF="$PWD/$SELF" ;;
+    esac
+
+    PROBE_LINES=$(manifest_get PROBE_LINES)
+    PAGES_BUDGET=$(manifest_get PAGES)
+
+    # Captured BEFORE anything is built, so G7.4 can prove the probe never
+    # reached the committed artifact or the working tree.
+    PDF_SHA_BEFORE=$(shasum -a 256 "$PDF" | awk '{print $1}')
+    if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+        GIT_OK=1
+        git status --porcelain > "$WORK/tree.before" 2>/dev/null
+    else
+        GIT_OK=0
+        : > "$WORK/tree.before"
+    fi
+
+    if ! command -v latexmk >/dev/null 2>&1; then
+        # Loud SKIP for the whole group, then exit 2: the self-test could not
+        # run, which is "cannot verify", never a pass.
+        result G7.1 SKIP "latexmk is not on PATH so the overflow probe cannot be built"
+        result G7.2 SKIP "latexmk is not on PATH so the probe page count cannot be measured"
+        result G7.3 SKIP "latexmk is not on PATH so the page gates cannot be exercised against a probe"
+        result G7.4 SKIP "latexmk is not on PATH so no probe ran; nothing to assert about the committed artifact"
+        die2 "self-test cannot run: latexmk not found -> run 'make install'"
+    fi
+
+    # The probe scratch lives UNDER $WORK, so it is created by mktemp -d and is
+    # released by the one guarded-removal path that already exists. The
+    # committed artifact is structurally unreachable from here on two counts: a
+    # different directory and a different jobname.
+    PROBE_DIR=$(mktemp -d "$WORK/probe.XXXXXX") || die2 "cannot create the probe scratch directory"
+    cp "$TEX" "$PROBE_DIR/probe.tex" || die2 "cannot copy $TEX into the probe scratch directory"
+
+    # Structural anchor, never a content anchor: the page-1 region is bounded by
+    # the document-begin and page-break tokens, and the insertion point is the
+    # last list-end token inside it. An English-phrase anchor would break as soon
+    # as a later phase rewrites the section it keys on.
+    PROBE_ANCHOR=$(python3 - "$PROBE_DIR/probe.tex" "$PROBE_LINES" <<'PY' 2>&1
+import sys
+
+path, count = sys.argv[1], int(sys.argv[2])
+lines = open(path, encoding='utf-8').read().split('\n')
+
+
+def find(token, lo=0, hi=None):
+    hi = len(lines) if hi is None else hi
+    # Skipping the macro-definition form is ESSENTIAL, not defensive: the list-end
+    # token is first defined near the top of the file via \newcommand, so a naive
+    # first match resolves to the definition rather than the Experience usage --
+    # measured, it crashed the first attempt with an index error.
+    return [i for i in range(lo, hi) if token in lines[i] and '\\newcommand' not in lines[i]]
+
+
+doc = find(r'\begin{document}')
+if not doc:
+    sys.exit('no document-begin token in %s' % path)
+brk = find(r'\newpage', doc[0])
+if not brk:
+    sys.exit('no page-break token after the document-begin token in %s' % path)
+at = find(r'\resumeItemListEnd', doc[0], brk[0])
+if not at:
+    sys.exit('no list-end token inside the page-1 region of %s' % path)
+
+anchor = at[-1]
+lines[anchor:anchor] = [
+    r'        \resumeItem{VERIFY SELFTEST probe filler line %d --- must overflow page 1.}' % i
+    for i in range(1, count + 1)
+]
+open(path, 'w', encoding='utf-8').write('\n'.join(lines))
+print('begin=%d break=%d insert=%d' % (doc[0] + 1, brk[0] + 1, anchor + 1))
+PY
+    ) || die2 "probe injection failed: $PROBE_ANCHOR"
+
+    # latexmk is called directly with its own flags. The Makefile's build flag
+    # variable is deliberately NOT reused: it pins the repo jobname, and the
+    # separate jobname is half of what keeps the committed artifact unreachable.
+    ( cd "$PROBE_DIR" && latexmk -pdf -interaction=nonstopmode -halt-on-error -jobname=probe probe.tex ) \
+        > "$PROBE_DIR/build.out" 2>&1
+    PROBE_EC=$?
+    PROBE_WARN=$(cat "$PROBE_DIR/probe.log" "$PROBE_DIR/build.out" 2>/dev/null \
+        | LC_ALL=C grep -ciE 'overfull|underfull')
+
+    # G7.1 establishes the premise the whole self-test rests on: today's build
+    # ACCEPTS the injection, silently. If this ever fails, the premise is gone --
+    # say so plainly instead of papering over it.
+    if [ "$PROBE_EC" -eq 0 ] && [ "$PROBE_WARN" -eq 0 ]; then
+        result G7.1 PASS "the build accepts +$PROBE_LINES injected line(s) silently: latexmk exit code $PROBE_EC with $PROBE_WARN overfull/underfull warning(s) ($PROBE_ANCHOR)"
+    else
+        result G7.1 FAIL "the premise that today's build accepts +$PROBE_LINES injected line(s) warning-free no longer holds: latexmk exit code $PROBE_EC with $PROBE_WARN overfull/underfull warning(s) ($PROBE_ANCHOR) -- the probe now trips a build diagnostic, so ROADMAP criterion 1's silent-overflow premise must be re-measured, not assumed"
+    fi
+
+    # G7.2 is the anti-rot guard and MUST run before G7.3. Concretely: 5 lines at
+    # 11.5pt is about 57.5pt and today's page-1 slack is a fraction of a point, so
+    # the probe overflows massively. But a later fold frees roughly 90-98pt, so if
+    # content is not added back, page-1 headroom could exceed the probe's height
+    # and a fixed-size probe would stop overflowing -- silently turning the whole
+    # self-test into a no-op that reports success.
+    PROBE_PAGES=$(pdfinfo "$PROBE_DIR/probe.pdf" 2>/dev/null | awk '/^Pages:/ {print $2; exit}')
+    if [ -z "$PROBE_PAGES" ]; then
+        result G7.2 FAIL "cannot read a page count from the probe PDF at $PROBE_DIR/probe.pdf -- the probe build produced no measurable page tree (latexmk exit code $PROBE_EC)"
+    elif [ "$PROBE_PAGES" -gt "$PAGES_BUDGET" ]; then
+        result G7.2 PASS "the probe PDF is $PROBE_PAGES page(s), above the manifest PAGES=$PAGES_BUDGET budget, so the +$PROBE_LINES probe is a genuine overflow"
+    else
+        result G7.2 FAIL "the probe PDF is only $PROBE_PAGES page(s) against manifest PAGES=$PAGES_BUDGET, so a +$PROBE_LINES probe NO LONGER overflows page 1 and the self-test would prove nothing -- page-1 headroom is now $(p1_headroom)pt against manifest CEILING_PT; raise PROBE_LINES in $MANIFEST until the probe exceeds the page budget again"
+    fi
+
+    # G7.3 re-invokes THIS script against the probe. --tex is paired with --pdf on
+    # purpose: latexmk wrote probe.fdb_latexmk beside probe.pdf recording the md5
+    # of the injected copy, so the freshness proof passes on its own terms and the
+    # probe run exercises it rather than skipping it. --skip-freshness is NOT
+    # passed here; that override belongs to one negative control alone.
+    #
+    # Asserting the specific IDs is the entire point. A probe that failed only on
+    # a pre-existing text-layer defect would satisfy a bare "exit non-zero" check
+    # and prove nothing about the page gates.
+    bash "$SELF" --pdf "$PROBE_DIR/probe.pdf" --tex "$PROBE_DIR/probe.tex" \
+        > "$PROBE_DIR/inner.out" 2>&1
+    INNER_EC=$?
+    INNER_G11=$(LC_ALL=C grep -cE '^RESULT G1\.1 +FAIL' "$PROBE_DIR/inner.out")
+    INNER_G21=$(LC_ALL=C grep -cE '^RESULT G2\.1 +FAIL' "$PROBE_DIR/inner.out")
+
+    if [ "$INNER_EC" -ne 0 ] && [ "$INNER_G11" -ge 1 ] && [ "$INNER_G21" -ge 1 ]; then
+        result G7.3 PASS "verifying the probe fails on the right gates: exit $INNER_EC with G1.1 FAIL x$INNER_G11 (page count) and G2.1 FAIL x$INNER_G21 (page-1 boundary)"
+    else
+        result G7.3 FAIL "verifying the probe did not fail on the expected gates: exit $INNER_EC with G1.1 FAIL x$INNER_G11 and G2.1 FAIL x$INNER_G21 -- a $PROBE_PAGES-page probe must trip BOTH the page-count and the page-1 boundary assertion; an exit code alone could come from a pre-existing defect"
+    fi
+
+    # G7.4 proves the blast radius is empty. The tree clause compares the porcelain
+    # snapshot before against after: the assertion is that the SELF-TEST changed
+    # nothing, which is the property under test. Asserting absolute emptiness
+    # instead would conflate that with "the caller's tree happened to be clean" and
+    # would fire on any unrelated edit in progress. Fail closed without git: a
+    # self-test that cannot prove it left no trace has not done its job.
+    PDF_SHA_AFTER=$(shasum -a 256 "$PDF" | awk '{print $1}')
+    if [ "$GIT_OK" -eq 1 ]; then
+        git status --porcelain > "$WORK/tree.after" 2>/dev/null
+    else
+        : > "$WORK/tree.after"
+    fi
+    TREE_N=$(LC_ALL=C grep -c '[^[:space:]]' "$WORK/tree.after")
+
+    if [ "$PDF_SHA_BEFORE" != "$PDF_SHA_AFTER" ]; then
+        result G7.4 FAIL "the committed artifact CHANGED during the self-test: $PDF was sha256 $PDF_SHA_BEFORE and is now $PDF_SHA_AFTER -- the probe escaped its scratch directory; restore the artifact from git before trusting any result above"
+    elif [ "$GIT_OK" -ne 1 ]; then
+        result G7.4 FAIL "$PDF is byte-unchanged (sha256 $PDF_SHA_AFTER) but this is not a git work tree, so the no-side-effect clause cannot be proven -- run the self-test inside the repository"
+    elif ! cmp -s "$WORK/tree.before" "$WORK/tree.after"; then
+        result G7.4 FAIL "the self-test changed the working tree: git status --porcelain went from $(LC_ALL=C grep -c '[^[:space:]]' "$WORK/tree.before") to $TREE_N path(s) -- a probe artifact leaked out of the scratch directory"
+    elif [ "$TREE_N" -eq 0 ]; then
+        result G7.4 PASS "$PDF byte-unchanged (sha256 $PDF_SHA_AFTER) and git status --porcelain empty before and after the probe"
+    else
+        result G7.4 PASS "$PDF byte-unchanged (sha256 $PDF_SHA_AFTER) and the self-test added no git status --porcelain entry ($TREE_N path(s) were already modified before the probe ran; the assertion is that the self-test changed nothing, not that the tree happened to be clean)"
+    fi
+
+    printf '>> Probe: +%s line(s) injected at %s in a scratch copy, built with jobname=probe.\n' \
+        "$PROBE_LINES" "$PROBE_ANCHOR"
+    printf '>> Self-test acceptance is INVERTED: it passes because verification FAILED on the probe.\n'
+
+    if [ "$BLOCKERS" -eq 0 ]; then
+        printf '>> PASS: the gates fire. 0 blocking failures in the self-test.\n'
+        exit 0
+    fi
+    printf '!! FAIL: %s blocking failure(s) in:%s\n' "$BLOCKERS" "$FAILED_IDS"
+    printf '!! The harness is wrong, or the probe no longer overflows. Read the FAIL lines above.\n'
+    exit 1
 fi
 
 if [ "$MODE" = write-baseline ]; then
