@@ -396,9 +396,23 @@ if [ "$MODE" = census ]; then
     if [ ! -f "$CENSUS_FILE" ] || [ ! -r "$CENSUS_FILE" ]; then
         die2 "census fixture not found or not readable: $CENSUS_FILE"
     fi
-    result G6.1 SKIP "glyph-class census over '$CENSUS_FILE' is implemented in Plan 03 (G6.1-G6.4)"
-    printf '>> Census mode: argument surface only in this plan; gate lands in Plan 03.\n'
-    exit 0
+    # The same glyph_census used against the real text layer, driven over a
+    # crafted fixture. This is what lets the four-class codepoint gate be proven
+    # discriminating without building a deliberately corrupted PDF -- there is
+    # exactly one implementation of the rules, so the control cannot drift away
+    # from the assertion it is validating.
+    glyph_census "$CENSUS_FILE" > "$WORK/census.rows"
+    emit_rows G6.1 "$WORK/census.rows"
+    emit_rows G6.2 "$WORK/census.rows"
+    emit_rows G6.3 "$WORK/census.rows"
+    emit_rows G6.4 "$WORK/census.rows"
+    printf '>> Census mode: glyph classes only, over %s. No PDF and no source were read, so G0.2-G0.4 and every other assertion group are deliberately absent from this run.\n' "$CENSUS_FILE"
+    if [ "$BLOCKERS" -eq 0 ]; then
+        printf '>> PASS: 0 blocking failures in the glyph census.\n'
+        exit 0
+    fi
+    printf '!! FAIL: %s blocking failure(s) in:%s\n' "$BLOCKERS" "$FAILED_IDS"
+    exit 1
 fi
 
 # ---------------------------------------------------------------------------
@@ -776,9 +790,182 @@ PY
         result G7.4 PASS "$PDF byte-unchanged (sha256 $PDF_SHA_AFTER) and the self-test added no git status --porcelain entry ($TREE_N path(s) were already modified before the probe ran; the assertion is that the self-test changed nothing, not that the tree happened to be clean)"
     fi
 
+    # -----------------------------------------------------------------------
+    # G8 -- non-probe negative controls, one per assertion class. Each mutates
+    # ONE input on a mktemp -d copy, re-invokes this script against the copy, and
+    # asserts that the expected assertion ID reports FAIL. A control that does NOT
+    # produce its expected failure is itself a BLOCKER failure: that is the entire
+    # point of a negative control. Nothing under docs/ is ever written.
+    #
+    # The IDs are a separate G8.x series so they cannot collide with the document
+    # assertions the inner runs emit.
+    # -----------------------------------------------------------------------
+
+    CTL_TEX_NAME=$(basename "$TEX")
+    shasum -a 256 "$FROZEN" "$MANIFEST" "$TEX" > "$WORK/inputs.before" 2>/dev/null
+    CTL_SUMMARY=""
+
+    # --- G8.1 -- the honesty freeze fires on a ONE-BYTE change ---------------
+    # The control for VERIFY-03's byte-identical clause: a single digit inside one
+    # frozen employment date, changed digit-for-digit so the mutation really is
+    # one byte, must make the whole-line matcher report count=0.
+    CTL_DIR=$(mktemp -d "$WORK/ctl-frozen.XXXXXX") || die2 "cannot create the G8.1 control directory"
+    cp "$FROZEN" "$CTL_DIR/frozen.txt" || die2 "cannot copy $FROZEN for the G8.1 control"
+    CTL_DATE=$(frozen_section '[dates]' | grep -m1 .)
+    CTL_MUTATION=$(python3 - "$CTL_DIR/frozen.txt" "$CTL_DATE" <<'PY' 2>&1
+import re
+import sys
+
+path, target = sys.argv[1], sys.argv[2]
+lines = open(path, encoding='utf-8').read().split('\n')
+for index, line in enumerate(lines):
+    if line == target:
+        # Digit for digit: an ASCII digit replaced by another ASCII digit is a
+        # one-byte edit, which is what the byte-identical clause is about.
+        mutated = re.sub(r'\d', lambda m: str((int(m.group(0)) + 1) % 10), line, count=1)
+        if mutated == line:
+            sys.exit('no digit to mutate in the first frozen date: %r' % line)
+        lines[index] = mutated
+        open(path, 'w', encoding='utf-8').write('\n'.join(lines))
+        print("'%s' -> '%s'" % (line, mutated))
+        break
+else:
+    sys.exit('the first frozen date is not present in the copied freeze: %r' % target)
+PY
+    ) || die2 "G8.1 control could not mutate the frozen copy: $CTL_MUTATION"
+
+    bash "$SELF" --frozen "$CTL_DIR/frozen.txt" > "$CTL_DIR/out" 2>&1
+    if LC_ALL=C grep -qE '^RESULT G5\.1 +FAIL.*count=0' "$CTL_DIR/out"; then
+        result G8.1 PASS "the honesty freeze fires on a one-byte date change: $CTL_MUTATION produced RESULT G5.1 FAIL with count=0"
+        CTL_SUMMARY="$CTL_SUMMARY G8.1/G5.1"
+    else
+        result G8.1 FAIL "the honesty freeze did NOT fire on a one-byte date change ($CTL_MUTATION): no 'RESULT G5.1 FAIL ... count=0' line -- the matcher has been weakened from whole-line exact-count, so a changed employment date could ship unnoticed"
+    fi
+
+    # --- G8.2 -- geometry drift fires (via the single documented override) ----
+    # --skip-freshness is MANDATORY here and is the one documented precedence rule
+    # for the G0.3-versus-G4.1 collision: mutating the source makes its md5 diverge
+    # from the latexmk record, so without the flag G0.3 refuses at exit 2 before any
+    # G4 assertion can run and RESULT G4.1 FAIL could never be emitted.
+    #
+    # The flag exists SOLELY for this control. No Makefile target passes it, and a
+    # run carrying it is not a verification pass -- G0.3 prints SKIP on every such
+    # run precisely so that is visible. It must never be widened into "auto-skip
+    # whenever --tex is overridden": G8.3 below depends on an overridden --tex
+    # still being refused.
+    CTL_DIR=$(mktemp -d "$WORK/ctl-geometry.XXXXXX") || die2 "cannot create the G8.2 control directory"
+    CTL_DRIFT=$(python3 - "$TEX" "$CTL_DIR/$CTL_TEX_NAME" <<'PY' 2>&1
+import re
+import sys
+
+src, dst = sys.argv[1], sys.argv[2]
+source = open(src, encoding='utf-8').read()
+pattern = r'(\\addtolength\{\\textheight\}\{)([0-9]*\.?[0-9]+)(in\})'
+match = re.search(pattern, source)
+if not match:
+    sys.exit('no \\textheight addition found in %s' % src)
+before = match.group(2)
+after = '%.1f' % (float(before) + 0.1)
+open(dst, 'w', encoding='utf-8').write(
+    source[:match.start()] + match.group(1) + after + match.group(3) + source[match.end():])
+print('textheight %sin -> %sin' % (before, after))
+PY
+    ) || die2 "G8.2 control could not write a drifted source: $CTL_DRIFT"
+
+    bash "$SELF" --tex "$CTL_DIR/$CTL_TEX_NAME" --skip-freshness > "$CTL_DIR/out" 2>&1
+    if LC_ALL=C grep -qE '^RESULT G4\.1 +FAIL' "$CTL_DIR/out"; then
+        result G8.2 PASS "the geometry freeze fires on margin drift: $CTL_DRIFT produced RESULT G4.1 FAIL (reached through --skip-freshness, which G0.3 reported as SKIP)"
+        CTL_SUMMARY="$CTL_SUMMARY G8.2/G4.1"
+    else
+        result G8.2 FAIL "the geometry freeze did NOT fire on margin drift ($CTL_DRIFT): no 'RESULT G4.1 FAIL' line -- either the hash no longer covers the geometry declarations, or the run never reached G4"
+    fi
+
+    # --- G8.3 -- the staleness REFUSAL stays distinct from a content failure --
+    # Deliberately WITHOUT --skip-freshness, and the copy deliberately keeps the
+    # original basename: the freshness record is looked up by source filename, so a
+    # renamed copy would find no record, escalate to the L2 rebuild arbiter, and
+    # come back FRESH -- a comment appended after the document end changes bytes
+    # but not the rendered document. L1 (byte md5) is strictly stronger than L2
+    # here, and this control depends on taking the L1 path.
+    #
+    # Exit code 2 is asserted exactly, not merely as non-zero: it is the
+    # refuse-to-verify code, which must never be conflated with the exit code 1
+    # that means the document was verified and found wrong. It has to be asserted
+    # against the script, because Make reports every failed recipe as exit 2 and
+    # would erase the distinction.
+    CTL_DIR=$(mktemp -d "$WORK/ctl-stale.XXXXXX") || die2 "cannot create the G8.3 control directory"
+    cp "$TEX" "$CTL_DIR/$CTL_TEX_NAME" || die2 "cannot copy $TEX for the G8.3 control"
+    printf '%%%% verify-resume selftest G8.3 staleness control\n' >> "$CTL_DIR/$CTL_TEX_NAME"
+    bash "$SELF" --tex "$CTL_DIR/$CTL_TEX_NAME" > "$CTL_DIR/out" 2>&1
+    CTL_EC=$?
+    CTL_G03=$(LC_ALL=C grep -cE '^RESULT G0\.3 +FAIL' "$CTL_DIR/out")
+    if [ "$CTL_EC" -eq 2 ] && [ "$CTL_G03" -ge 1 ]; then
+        result G8.3 PASS "a drifted source is REFUSED rather than reported wrong: exit code 2 with RESULT G0.3 FAIL x$CTL_G03, machine-readable and distinct from the exit code 1 that means the document is wrong"
+    else
+        result G8.3 FAIL "the staleness refusal is broken: exit code $CTL_EC (want exactly 2) with RESULT G0.3 FAIL x$CTL_G03 (want at least 1) -- a stale artifact must be refused, never verified; exit code 1 here would report a wrong document instead of an unverifiable one"
+    fi
+    if [ "$CTL_EC" -eq 2 ]; then
+        CTL_SUMMARY="$CTL_SUMMARY G8.3/G0.3-exit2"
+    fi
+
+    # --- G8.4 -- glyph corruption fires -------------------------------------
+    # A crafted text fixture, driven through --census, so the codepoint gate is
+    # proven discriminating without a corrupted PDF. UTF-8 byte escapes are used
+    # because bash 3.2's printf has no codepoint escape.
+    #   \357\254\201 = U+FB01 LATIN SMALL LIGATURE FI
+    #   \357\277\275 = U+FFFD REPLACEMENT CHARACTER
+    #   \356\200\200 = U+E000 private-use area
+    CTL_DIR=$(mktemp -d "$WORK/ctl-glyph.XXXXXX") || die2 "cannot create the G8.4 control directory"
+    printf 'con\357\254\201guration \357\277\275 and \356\200\200 in one fixture\n' > "$CTL_DIR/glyph.txt"
+    bash "$SELF" --census "$CTL_DIR/glyph.txt" > "$CTL_DIR/out" 2>&1
+    CTL_EC=$?
+    CTL_N=$(LC_ALL=C grep -cE '^RESULT G6\.(1|2|3) +FAIL' "$CTL_DIR/out")
+    if [ "$CTL_EC" -eq 1 ] && [ "$CTL_N" -eq 3 ]; then
+        result G8.4 PASS "all three glyph classes fire on a corrupted text fixture: G6.1 (ligature), G6.2 (private-use) and G6.3 (replacement character) all FAIL, census exit code 1"
+        CTL_SUMMARY="$CTL_SUMMARY G8.4/G6.1-3"
+    else
+        result G8.4 FAIL "the glyph gate did not discriminate: census exit code $CTL_EC (want 1) with $CTL_N of 3 expected G6.1/G6.2/G6.3 FAIL lines -- a broken ToUnicode mapping would ship undetected"
+    fi
+
+    # --- G8.5 -- an absent required keyword fires ---------------------------
+    # Only --manifest is overridden, so the freshness proof still passes against
+    # the untouched source and no override flag is needed.
+    CTL_DIR=$(mktemp -d "$WORK/ctl-keyword.XXXXXX") || die2 "cannot create the G8.5 control directory"
+    CTL_TOKEN="ZZSELFTESTKEYWORDABSENTBYCONSTRUCTION"
+    sed "s/^KEYWORDS_REQUIRED=.*/&|$CTL_TOKEN/" "$MANIFEST" > "$CTL_DIR/manifest.txt"
+    bash "$SELF" --manifest "$CTL_DIR/manifest.txt" > "$CTL_DIR/out" 2>&1
+    if LC_ALL=C grep -qE "^RESULT G6\.5 +FAIL.*$CTL_TOKEN" "$CTL_DIR/out"; then
+        result G8.5 PASS "a required keyword that is absent from the text layer fires: RESULT G6.5 FAIL names '$CTL_TOKEN'"
+        CTL_SUMMARY="$CTL_SUMMARY G8.5/G6.5"
+    else
+        result G8.5 FAIL "an absent required keyword did NOT fire: no 'RESULT G6.5 FAIL' line naming '$CTL_TOKEN' -- the keyword tier is not gating, so a regression that drops a required keyword would pass"
+    fi
+
+    # --- G8.6 -- the control group's blast radius is empty -------------------
+    # The G8 analogue of G7.4, emitted on every run rather than only on failure.
+    # Two clauses: the three tracked inputs the controls copy are checksum-identical,
+    # and the controls added no working-tree entry.
+    shasum -a 256 "$FROZEN" "$MANIFEST" "$TEX" > "$WORK/inputs.after" 2>/dev/null
+    if [ "$GIT_OK" -eq 1 ]; then
+        git status --porcelain > "$WORK/tree.controls" 2>/dev/null
+    else
+        : > "$WORK/tree.controls"
+    fi
+
+    if ! cmp -s "$WORK/inputs.before" "$WORK/inputs.after"; then
+        result G8.6 FAIL "a negative control MUTATED a tracked input: $FROZEN, $MANIFEST or $TEX changed checksum during the control group -- a control wrote in place instead of on its scratch copy; restore them from git"
+    elif [ "$GIT_OK" -ne 1 ]; then
+        result G8.6 FAIL "the tracked inputs are checksum-identical but this is not a git work tree, so the no-side-effect clause cannot be proven -- run the self-test inside the repository"
+    elif ! cmp -s "$WORK/tree.before" "$WORK/tree.controls"; then
+        result G8.6 FAIL "the negative controls changed the working tree: git status --porcelain went from $(LC_ALL=C grep -c '[^[:space:]]' "$WORK/tree.before") to $(LC_ALL=C grep -c '[^[:space:]]' "$WORK/tree.controls") path(s) -- a control escaped its scratch directory"
+    else
+        result G8.6 PASS "every control ran on a scratch copy: $FROZEN, $MANIFEST and $TEX are checksum-identical and the controls added no git status --porcelain entry"
+    fi
+
     printf '>> Probe: +%s line(s) injected at %s in a scratch copy, built with jobname=probe.\n' \
         "$PROBE_LINES" "$PROBE_ANCHOR"
-    printf '>> Self-test acceptance is INVERTED: it passes because verification FAILED on the probe.\n'
+    printf '>> Controls: each assertion class observed FAILING as well as passing --%s.\n' "$CTL_SUMMARY"
+    printf '>> Self-test acceptance is INVERTED: it passes because verification FAILED on the probe and on every mutated input.\n'
 
     if [ "$BLOCKERS" -eq 0 ]; then
         printf '>> PASS: the gates fire. 0 blocking failures in the self-test.\n'
