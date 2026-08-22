@@ -1029,19 +1029,40 @@ PY
     # that means the document was verified and found wrong. It has to be asserted
     # against the script, because Make reports every failed recipe as exit 2 and
     # would erase the distinction.
-    CTL_DIR=$(mktemp -d "$WORK/ctl-stale.XXXXXX") || die2 "cannot create the G8.3 control directory"
-    cp "$TEX" "$CTL_DIR/$CTL_TEX_NAME" || die2 "cannot copy $TEX for the G8.3 control"
-    printf '%%%% verify-resume selftest G8.3 staleness control\n' >> "$CTL_DIR/$CTL_TEX_NAME"
-    bash "$SELF" --tex "$CTL_DIR/$CTL_TEX_NAME" > "$CTL_DIR/out" 2>&1
-    CTL_EC=$?
-    CTL_G03=$(LC_ALL=C grep -cE '^RESULT G0\.3 +FAIL' "$CTL_DIR/out")
-    if [ "$CTL_EC" -eq 2 ] && [ "$CTL_G03" -ge 1 ]; then
-        result G8.3 PASS "a drifted source is REFUSED rather than reported wrong: exit code 2 with RESULT G0.3 FAIL x$CTL_G03, machine-readable and distinct from the exit code 1 that means the document is wrong"
-    else
-        result G8.3 FAIL "the staleness refusal is broken: exit code $CTL_EC (want exactly 2) with RESULT G0.3 FAIL x$CTL_G03 (want at least 1) -- a stale artifact must be refused, never verified; exit code 1 here would report a wrong document instead of an unverifiable one"
+    #
+    # Because the control depends on the L1 path, it depends on the L1 RECORD
+    # existing -- and a routine 'make clean' deletes docs/*.fdb_latexmk. Measured
+    # without the record: the inner run escalates to L2, the appended comment
+    # renders identically, the arbiter answers FRESH, G0.3 PASSes and the inner run
+    # exits 1 on the known content defects -- which this control would report as
+    # "the staleness refusal is broken", a false alarm about the harness after
+    # nothing but a clean. So the record is checked FIRST and its absence is an
+    # explicit SKIP naming the remedy. SKIP does not touch BLOCKERS: an
+    # unexercisable control is not a failing control, and saying so plainly beats
+    # both a spurious FAIL and a silent pass. --pdf is forwarded so the record this
+    # pre-check reads is exactly the one the inner run will look up.
+    CTL_FDB="${PDF%.pdf}.fdb_latexmk"
+    CTL_FDB_MD5=""
+    if [ -f "$CTL_FDB" ]; then
+        CTL_FDB_MD5=$(awk -v f="\"$CTL_TEX_NAME\"" '$1==f {print $4; exit}' "$CTL_FDB" 2>/dev/null)
     fi
-    if [ "$CTL_EC" -eq 2 ]; then
-        CTL_SUMMARY="$CTL_SUMMARY G8.3/G0.3-exit2"
+    if [ -z "$CTL_FDB_MD5" ]; then
+        result G8.3 SKIP "the staleness control cannot run: no latexmk md5 record for $CTL_TEX_NAME in $CTL_FDB (a routine 'make clean' deletes it), so the inner run would escalate to the L2 arbiter, which answers FRESH for a comment appended after the document end -- this control asserts the strictly stronger L1 byte path; run 'make build' to restore the record, then re-run the self-test"
+    else
+        CTL_DIR=$(mktemp -d "$WORK/ctl-stale.XXXXXX") || die2 "cannot create the G8.3 control directory"
+        cp "$TEX" "$CTL_DIR/$CTL_TEX_NAME" || die2 "cannot copy $TEX for the G8.3 control"
+        printf '%%%% verify-resume selftest G8.3 staleness control\n' >> "$CTL_DIR/$CTL_TEX_NAME"
+        bash "$SELF" --pdf "$PDF" --tex "$CTL_DIR/$CTL_TEX_NAME" > "$CTL_DIR/out" 2>&1
+        CTL_EC=$?
+        CTL_G03=$(LC_ALL=C grep -cE '^RESULT G0\.3 +FAIL' "$CTL_DIR/out")
+        if [ "$CTL_EC" -eq 2 ] && [ "$CTL_G03" -ge 1 ]; then
+            result G8.3 PASS "a drifted source is REFUSED rather than reported wrong: exit code 2 with RESULT G0.3 FAIL x$CTL_G03, machine-readable and distinct from the exit code 1 that means the document is wrong (L1 record $CTL_FDB_MD5)"
+        else
+            result G8.3 FAIL "the staleness refusal is broken: exit code $CTL_EC (want exactly 2) with RESULT G0.3 FAIL x$CTL_G03 (want at least 1) against the L1 record $CTL_FDB_MD5 in $CTL_FDB -- a stale artifact must be refused, never verified; exit code 1 here would report a wrong document instead of an unverifiable one"
+        fi
+        if [ "$CTL_EC" -eq 2 ]; then
+            CTL_SUMMARY="$CTL_SUMMARY G8.3/G0.3-exit2"
+        fi
     fi
 
     # --- G8.4 -- glyph corruption fires -------------------------------------

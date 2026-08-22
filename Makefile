@@ -183,6 +183,12 @@ verify-baseline:  ## Regenerate docs/verify/manifest.txt (honesty freeze needs A
 # freshness is UNKNOWN, never assumed fresh, so the harness escalates to a
 # scratch rebuild and compares the rendered documents instead. The checked-in
 # verification manifests are source, not artifacts, and are not touched here.
+#
+# One consequence is worth knowing before you read a self-test report: the G8.3
+# staleness control asserts the record-based (L1) refusal path, so with the record
+# deleted it reports SKIP and names 'make build' as the remedy. That is the
+# designed degradation, not a harness failure -- run 'make build' to restore the
+# record and the control becomes exercisable again.
 clean:  ## Remove LaTeX auxiliary files
 	@cd $(TEX_DIR) && (latexmk -c >/dev/null 2>&1 || true)
 	@rm -f $(TEX_DIR)/*.aux $(TEX_DIR)/*.log $(TEX_DIR)/*.out \
