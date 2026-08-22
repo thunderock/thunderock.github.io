@@ -565,7 +565,7 @@ RESULT G6.12 FAIL  Education binding: 'Bloomington, IN' extracts BEFORE
 ```
 
 3. **Everything else is green today** (verified: G1.1, G2.1, G2.2, G2.3, G3.1, G3.4, G4.1–G4.4, G5.1–G5.3, G5.5, G6.1–G6.8, G6.11, G6.15 all PASS) — so Phase 2 fixing EXP-06 + the Education reorder flips the exit code to 0 and satisfies Phase 2's criterion 5 with no mechanism change.
-4. **Phase-1 acceptance is inverted and must be stated in the plan:** the phase is done when `make verify; echo $?` prints **1** and the three named defects appear, and when `make verify-selftest` prints **0**. A planner who writes "`make verify` passes" as Phase 1's acceptance criterion has inverted the deliverable.
+4. **Phase-1 acceptance is inverted and must be stated in the plan:** the phase is done when the three named defects appear and `make verify-selftest` prints **0**. A planner who writes "`make verify` passes" as Phase 1's acceptance criterion has inverted the deliverable. **CORRECTED during planning:** the exit-1 assertion is `bash scripts/verify-resume.sh; echo $?` prints **1**, NOT `make verify; echo $?` — GNU Make 3.81 exits 2 for any failed recipe regardless of what the recipe returned (measured both ways), so the Make-level form is unsatisfiable. `make verify` is assertable only as "exits non-zero". Same correction as Pitfall 1 at :689.
 5. **The exit-code vocabulary carries the distinction:** `0` = all BLOCKERs pass · `1` = ≥1 BLOCKER failed (the document is wrong) · `2` = harness could not run (missing tool, missing artifact, stale PDF). Criterion 5's "refuses to verify a stale PDF" is exit **2**, semantically distinct from "verified and found wrong".
 
 ---
@@ -982,7 +982,7 @@ Each negative control operates on a **temp copy** (`mktemp -d`), never on `docs/
 
 - **Per task commit:** `make verify` (≈0.4s) — cheap enough to run on every commit.
 - **Per wave merge:** `make verify && make verify-selftest` (≈1.6s).
-- **Phase gate:** `make verify` exits **1** with exactly the three named defects, and `make verify-selftest` exits **0**, before `/gsd-verify-work`.
+- **Phase gate:** the three named defects appear and `make verify-selftest` exits **0**, before `/gsd-verify-work`. **CORRECTED during planning:** the exit-1 gate is `bash scripts/verify-resume.sh` exiting **1**, not `make verify` exiting **1** — GNU Make 3.81 collapses any failed recipe to exit 2 (measured both ways), so `make verify` is assertable only as "exits non-zero". Same correction as Pitfall 1 at :689 and the acceptance row at :973.
 
 ### Wave 0 gaps
 
