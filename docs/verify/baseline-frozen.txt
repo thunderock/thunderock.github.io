@@ -1,0 +1,32 @@
+# Frozen honesty invariants. Matched with: LC_ALL=C grep -Fxc  -> must equal exactly 1.
+# Whole-line (-Fx) is load-bearing: "Software Development Engineer" (Groupon) is a substring
+# of "Software Development Engineer (Search Relevance)" (Flipkart), so grep -Fc returns 2 for
+# the bare form and reports PASS even if Groupon's title were deleted. Match gate.txt, not raw.
+# Strings are pdftotext DEFAULT-MODE extracted forms: date separator is EN DASH U+2013 (source
+# writes "--") and the ampersand is bare "&" (source writes "\&"). File is UTF-8.
+# [geometry-sha256] is read by G4.1's source hash, not by the whole-line matcher -- a G5 loop
+# must stop at that section header. Editing = reviewed commit. VERIFY-03 / REQUIREMENTS.md:73.
+
+[dates]
+Jul. 2024 – Present
+Jan. 2019 – Jul. 2021
+Sep. 2017 – Jan. 2019
+Sep. 2016 – Sep. 2017
+Sep. 2015 – Aug. 2016
+
+[titles]
+Senior Machine Learning Engineer (ML Platform & Frameworks)
+Software Dev Engineer II (ML Platform)
+Software Development Engineer (Search Relevance)
+Software Development Engineer
+Software Engineer
+
+[employers]
+ADOBE FIREFLY
+SWIGGY
+FLIPKART (a Walmart company)
+GROUPON
+NETSPEED SYSTEMS (Acquired by Intel)
+
+[geometry-sha256]
+8b13a46bf5716cb9bb9042a4e1bb60a9d6919fd5f347a34ecdc6122d7f465a56

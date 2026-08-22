@@ -1,0 +1,54 @@
+# Phase-mutable verification manifest. Read line-wise by scripts/verify-resume.sh via
+# manifest_get / manifest_list -- never sourced, never eval'd, so a value containing shell
+# metacharacters is inert data. UPPER_SNAKE keys, plain "=", no leading whitespace.
+# A trailing "#" annotation is stripped by manifest_get; pipe-separated values split via
+# manifest_list. Thresholds here are meant to move as phases land; the honesty invariants
+# in baseline-frozen.txt are not.
+
+# --- Page geometry and budget (VERIFY-01) ---
+PAGES=2
+CEILING_PT=764.4
+LINE_PT=11.5                      # R1: conservative pair (11.5 over 11.0 -> smaller line count)
+CAREER_BREAK_PT=48.9              # R2: conservative pair (4.25 lines); Phase 2 EXP-01 reclaims it
+P1_BOTTOM_WS_PT=27.7              # R3: INFO only -- same measurement as CEILING_PT, other framing
+P1_TOP_PT=27.3
+PAGE_SIZE=612 x 792 pts (letter)
+PROBE_LINES=5
+
+# --- Section structure (R5: mutable; seeded with today's verified headings) ---
+PAGE2_OPENS_WITH=PUBLICATIONS
+EXPERIENCE_HEADING=WORK EXPERIENCE
+LAST_EXPERIENCE_EMPLOYER=NETSPEED SYSTEMS (Acquired by Intel)
+SECTIONS=WORK EXPERIENCE|PUBLICATIONS|EDUCATION|RESEARCH EXPERIENCE / INDEPENDENT STUDY|TEACHING EXPERIENCE|SELECTED PROJECTS|TECHNICAL SKILLS
+
+# --- Education binding (scoped: the institution also appears on page 1) ---
+EDU_HEADING=EDUCATION
+EDU_INSTITUTION=Indiana University, Bloomington
+EDU_CITY=Bloomington, IN
+EDU_DATE=Aug. 2021 – May 2023
+EDU_BIND_WINDOW=3
+
+# --- Source-side geometry freeze (G4.1 reads this alternation, not a hardcoded regex) ---
+GEOMETRY_KEYS=oddsidemargin|evensidemargin|textwidth|topmargin|textheight
+
+# --- Contact literals (VERIFY-02 / EXP-06) ---
+CONTACT_LITERALS=findashutoshtiwari@gmail.com|ashutosh--tiwari|github.com/thunderock|thunderock.github.io
+FORBIDDEN_LITERAL=ashutosh–tiwari    # U+2013 EN DASH -- the live defect Phase 2 EXP-06 removes
+
+# --- Text-layer content rules (VERIFY-02) ---
+PROHIBITED_WORDS=Go
+PROHIBITED_PHRASES=speculative decoding
+NONASCII_ALLOW=2013,2019,2022,2192,2206,00D7,2014,201C,201D
+DIGIT_BULLET_FLOOR=7
+SKILLS_MAX_LINES=3                # measures 4 today; owner Phase 5 -> WARN until then
+
+# --- Keyword tiers. Promotion = move an entry from KEYWORDS_TARGET to KEYWORDS_REQUIRED
+# --- in the same commit that adds the keyword. Present today = BLOCKER; absent = WARN.
+KEYWORDS_REQUIRED=inference|distributed|Kubernetes|PyTorch|FSDP|Ray|vLLM|Rust|fault|KEDA|SQS|Spark|Flash Attention
+KEYWORDS_TARGET=torch.compile:3|A100:3|H100:3|ONNX:5|CUDA graphs:3|Iceberg:5|Triton:5
+
+# --- WARN owners. Every WARN-tier assertion needs an entry or it prints an empty owner.
+# --- Sentinels: none = corroborating only, nothing to promote; unassigned = real deviation
+# --- with no owning requirement yet; any = the next phase touching that surface owns it.
+# --- G6.6 is a fallback only: a KEYWORDS_TARGET entry's own ":phase" suffix always wins.
+WARN_OWNERS=G4.3:none|G5.4:3|G6.6:3|G6.13:unassigned|G6.14:5|G6.4:any
