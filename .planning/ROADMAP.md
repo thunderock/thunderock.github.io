@@ -49,15 +49,15 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. Groupon and NetSpeed render as one compact earlier-experience block that still reads C++ and Network-on-Chip
   3. `pdftotext` output contains `ashutosh-tiwari` (correct hyphenated handle) and zero occurrences of `ashutosh–tiwari` (en dash)
   4. The text layer carries the portfolio, GitHub, and LinkedIn URLs as literal strings a text-only parser can read — not as masked anchors
-  5. `make verify` passes end-to-end, and the harness's headroom report shows **≥12 lines** of page-1 space recovered vs baseline (≈4.25 from the career-break row + ≈8 from the fold)
+  5. `make verify` passes end-to-end, and the harness's headroom report shows **≥12 lines** of page-1 space recovered vs baseline (≈4.25 from the career-break row + a **measured 0.13 lines / 1.5pt from the fold** — this parenthetical's original fold term, ≈8 lines, is a prediction **superseded by D-08**; see the note below)
 
 **Superseded literals** (bind these; a verification pass must not correct them backwards):
   - Criterion 3's `ashutosh-tiwari` (single hyphen) is a transcription error. The handle is **`ashutosh--tiwari`** (two ASCII hyphens), user-confirmed against a live LinkedIn probe and frozen in `docs/verify/manifest.txt` `CONTACT_LITERALS` — see STATE.md `[Phase 1 / A1]`.
-  - Criterion 5's "**≥12 lines**" is superseded by decision **D-08** (`02-CONTEXT.md`): the fold keeps one descriptor line per role, so the assertion is the **measured** post-change headroom, recorded at phase close — not a hardcoded 12. Planning measurement (`02-01-PLAN.md` §measured_width_budget) puts the realistic recovery near the career-break's **4.25 lines**: `\resumeSubheading`'s two-row header must survive for `G5`'s whole-line matching of the frozen title/date/employer, so the fold itself is worth at most one rendered line per role. Measured figure: _recorded by 02-02 Task 3_.
+  - Criterion 5's "**≥12 lines**" is superseded by decision **D-08** (`02-CONTEXT.md`): the fold keeps one descriptor line per role, so the assertion is the **measured** post-change headroom, recorded at phase close — not a hardcoded 12. Planning measurement (`02-01-PLAN.md` §measured_width_budget) puts the realistic recovery near the career-break's **4.25 lines**: `\resumeSubheading`'s two-row header must survive for `G5`'s whole-line matching of the frozen title/date/employer, so the fold itself is worth at most one rendered line per role. Measured figure: **50.4pt / 4.39 lines recovered** against the +0.1pt arrival baseline (`G3.2` page-1 headroom +0.1pt → +50.5pt; deepest content bottom 764.3pt → 713.9pt). Breakdown: career-break deletion **48.9pt / 4.26 lines** (matching manifest `CAREER_BREAK_PT=48.9` exactly), Groupon + NetSpeed fold **1.5pt / 0.13 lines** — itemize `topsep`/`itemsep` overhead only, because both descriptors wrap to two rendered lines at their locked D-05/D-06 length (167 and 164 chars against a measured 137–141-char one-line capacity), so the fold recovers zero *rendered* lines per role. This also corrects D-08's own "10–11 lines" prediction downward. No manifest threshold was moved and no locked content was shortened to improve it — D-08 designates the two descriptors as Phase 3's first re-compression lever. Measured by `02-01`; recorded here by `02-02` Task 3.
 
 **Plans**: 2 plans (sequential, waves 1→2)
 - [x] 02-01-PLAN.md — Contact line bare-URL rewrite + ligature break, career-break deletion, Groupon/NetSpeed fold, measured budget
-- [ ] 02-02-PLAN.md — Education city-cell drop, `EDU_CITY`/`PROBE_LINES` harness reconciliation with negative control, green gate + artifact
+- [x] 02-02-PLAN.md — Education city-cell drop, `EDU_CITY`/`PROBE_LINES` harness reconciliation with negative control, green gate + artifact
 
 ### Phase 3: Adobe Rebuild & Staff-Signal Bullets
 **Goal**: Page-1 Experience carries the evidenced staff signal — fault tolerance, distributed GPU inference, the Rust governance subsystem, `torch.compile` — with every number traceable and no unapproved claim shipped
@@ -116,7 +116,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 (Phase 4 may ru
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Verification Harness | 3/3 | Complete    | 2026-08-22 |
-| 2. Page-1 Budget & Text-Layer Defects | 1/2 | In Progress|  |
+| 2. Page-1 Budget & Text-Layer Defects | 2/2 | Complete    | 2026-08-22 |
 | 3. Adobe Rebuild & Staff-Signal Bullets | 0/TBD | Not started | - |
 | 4. Page-2 Restructure & GitHub Presence | 0/TBD | Not started | - |
 | 5. Skills Rebuild | 0/TBD | Not started | - |
