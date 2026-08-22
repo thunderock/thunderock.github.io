@@ -79,13 +79,39 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| (populated by roadmapper) | | |
+| VERIFY-01 | Phase 1 | Pending |
+| VERIFY-02 | Phase 1 | Pending |
+| VERIFY-03 | Phase 1 | Pending |
+| EXP-01 | Phase 2 | Pending |
+| EXP-05 | Phase 2 | Pending |
+| EXP-06 | Phase 2 | Pending |
+| EXP-02 | Phase 3 | Pending |
+| EXP-03 | Phase 3 | Pending |
+| EXP-04 | Phase 3 | Pending |
+| EXP-07 | Phase 3 | Pending |
+| EXP-08 | Phase 3 | Pending |
+| PG2-01 | Phase 4 | Pending |
+| PG2-02 | Phase 4 | Pending |
+| PG2-03 | Phase 4 | Pending |
+| GH-01 | Phase 4 | Pending |
+| GH-02 | Phase 4 | Pending |
+| GH-03 | Phase 4 | Pending |
+| PG2-04 | Phase 5 | Pending |
+| PG2-05 | Phase 5 | Pending |
+| PG2-06 | Phase 5 | Pending |
+| VIS-01 | Phase 6 | Pending |
+| SITE-01 | Phase 6 | Pending |
+| SITE-02 | Phase 6 | Pending |
 
 **Coverage:**
-- v1 requirements: 21 total
-- Mapped to phases: 0
-- Unmapped: 21 ⚠️ (pre-roadmap)
+- v1 requirements: 23 total
+- Mapped to phases: 23
+- Unmapped: 0 ✓
+
+> **Count correction (roadmap creation, 2026-08-21):** this section previously read "21 total". The v1 list enumerates **23** requirement IDs — 3 VERIFY + 8 EXP + 6 PG2 + 3 GH + 1 VIS + 2 SITE = 23. The ID list is authoritative; the earlier total was an arithmetic error. No requirements were added or removed.
+
+**Phase distribution:** Phase 1 → 3 · Phase 2 → 3 · Phase 3 → 5 · Phase 4 → 6 · Phase 5 → 3 · Phase 6 → 3
 
 ---
 *Requirements defined: 2026-08-21*
-*Last updated: 2026-08-21 after initial definition*
+*Last updated: 2026-08-21 after roadmap creation (traceability populated, 23/23 mapped)*
