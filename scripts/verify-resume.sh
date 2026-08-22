@@ -187,6 +187,17 @@ emit_row() {
     return 0
 }
 
+# emit_rows <ID> <rowfile> -- emit every row in <rowfile> whose ID field is <ID>.
+# Lets a single parse pass buffer rows and still print them in stable ID order.
+emit_rows() {
+    LC_ALL=C grep "^$1|" "$2" > "$2.sel" 2>/dev/null
+    while IFS='|' read -r _ri _rs _rm; do
+        [ -n "$_ri" ] || continue
+        emit_row "$_ri" "$_rs" "$_rm"
+    done < "$2.sel"
+    return 0
+}
+
 # frozen_section <[section]> -> the non-blank value lines of one honesty-freeze
 # section. Comment lines and every other section are dropped, so a caller can
 # never accidentally match the [geometry-sha256] value against the text layer.
@@ -645,6 +656,160 @@ while IFS='|' read -r ROW_ID ROW_STATUS ROW_MSG; do
     fi
     emit_row "$ROW_ID" "$ROW_STATUS" "$ROW_MSG"
 done < "$WORK/bbox.rows"
+
+# ---------------------------------------------------------------------------
+# G4 -- geometry and spacing freeze. G4.1 is the HARD MARGIN GATE.
+#
+# The observation point is the LaTeX source, not the PDF: pdfinfo reports only
+# paper size and cannot see \textheight, so a margin change is invisible from
+# the artifact. Line numbers are not usable either -- they shift in every later
+# phase -- so the declarations are pattern-extracted, whitespace-normalized,
+# sorted and hashed, which makes the hash line-number independent.
+#
+# Observing drift end-to-end needs --skip-freshness alongside --tex: a mutated
+# copy no longer matches the .fdb_latexmk record, so G0.3 refuses at exit 2
+# before G4 runs. That flag is the SINGLE documented override; do not add a
+# second bypass and do not reorder G0.3 behind G4.
+# ---------------------------------------------------------------------------
+
+# geom_hash <texfile> -> normalized sha256 over two sorted streams. shasum is
+# preferred over a BSD-only hash tool so the check also works on Linux.
+geom_hash() {
+    _gk=$(manifest_get GEOMETRY_KEYS)
+    # Matched inside the braces so trailing content on the line cannot leak in.
+    _gre='\\addtolength\{\\('"$_gk"')\}\{[^}]*\}'
+    {
+        LC_ALL=C grep -hoE "$_gre" "$1" | sort
+        python3 - "$1" <<'PY'
+import re
+import sys
+
+source = open(sys.argv[1], encoding='utf-8').read()
+# Brace-balanced on purpose: the \setlist[itemize] declaration spans two source
+# lines, and a per-line grep would capture only half of it -- silently dropping
+# half the list-spacing contract out of the hash.
+pattern = r"\\setlist(\[[^\]]*\])?\{(?:[^{}]|\{[^{}]*\})*\}"
+print("\n".join(sorted(" ".join(m.group(0).split()) for m in re.finditer(pattern, source))))
+PY
+    } | shasum -a 256 | awk '{print $1}'
+    return 0
+}
+
+GEOM_WANT=$(frozen_section '[geometry-sha256]' | grep -m1 .)
+GEOM_GOT=$(geom_hash "$TEX")
+
+if [ -z "$GEOM_WANT" ]; then
+    result G4.1 FAIL "no [geometry-sha256] value in $FROZEN, so margin and list-spacing drift cannot be detected"
+elif [ "$GEOM_GOT" = "$GEOM_WANT" ]; then
+    result G4.1 PASS "geometry and setlist declarations hash to the frozen value $GEOM_GOT"
+else
+    result G4.1 FAIL "geometry drift: $TEX now hashes to $GEOM_GOT but $FROZEN freezes $GEOM_WANT -- a margin or list-spacing declaration changed; revert it, or make a reviewed edit to the frozen file"
+fi
+
+# Paper size only. A margin change leaves this untouched, which is exactly why
+# G4.1 above carries the real gate.
+PAGE_SIZE_WANT=$(manifest_get PAGE_SIZE)
+PAGE_SIZE_GOT=$(pdfinfo "$PDF" 2>/dev/null | sed -n 's/^Page size:[[:space:]]*//p' | head -1 | sed 's/[[:space:]]*$//')
+if [ "$PAGE_SIZE_GOT" = "$PAGE_SIZE_WANT" ]; then
+    result G4.2 PASS "page size is $PAGE_SIZE_GOT as required by manifest PAGE_SIZE"
+else
+    result G4.2 FAIL "page size is '$PAGE_SIZE_GOT' but manifest PAGE_SIZE='$PAGE_SIZE_WANT' -- the paper size changed"
+fi
+
+# Corroborating only, hence the 'none' owner sentinel read from WARN_OWNERS.
+P1_TOP_WANT=$(manifest_get P1_TOP_PT)
+if [ -z "$P1_TOP_MEASURED" ]; then
+    warn G4.3 "$(warn_owner G4.3)" "page-1 top content extent unavailable from the bbox parse, so \\topmargin could not be corroborated"
+else
+    TOP_DELTA=$(awk -v a="$P1_TOP_MEASURED" -v b="$P1_TOP_WANT" 'BEGIN { d = a - b; if (d < 0) d = -d; printf "%.2f", d }')
+    TOP_VERDICT=$(awk -v d="$TOP_DELTA" 'BEGIN { print (d <= 1.0) ? "within" : "outside" }')
+    warn G4.3 "$(warn_owner G4.3)" "page-1 top content extent ${P1_TOP_MEASURED}pt is $TOP_VERDICT 1.0pt of manifest P1_TOP_PT=${P1_TOP_WANT}pt (delta ${TOP_DELTA}pt) -- corroborates \\topmargin; G4.1 carries the real margin gate"
+fi
+
+# The ATS switch. Its removal would make the extracted text layer unreliable and
+# would invalidate every G5 and G6 assertion, so this is a BLOCKER.
+ATS_MISSING=""
+LC_ALL=C grep -Fq '\input{glyphtounicode}' "$TEX" || ATS_MISSING="$ATS_MISSING \\input{glyphtounicode}"
+LC_ALL=C grep -Fq '\pdfgentounicode=1' "$TEX" || ATS_MISSING="$ATS_MISSING \\pdfgentounicode=1"
+if [ -z "$ATS_MISSING" ]; then
+    result G4.4 PASS "ATS text-layer switch intact in $TEX: \\input{glyphtounicode} and \\pdfgentounicode=1"
+else
+    result G4.4 FAIL "ATS text-layer switch broken in $TEX -- missing:$ATS_MISSING; restore it, or every G5/G6 text-layer assertion is void"
+fi
+
+# Reported because its presence is the reason G1.1 has to exist at all.
+if LC_ALL=C grep -Fq '\raggedbottom' "$TEX"; then
+    info G4.5 "$TEX declares \\raggedbottom -- vertical slack is absorbed silently, which is why the page count (G1.1) is the primary fit gate"
+else
+    info G4.5 "$TEX no longer declares \\raggedbottom -- vertical-fit diagnostics may behave differently; G1.1 remains authoritative"
+fi
+
+# ---------------------------------------------------------------------------
+# G5 -- honesty freeze. Three matcher properties are load-bearing, each measured:
+#
+#   -x  (whole line) resolves a real substring collision: "Software Development
+#       Engineer" (Groupon) is a substring of "Software Development Engineer
+#       (Search Relevance)" (Flipkart), so a substring count returns 2 for the
+#       bare form and would report PASS even if Groupon's title were deleted.
+#       Whole-line counts return exactly 1 for both.
+#   -F  (fixed string) keeps the parentheses and ampersands inside titles from
+#       being read as regex.
+#   LC_ALL=C gives byte semantics, so the UTF-8 EN DASH inside the frozen date
+#       strings matches byte-exactly.
+#
+# The input is gate.txt, never raw.txt. The comparison is exact-count (== 1),
+# never an at-least-one test -- an at-least-one test cannot detect a duplicate.
+# The [geometry-sha256] value is deliberately skipped: it belongs to G4.1, and
+# grepping a sha256 against the text layer would report a spurious FAIL.
+# ---------------------------------------------------------------------------
+
+: > "$WORK/frozen.rows"
+FROZEN_SECT=""
+while IFS= read -r FLINE; do
+    case "$FLINE" in
+        '')   continue ;;
+        '#'*) continue ;;
+        '['*) FROZEN_SECT="$FLINE"; continue ;;
+    esac
+    case "$FROZEN_SECT" in
+        '[dates]')     FID=G5.1 ;;
+        '[titles]')    FID=G5.2 ;;
+        '[employers]') FID=G5.5 ;;
+        *)             continue ;;
+    esac
+    N=$(LC_ALL=C grep -Fxc "$FLINE" "$WORK/gate.txt")
+    if [ "$N" = 1 ]; then
+        printf '%s|PASS|frozen string appears exactly once as a whole extracted line: %s\n' \
+            "$FID" "$FLINE" >> "$WORK/frozen.rows"
+    else
+        printf '%s|FAIL|frozen string count=%s (want exactly 1): %s -- an employment date, printed title or employer changed; revert the document, or make a reviewed edit to %s\n' \
+            "$FID" "$N" "$FLINE" "$FROZEN" >> "$WORK/frozen.rows"
+    fi
+done < "$FROZEN"
+
+emit_rows G5.1 "$WORK/frozen.rows"
+emit_rows G5.2 "$WORK/frozen.rows"
+
+STAFF_N=$(LC_ALL=C grep -Fc 'Staff' "$WORK/gate.txt")
+HEDGE_N=$(LC_ALL=C grep -cE '(/(Staff|Senior|Principal|Lead))|((Staff|Senior|Principal|Lead)/)' "$WORK/gate.txt")
+if [ "$STAFF_N" = 0 ] && [ "$HEDGE_N" = 0 ]; then
+    result G5.3 PASS "no title inflation in the text layer: 'Staff' x0, slash-hedged seniority lines x0"
+else
+    result G5.3 FAIL "title inflation in the text layer: 'Staff' x$STAFF_N, slash-hedged seniority lines x$HEDGE_N -- the printed title must stay truthful"
+fi
+
+# Crude on purpose and therefore WARN, not a gate: a rewording that moves a
+# number onto a wrapped continuation line trips it spuriously. It exists to make
+# compression that silently eats quantified claims visible.
+BULLET_FLOOR=$(manifest_get DIGIT_BULLET_FLOOR)
+BULLET_N=$(LC_ALL=C grep -cE '^[[:space:]]*(•|▪|◦|·|–|—|\*|-).*[0-9]' "$WORK/p1gate.txt")
+if [ "$BULLET_N" -lt "$BULLET_FLOOR" ]; then
+    warn G5.4 "$(warn_owner G5.4)" "page-1 digit-bearing bullet lines: $BULLET_N, BELOW manifest DIGIT_BULLET_FLOOR=$BULLET_FLOOR -- compression may have removed quantified claims"
+else
+    warn G5.4 "$(warn_owner G5.4)" "page-1 digit-bearing bullet lines: $BULLET_N against manifest DIGIT_BULLET_FLOOR=$BULLET_FLOOR -- crude metric, kept non-gating"
+fi
+
+emit_rows G5.5 "$WORK/frozen.rows"
 
 # ---------------------------------------------------------------------------
 # Human summary. Machine-readable RESULT lines come first; this block uses the
