@@ -60,6 +60,12 @@ The resume gets past ATS keyword screens and recruiter scans for Staff MLE / inf
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
 | Delete career-break entry outright (no RA/TA replacement row) | User preference; Education section already shows IU 2021–2023, gap self-explains | — Pending |
+| Replace unverified page-1 numbers with evidence-backed figures | "10–50×"/"3–8K images/sec" have no recorded source; verified figures survive interview probing | — Pending |
+| Fold Groupon+NetSpeed, no summary section | Freed lines fund the Adobe rebuild; summary would consume ~3-4 of 4.25 freed lines | — Pending |
+| Concept-vocabulary skills group, explicitly labeled | Only honest path for tensor/pipeline/MoE parallelism keywords to reach the page | — Pending |
+| C++ via NetSpeed NoC + graph_ml kernels; Go omitted everywhere | User confirmation 2026-08-21; never used Go | — Pending |
+| Projects = rollout + graph_ml (spike 002 Variant A) | Only current, public, staff-signal artifacts; lands Rust + C++ Tier-1 keywords | — Pending |
+| Cost/mentoring bullets: provisional figures behind a sign-off checkpoint | User wants drafts to react to; honesty gate requires explicit approval before ship | — Pending |
 | Skills-stretch/bullets-true honesty boundary | Max ATS coverage without interview risk in accomplishments | — Pending |
 | Recommendation-first workflow | User iterates on a concrete proposal faster than answering abstract questions | — Pending |
 | Milestone scope = resume + site hero text only | Keep milestone shippable; full site refresh deferred | — Pending |
