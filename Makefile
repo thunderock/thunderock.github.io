@@ -155,11 +155,23 @@ watch:  ## Continuous build with latexmk -pvc
 # status is not configurable in 3.81, and the workaround would only hide where
 # the real distinction lives.
 #
-# verify depends on $(PDF) so a MISSING PDF gets built. It deliberately does not
-# rebuild a STALE one: make is mtime-gated and currently reports nothing to be
-# done for the build even when the source has moved on, which is exactly why the
-# harness carries its own content-hash freshness proof and refuses (exit 2)
-# rather than verifying yesterday's artifact.
+# What `verify: $(PDF)` actually does, measured with make's what-if mode
+# (`make -n -W docs/main.tex verify`, which changes no file): make builds the PDF
+# when it is MISSING **and rebuilds it whenever docs/main.tex carries a strictly
+# newer mtime**, then verifies the artifact it just built. So on an edited source
+# this target is build-then-verify, and it overwrites the tracked PDF and its aux
+# files in the process. The "nothing to be done" case people remember is the
+# equal-mtimes one: a fresh checkout stamps source and artifact identically, so
+# make rebuilds nothing and the committed PDF is verified as-is.
+#
+# That is also why mtime is not, and cannot be, the freshness proof. make's
+# comparison says nothing about provenance in either direction -- equal mtimes do
+# not prove the PDF came from this source, and a rebuild only proves it did once
+# make had already replaced it. The harness therefore carries its own content-hash
+# proof (G0.3, md5 against the latexmk record) and refuses at exit 2 rather than
+# verifying an artifact it cannot tie to the current source. If you want to gate
+# the committed artifact without any chance of rebuilding it first, invoke
+# `bash $(VERIFY)` directly.
 #
 # No target waives the harness's freshness proof. The one flag that can waive it
 # exists solely for the harness's own geometry negative control, is named only
