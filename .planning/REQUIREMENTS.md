@@ -15,7 +15,7 @@ Requirements for milestone v1.0. Each maps to roadmap phases.
 
 ### Experience (Page 1)
 
-- [ ] **EXP-01**: Career-break entry removed; Experience runs Swiggy → Adobe (Education section carries the master's dates)
+- [x] **EXP-01**: Career-break entry removed; Experience runs Swiggy → Adobe (Education section carries the master's dates)
 - [ ] **EXP-02**: Adobe section rebuilt leading with fault-tolerance + distributed-inference language (Tier-1 keyword family: 63% normalized DF, 92% of surveyed companies)
 - [ ] **EXP-03**: `torch.compile(mode="max-autotune")` production claim present with compiler-bridge phrasing (honestly earns CUDA graphs / Triton / kernel fusion per official PyTorch docs)
 - [ ] **EXP-04**: Both unverified page-1 numbers ("10–50× faster image loading", "3–8K images/sec on 32 GPUs") replaced with evidence-backed figures from `.planning/research/CODEBASE-EVIDENCE.md`: 1.09M-row / 8×A100 Ray benchmark, 24×A100-40GB × 9 model queues, 64-H100 enrichment wave, 202.6M-row resumable migration, 24.8M video clips, ~700M-asset catalog (+35–38M/month), 40-node daily EMR
@@ -82,7 +82,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | VERIFY-01 | Phase 1 | Complete |
 | VERIFY-02 | Phase 1 | Complete |
 | VERIFY-03 | Phase 1 | Complete |
-| EXP-01 | Phase 2 | Pending |
+| EXP-01 | Phase 2 | Complete |
 | EXP-05 | Phase 2 | Complete |
 | EXP-06 | Phase 2 | Complete |
 | EXP-02 | Phase 3 | Pending |

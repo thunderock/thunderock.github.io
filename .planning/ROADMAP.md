@@ -17,7 +17,7 @@ Milestone v1.0 repositions the LaTeX resume (and the site text that mirrors it) 
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Verification Harness** - `make verify` turns "fits page 1 / ATS-parsable / dates untouched" from opinion into an exit code (completed 2026-08-22)
-- [ ] **Phase 2: Page-1 Budget & Text-Layer Defects** - Free the ≈12 lines the rebuild spends; fix the broken LinkedIn handle and masked URLs
+- [x] **Phase 2: Page-1 Budget & Text-Layer Defects** - Free the ≈12 lines the rebuild spends; fix the broken LinkedIn handle and masked URLs (completed 2026-08-22)
 - [ ] **Phase 3: Adobe Rebuild & Staff-Signal Bullets** - Spend the budget on evidenced fault-tolerance / distributed-inference content
 - [ ] **Phase 4: Page-2 Restructure & GitHub Presence** - Projects → `rollout` + `graph_ml`; compress page 2; make linked repos click-through-safe
 - [ ] **Phase 5: Skills Rebuild** - Derive keyword-tier Skills from finalized bullets, every item interview-defensible
@@ -116,7 +116,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 (Phase 4 may ru
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Verification Harness | 3/3 | Complete    | 2026-08-22 |
-| 2. Page-1 Budget & Text-Layer Defects | 2/2 | Complete    | 2026-08-22 |
+| 2. Page-1 Budget & Text-Layer Defects | 2/2 | Complete   | 2026-08-22 |
 | 3. Adobe Rebuild & Staff-Signal Bullets | 0/TBD | Not started | - |
 | 4. Page-2 Restructure & GitHub Presence | 0/TBD | Not started | - |
 | 5. Skills Rebuild | 0/TBD | Not started | - |
