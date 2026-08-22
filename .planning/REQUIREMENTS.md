@@ -19,8 +19,8 @@ Requirements for milestone v1.0. Each maps to roadmap phases.
 - [ ] **EXP-02**: Adobe section rebuilt leading with fault-tolerance + distributed-inference language (Tier-1 keyword family: 63% normalized DF, 92% of surveyed companies)
 - [ ] **EXP-03**: `torch.compile(mode="max-autotune")` production claim present with compiler-bridge phrasing (honestly earns CUDA graphs / Triton / kernel fusion per official PyTorch docs)
 - [ ] **EXP-04**: Both unverified page-1 numbers ("10–50× faster image loading", "3–8K images/sec on 32 GPUs") replaced with evidence-backed figures from `.planning/research/CODEBASE-EVIDENCE.md`: 1.09M-row / 8×A100 Ray benchmark, 24×A100-40GB × 9 model queues, 64-H100 enrichment wave, 202.6M-row resumable migration, 24.8M video clips, ~700M-asset catalog (+35–38M/month), 40-node daily EMR
-- [ ] **EXP-05**: Groupon + NetSpeed folded into a compact earlier-experience block (~8 lines freed); NetSpeed retains C++/Network-on-Chip wording as C++ evidence
-- [ ] **EXP-06**: LinkedIn en-dash defect fixed (handle currently extracts as `ashutosh–tiwari`); portfolio URL present as literal text in the text layer
+- [x] **EXP-05**: Groupon + NetSpeed folded into a compact earlier-experience block (~8 lines freed); NetSpeed retains C++/Network-on-Chip wording as C++ evidence
+- [x] **EXP-06**: LinkedIn en-dash defect fixed (handle currently extracts as `ashutosh–tiwari`); portfolio URL present as literal text in the text layer
 - [ ] **EXP-07**: Swiggy/Flipkart bullets tightened to staff-signal formulas (adoption-count + failure-class-closure slots)
 - [ ] **EXP-08**: Cost-savings + mentoring/leadership bullets drafted with provisional figures, explicitly ⚠-flagged as UNVERIFIED, and shipped only after user's explicit sign-off at a checkpoint (never silently)
 
@@ -83,8 +83,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | VERIFY-02 | Phase 1 | Complete |
 | VERIFY-03 | Phase 1 | Complete |
 | EXP-01 | Phase 2 | Pending |
-| EXP-05 | Phase 2 | Pending |
-| EXP-06 | Phase 2 | Pending |
+| EXP-05 | Phase 2 | Complete |
+| EXP-06 | Phase 2 | Complete |
 | EXP-02 | Phase 3 | Pending |
 | EXP-03 | Phase 3 | Pending |
 | EXP-04 | Phase 3 | Pending |

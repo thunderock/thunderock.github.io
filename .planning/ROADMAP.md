@@ -56,7 +56,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   - Criterion 5's "**≥12 lines**" is superseded by decision **D-08** (`02-CONTEXT.md`): the fold keeps one descriptor line per role, so the assertion is the **measured** post-change headroom, recorded at phase close — not a hardcoded 12. Planning measurement (`02-01-PLAN.md` §measured_width_budget) puts the realistic recovery near the career-break's **4.25 lines**: `\resumeSubheading`'s two-row header must survive for `G5`'s whole-line matching of the frozen title/date/employer, so the fold itself is worth at most one rendered line per role. Measured figure: _recorded by 02-02 Task 3_.
 
 **Plans**: 2 plans (sequential, waves 1→2)
-- [ ] 02-01-PLAN.md — Contact line bare-URL rewrite + ligature break, career-break deletion, Groupon/NetSpeed fold, measured budget
+- [x] 02-01-PLAN.md — Contact line bare-URL rewrite + ligature break, career-break deletion, Groupon/NetSpeed fold, measured budget
 - [ ] 02-02-PLAN.md — Education city-cell drop, `EDU_CITY`/`PROBE_LINES` harness reconciliation with negative control, green gate + artifact
 
 ### Phase 3: Adobe Rebuild & Staff-Signal Bullets
@@ -116,7 +116,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 (Phase 4 may ru
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Verification Harness | 3/3 | Complete    | 2026-08-22 |
-| 2. Page-1 Budget & Text-Layer Defects | 0/TBD | Not started | - |
+| 2. Page-1 Budget & Text-Layer Defects | 1/2 | In Progress|  |
 | 3. Adobe Rebuild & Staff-Signal Bullets | 0/TBD | Not started | - |
 | 4. Page-2 Restructure & GitHub Presence | 0/TBD | Not started | - |
 | 5. Skills Rebuild | 0/TBD | Not started | - |
