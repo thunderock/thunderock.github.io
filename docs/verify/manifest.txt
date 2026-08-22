@@ -22,9 +22,15 @@ LAST_EXPERIENCE_EMPLOYER=NETSPEED SYSTEMS (Acquired by Intel)
 SECTIONS=WORK EXPERIENCE|PUBLICATIONS|EDUCATION|RESEARCH EXPERIENCE / INDEPENDENT STUDY|TEACHING EXPERIENCE|SELECTED PROJECTS|TECHNICAL SKILLS
 
 # --- Education binding (scoped: the institution also appears on page 1) ---
+# G6.12's ordering clause is ANCHOR-FREE since Phase 2 / D-09: it asserts that
+# EDU_INSTITUTION *is* the first non-empty extracted line inside the EDU_HEADING
+# region, so it needs no second needle to compare against. The former
+# city anchor became unnecessary when D-09 dropped the redundant Education city
+# cells, and it was deleted in the same commit as its only reader -- a needle key
+# left behind after its string leaves the document degrades into grep -Fx on the
+# empty string, which matches the region's first BLANK line.
 EDU_HEADING=EDUCATION
 EDU_INSTITUTION=Indiana University, Bloomington
-EDU_CITY=Bloomington, IN
 EDU_DATE=Aug. 2021 – May 2023
 EDU_BIND_WINDOW=3
 

@@ -392,6 +392,27 @@ region_nonempty_count() {
     return 0
 }
 
+# region_first_nonempty <start> <end> -> the absolute gate.txt line number of the
+# first non-blank line inside the range, or empty.
+#
+# This is what lets G6.12's ordering clause be ANCHOR-FREE. "The institution is
+# the first thing a text-only parser reads inside EDUCATION" is a property of the
+# region itself, so it needs no second manifest string to compare against. That
+# matters for two reasons: a clause that compares against a supplied needle can
+# only ever catch the ONE noise string that needle names, and a needle that goes
+# absent degrades into grep -Fx on the empty string, which matches the region's
+# first BLANK line and reports a nonsense line number.
+region_first_nonempty() {
+    if [ "$1" -lt 1 ] || [ "$1" -gt "$2" ]; then
+        return 0
+    fi
+    _rfn=$(sed -n "$1,$2p" "$WORK/gate.txt" | LC_ALL=C grep -n -m1 '[^[:space:]]' | cut -d: -f1)
+    if [ -n "$_rfn" ]; then
+        printf '%s\n' "$(($1 + _rfn - 1))"
+    fi
+    return 0
+}
+
 # frozen_section <[section]> -> the non-blank value lines of one honesty-freeze
 # section. Comment lines and every other section are dropped, so a caller can
 # never accidentally match the [geometry-sha256] value against the text layer.
@@ -1836,24 +1857,37 @@ fi
 # G6.12 -- Education binding, the third live defect. SCOPED to the Education
 # region, and the scoping is mandatory rather than tidy.
 #
-# Measured: the EDU_INSTITUTION string occurs twice in today's extraction -- once
-# on page 1 inside the Career Break block and once in the Education section. A
-# whole-document ordering comparison would test the page-1 occurrence against the
-# Education city line, conclude the institution comes first, and return a false
-# PASS -- silently un-asserting one of the three defects this harness exists to
-# name. Region scoping is what makes the ordering clause real.
+# Measured (pre-Phase-2): the EDU_INSTITUTION string occurred twice in the
+# extraction -- once on page 1 inside the Career Break block and once in the
+# Education section. A whole-document comparison would have tested the page-1
+# occurrence and returned a false PASS, silently un-asserting one of the three
+# defects this harness exists to name. Phase 2 deleted the career-break entry so
+# the string occurs once today, but the scoping is NOT relaxed on the strength of
+# that: "first non-empty line" is only meaningful relative to a region, and any
+# later phase re-introducing the institution above Education must not be able to
+# satisfy this clause from outside the section.
 #
-# Two clauses: the institution line must precede the city line, and the date line
-# must sit within EDU_BIND_WINDOW non-empty lines of the institution line. Either
-# clause failing produces the single G6.12 FAIL.
+# Two clauses, both scoped to the region:
+#
+#   1. ORDERING -- the institution line must BE the first non-empty line inside
+#      the region. This is anchor-free by construction: it needs no second
+#      manifest needle, and it fires on city-first, date-first and degree-first
+#      alike rather than only on the one noise string a needle happens to name.
+#      Phase 2 (D-09) reached it by dropping the redundant city cells; the clause
+#      is deliberately stronger than the city-versus-institution comparison it
+#      replaces, and a negative control proves it still FAILs on the pre-Phase-2
+#      document, where 'Bloomington, IN' extracted first.
+#   2. WINDOW -- the date line must sit within EDU_BIND_WINDOW non-empty lines of
+#      the institution line, so the degree's dates stay bound to the school.
+#
+# Either clause failing produces the single G6.12 FAIL.
 # ---------------------------------------------------------------------------
 
 EDU_HEAD=$(manifest_get EDU_HEADING)
 EDU_INST=$(manifest_get EDU_INSTITUTION)
-EDU_CITY=$(manifest_get EDU_CITY)
 EDU_DATE=$(manifest_get EDU_DATE)
 EDU_WINDOW=$(manifest_get EDU_BIND_WINDOW)
-EDU_OWNER="Owner: Phase 2 (EXP-01 already edits Education; re-asserted by Phase 4 / PG2-03)"
+EDU_OWNER="Owner: Phase 4 / PG2-03 (Phase 2 / EXP-01 fixed this by dropping the redundant Education city cells; PG2-03 is the next phase to move these arguments)"
 
 EDU_REGION=$(section_region "$EDU_HEAD")
 EDU_START=${EDU_REGION% *}
@@ -1863,15 +1897,16 @@ if [ "$EDU_START" = 0 ]; then
     result G6.12 FAIL "Education heading '$EDU_HEAD' does not extract as a whole line, so the Education binding cannot be scoped -- $EDU_OWNER"
 else
     EDU_INST_AT=$(region_line_of "$EDU_START" "$EDU_END" "$EDU_INST")
-    EDU_CITY_AT=$(region_line_of "$EDU_START" "$EDU_END" "$EDU_CITY")
     EDU_DATE_AT=$(region_line_of "$EDU_START" "$EDU_END" "$EDU_DATE")
+    EDU_FIRST_AT=$(region_first_nonempty "$EDU_START" "$EDU_END")
 
     EDU_PROBLEMS=""
-    if [ -z "$EDU_INST_AT" ] || [ -z "$EDU_CITY_AT" ] || [ -z "$EDU_DATE_AT" ]; then
-        result G6.12 FAIL "Education binding unmeasurable inside the '$EDU_HEAD' region (gate lines $EDU_START-$EDU_END): institution='${EDU_INST_AT:-absent}' city='${EDU_CITY_AT:-absent}' date='${EDU_DATE_AT:-absent}' -- $EDU_OWNER"
+    if [ -z "$EDU_INST_AT" ] || [ -z "$EDU_DATE_AT" ] || [ -z "$EDU_FIRST_AT" ]; then
+        result G6.12 FAIL "Education binding unmeasurable inside the '$EDU_HEAD' region (gate lines $EDU_START-$EDU_END): institution='${EDU_INST_AT:-absent}' date='${EDU_DATE_AT:-absent}' first-non-empty='${EDU_FIRST_AT:-absent}' -- $EDU_OWNER"
     else
-        if [ "$EDU_INST_AT" -gt "$EDU_CITY_AT" ]; then
-            EDU_PROBLEMS="$EDU_PROBLEMS ordering: the city line '$EDU_CITY' (line $EDU_CITY_AT) extracts BEFORE the institution line '$EDU_INST' (line $EDU_INST_AT), so a parser reads the city as the school;"
+        if [ "$EDU_INST_AT" -ne "$EDU_FIRST_AT" ]; then
+            EDU_FIRST_TEXT=$(sed -n "${EDU_FIRST_AT}p" "$WORK/gate.txt")
+            EDU_PROBLEMS="$EDU_PROBLEMS ordering: the institution line '$EDU_INST' (line $EDU_INST_AT) is NOT the first non-empty line in the region -- line $EDU_FIRST_AT comes first and reads '$EDU_FIRST_TEXT', so a text-only parser reads that instead of the school;"
         fi
         if [ "$EDU_INST_AT" -le "$EDU_DATE_AT" ]; then
             EDU_LO=$EDU_INST_AT; EDU_HI=$EDU_DATE_AT
@@ -1883,9 +1918,9 @@ else
             EDU_PROBLEMS="$EDU_PROBLEMS window: the date line '$EDU_DATE' (line $EDU_DATE_AT) is $EDU_SPAN non-empty line(s) from the institution line (line $EDU_INST_AT), over EDU_BIND_WINDOW=$EDU_WINDOW;"
         fi
         if [ -z "$EDU_PROBLEMS" ]; then
-            result G6.12 PASS "Education binding intact inside the '$EDU_HEAD' region (gate lines $EDU_START-$EDU_END): institution line $EDU_INST_AT precedes city line $EDU_CITY_AT, date line $EDU_DATE_AT is $EDU_SPAN non-empty line(s) away (window $EDU_WINDOW)"
+            result G6.12 PASS "Education binding intact inside the '$EDU_HEAD' region (gate lines $EDU_START-$EDU_END): the institution line '$EDU_INST' (line $EDU_INST_AT) is the first non-empty line in the region, and date line $EDU_DATE_AT is $EDU_SPAN non-empty line(s) away (window $EDU_WINDOW)"
         else
-            result G6.12 FAIL "Education binding broken inside the '$EDU_HEAD' region (gate lines $EDU_START-$EDU_END) --$EDU_PROBLEMS reorder the \\resumeSubheading arguments at docs/main.tex:240-242. $EDU_OWNER"
+            result G6.12 FAIL "Education binding broken inside the '$EDU_HEAD' region (gate lines $EDU_START-$EDU_END) --$EDU_PROBLEMS reorder the \\resumeSubheading arguments in the Education section of docs/main.tex so the institution cell is what extracts first. $EDU_OWNER"
         fi
     fi
 fi
