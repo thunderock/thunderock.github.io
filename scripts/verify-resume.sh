@@ -21,9 +21,13 @@
 # associative arrays, the bash-4 line-slurp read builtins, case-converting parameter
 # expansion, and recursive glob expansion. Lookups use `case` or an on-demand grep.
 #
-# The harness is READ-ONLY. It never writes inside docs/, never invokes the build,
-# and never updates a file's timestamp -- mutating the thing under test is exactly
-# how a stale artifact gets blessed.
+# The harness is READ-ONLY in every verifying mode. It never writes inside docs/,
+# never invokes the build of the artifact under test, and never updates a file's
+# timestamp -- mutating the thing under test is exactly how a stale artifact gets
+# blessed. The ONE exception is the explicitly requested --write-baseline mode,
+# which regenerates observation-only keys in docs/verify/manifest.txt (and, only
+# with ALLOW_FROZEN_UPDATE=1, the derivable hash in the honesty freeze); see its
+# own block below for the guards. No mode that asserts anything writes anything.
 
 # No errexit on purpose: the harness must run every assertion and aggregate into
 # BLOCKERS, so a single failing grep may not abort the run. Deliberately omitting
@@ -68,8 +72,12 @@ Options:
                       A run carrying this flag is NOT a verification pass. No build
                       target may pass it; it exists only for a negative control that
                       must mutate the source to prove a content gate fires.
-  --selftest          Probe-build self-test               (implemented in Plan 03)
-  --write-baseline    Regenerate the mutable manifest     (implemented in Plan 03)
+  --selftest          Probe-build self-test and negative controls (G7, G8). Runs
+                      against the DEFAULT inputs: each control forwards only the
+                      one input it mutates, so --manifest/--frozen given here are
+                      not forwarded to the inner runs.
+  --write-baseline    Regenerate the observation-only keys of the mutable manifest.
+                      The only mode that writes; see its block in the script.
   --census TEXTFILE   Glyph-class census over a raw text fixture. Runs G0.1 only;
                       skips G0.2/G0.3/G0.4 because no PDF and no TEX are read.
   -h, --help          Show this help and exit 0
@@ -79,7 +87,9 @@ Environment:
   VERIFY_TMPDIR            Parent directory for the scratch workspace
 
 Remedies printed by this harness name the command to run; the harness never
-runs a build itself.
+rebuilds the artifact under test. (--selftest and the L2 freshness arbiter do
+build scratch copies, in a temporary directory and under their own jobnames, so
+the artifact under test stays unreachable from them.)
 USAGE
     return 0
 }
@@ -1901,7 +1911,12 @@ while IFS= read -r EMP; do
     EMP_AT=$(gate_line_of "$EMP")
     TITLE_AT=$(gate_line_of "$ROLE_TITLE")
     DATE_AT=$(gate_line_of "$ROLE_DATE")
-    if [ -z "$EMP_AT" ] || [ -z "$TITLE_AT" ] || [ -z "$DATE_AT" ]; then
+    # The two emptiness tests are not decoration: the sections are paired by index,
+    # so a shorter [titles] or [dates] list yields an empty string here, and
+    # `grep -Fx -- ""` matches the first BLANK line of gate.txt -- which would
+    # produce a confidently-worded adjacency measurement against line 1 of the
+    # extraction. Unmeasurable has to report unmeasurable.
+    if [ -z "$ROLE_TITLE" ] || [ -z "$ROLE_DATE" ] || [ -z "$EMP_AT" ] || [ -z "$TITLE_AT" ] || [ -z "$DATE_AT" ]; then
         warn G6.13 "$(warn_owner G6.13)" "role block '$EMP': one of the employer/title/date lines does not extract as a whole line, so adjacency is unmeasurable"
         continue
     fi
@@ -1992,7 +2007,8 @@ for match in re.finditer(r'\\definecolor\{([^}]*)\}\{(HTML|gray)\}\{([^}]*)\}', 
         except ValueError:
             continue
         shown = 'gray %s' % value
-    if luma <= 0.9:
+    if luma <= 0.9:  # near-white cutoff; a local constant like ROLE_BIND_WINDOW,
+        # promoting it to a manifest key is the commit that makes it configurable
         continue
     if re.search(APPLY % {'n': re.escape(name)}, source):
         hits.append('near-white colour %s (%s, luma %.3f) applied at a call site' % (name, shown, luma))
