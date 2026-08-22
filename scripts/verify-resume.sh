@@ -198,6 +198,63 @@ emit_rows() {
     return 0
 }
 
+# glyph_census <textfile> -> "ID|STATUS|MESSAGE" rows for the four-class glyph
+# gate. All four rules live in THIS one block, so there is exactly one
+# implementation of each:
+#   RESULT G6.1  ligature codepoints U+FB00-U+FB06
+#   RESULT G6.2  private-use codepoints U+E000-U+F8FF
+#   RESULT G6.3  U+FFFD replacement characters
+#   RESULT G6.4  every non-ASCII codepoint declared in NONASCII_ALLOW
+#
+# The input file is a PARAMETER, deliberately not $WORK/gate.txt: --census FILE
+# drives this same gate over a crafted fixture, and a hardcoded path would force
+# that mode to duplicate the logic.
+#
+# Four classes, not the five ligature glyphs: private-use and replacement
+# characters are the classes that actually appear when the ToUnicode mapping
+# breaks, and neither is caught by looking for ligature glyphs.
+glyph_census() {
+    python3 - "$1" "$(manifest_get NONASCII_ALLOW)" <<'PY'
+import collections
+import sys
+import unicodedata
+
+text = open(sys.argv[1], encoding='utf-8').read()
+declared = {int(x, 16) for x in sys.argv[2].split(',') if x.strip()}
+census = collections.Counter(ord(ch) for ch in text if ord(ch) > 0x7F)
+
+ligature = sum(n for cp, n in census.items() if 0xFB00 <= cp <= 0xFB06)
+private = sum(n for cp, n in census.items() if 0xE000 <= cp <= 0xF8FF)
+replacement = census.get(0xFFFD, 0)
+
+rows = [
+    ('G6.1', 'PASS' if not ligature else 'FAIL',
+     'ligature codepoints U+FB00-U+FB06: %d' % ligature),
+    ('G6.2', 'PASS' if not private else 'FAIL',
+     'private-use codepoints U+E000-U+F8FF: %d' % private),
+    ('G6.3', 'PASS' if not replacement else 'FAIL',
+     'U+FFFD replacement characters: %d' % replacement),
+]
+
+undeclared = [(cp, n) for cp, n in sorted(census.items()) if cp not in declared]
+if undeclared:
+    for cp, n in undeclared:
+        rows.append(('G6.4', 'WARN',
+                     'non-ASCII codepoint U+%04X x%d (%s) is absent from manifest NONASCII_ALLOW'
+                     ' -- add it there if intentional'
+                     % (cp, n, unicodedata.name(chr(cp), 'UNNAMED'))))
+else:
+    summary = ', '.join('U+%04X x%d' % (cp, n) for cp, n in sorted(census.items()))
+    rows.append(('G6.4', 'PASS',
+                 'every non-ASCII codepoint is declared in manifest NONASCII_ALLOW -- census: %s'
+                 % (summary or 'no non-ASCII characters')))
+
+for row in rows:
+    print('%s|%s|%s' % row)
+PY
+    return 0
+}
+
 # frozen_section <[section]> -> the non-blank value lines of one honesty-freeze
 # section. Comment lines and every other section are dropped, so a caller can
 # never accidentally match the [geometry-sha256] value against the text layer.
@@ -810,6 +867,151 @@ else
 fi
 
 emit_rows G5.5 "$WORK/frozen.rows"
+
+# ---------------------------------------------------------------------------
+# G6.1-G6.4 -- the glyph gate. One reusable block, invoked here over the
+# form-feed-normalized whole-document text.
+# ---------------------------------------------------------------------------
+
+glyph_census "$WORK/gate.txt" > "$WORK/census.rows"
+emit_rows G6.1 "$WORK/census.rows"
+emit_rows G6.2 "$WORK/census.rows"
+emit_rows G6.3 "$WORK/census.rows"
+emit_rows G6.4 "$WORK/census.rows"
+
+# ---------------------------------------------------------------------------
+# G6.5 / G6.6 -- keyword tiers. Together these ARE the promotion mechanism: a
+# phase that adds a keyword moves its entry from KEYWORDS_TARGET to
+# KEYWORDS_REQUIRED in the same commit. Do not add any other deferral construct.
+#
+# Counting is CASE-SENSITIVE, and that is a correctness requirement rather than
+# a preference: ATS matchers are substring-literal, so a case-insensitive count
+# reports 'PyTorch' as more present than it indexably is -- the Skills line
+# writes a differently-cased variant that earns nothing.
+# ---------------------------------------------------------------------------
+
+manifest_list KEYWORDS_REQUIRED > "$WORK/kw.required"
+while IFS= read -r KW; do
+    [ -n "$KW" ] || continue
+    N=$(LC_ALL=C grep -oF "$KW" "$WORK/gate.txt" | wc -l | tr -d ' ')
+    if [ "$N" != 0 ]; then
+        result G6.5 PASS "required keyword present (case-sensitive): '$KW' x$N"
+    else
+        result G6.5 FAIL "required keyword absent from the text layer (case-sensitive): '$KW' -- restore it, or move it back to KEYWORDS_TARGET in $MANIFEST with an owning phase"
+    fi
+done < "$WORK/kw.required"
+
+# Each entry carries its own ":phase" suffix and that suffix WINS over the
+# categorical WARN_OWNERS entry -- three of the seven targets belong to a
+# different phase than the categorical value would suggest.
+manifest_list KEYWORDS_TARGET > "$WORK/kw.target"
+while IFS= read -r ENTRY; do
+    [ -n "$ENTRY" ] || continue
+    case "$ENTRY" in
+        *:*) KW=${ENTRY%:*}; KW_OWNER=${ENTRY##*:} ;;
+        *)   KW="$ENTRY";    KW_OWNER=$(warn_owner G6.6) ;;
+    esac
+    N=$(LC_ALL=C grep -oF "$KW" "$WORK/gate.txt" | wc -l | tr -d ' ')
+    warn G6.6 "$KW_OWNER" "target keyword '$KW' x$N -- promote it into KEYWORDS_REQUIRED in the same commit that adds it"
+done < "$WORK/kw.target"
+
+# ---------------------------------------------------------------------------
+# G6.7 -- prohibited terms. The word-boundary flag is mandatory and measured: a
+# naive substring count for 'Go' returns 1 today because it matches 'Goal' in
+# the source text, while a word-boundary count returns 0. Without -w this
+# assertion fails on today's document for a false reason.
+# ---------------------------------------------------------------------------
+
+PROHIB_HITS=""
+manifest_list PROHIBITED_WORDS > "$WORK/prohibited.words"
+while IFS= read -r PW; do
+    [ -n "$PW" ] || continue
+    N=$(LC_ALL=C grep -Fowc "$PW" "$WORK/gate.txt")
+    if [ "$N" != 0 ]; then
+        PROHIB_HITS="$PROHIB_HITS word '$PW' on $N line(s);"
+    fi
+done < "$WORK/prohibited.words"
+
+manifest_list PROHIBITED_PHRASES > "$WORK/prohibited.phrases"
+while IFS= read -r PP; do
+    [ -n "$PP" ] || continue
+    N=$(LC_ALL=C grep -Fc "$PP" "$WORK/gate.txt")
+    if [ "$N" != 0 ]; then
+        PROHIB_HITS="$PROHIB_HITS phrase '$PP' on $N line(s);"
+    fi
+done < "$WORK/prohibited.phrases"
+
+if [ -z "$PROHIB_HITS" ]; then
+    result G6.7 PASS "no prohibited term in the text layer (words counted with word boundaries, phrases as fixed strings)"
+else
+    result G6.7 FAIL "prohibited term(s) in the text layer:$PROHIB_HITS -- these have no commit evidence and are an interview risk; remove them"
+fi
+
+# ---------------------------------------------------------------------------
+# G6.8 -- canonical section headings. This MUST read the form-feed-normalized
+# text. Measured: against the raw extraction a whole-line search for the page-2
+# opening heading returns 0, because the page-1 form feed is glued to that
+# heading's first character; against the normalized text all headings return 1.
+# ---------------------------------------------------------------------------
+
+manifest_list SECTIONS > "$WORK/sections.txt"
+while IFS= read -r SH; do
+    [ -n "$SH" ] || continue
+    N=$(LC_ALL=C grep -Fxc "$SH" "$WORK/gate.txt")
+    if [ "$N" != 0 ]; then
+        result G6.8 PASS "section heading extracts as a whole line: '$SH'"
+    else
+        result G6.8 FAIL "section heading does not extract as a whole line: '$SH' -- ATS parsers key on canonical headings; restore it, or update SECTIONS in $MANIFEST in the same commit that renames it"
+    fi
+done < "$WORK/sections.txt"
+
+# ---------------------------------------------------------------------------
+# G6.9 / G6.10 -- the two contact-literal defects, both live today.
+#
+# G6.9: docs/main.tex:134-136 masks the links behind display anchor text
+# ('Github@thunderock', 'Homepage/Portfolio'), so the URI annotations live in
+# compressed object streams that text extraction never sees. An ATS reads the
+# text layer, so a masked URL is an absent URL.
+#
+# G6.10: LaTeX converts the source double hyphen in the handle to an EN DASH, so
+# the rendered text layer carries a handle that resolves to nothing.
+# ---------------------------------------------------------------------------
+
+manifest_list CONTACT_LITERALS > "$WORK/contacts.txt"
+while IFS= read -r LIT; do
+    [ -n "$LIT" ] || continue
+    N=$(LC_ALL=C grep -Fc "$LIT" "$WORK/gate.txt")
+    if [ "$N" != 0 ]; then
+        result G6.9 PASS "contact literal present in the text layer: '$LIT' on $N line(s)"
+    else
+        result G6.9 FAIL "contact literal missing from the text layer: '$LIT' (0 occurrences) -- the anchor at docs/main.tex:134-136 masks it behind display text; make the anchor text the literal URL. Owner: Phase 2 / EXP-06"
+    fi
+done < "$WORK/contacts.txt"
+
+FORBIDDEN_LIT=$(manifest_get FORBIDDEN_LITERAL)
+N=$(LC_ALL=C grep -Fc "$FORBIDDEN_LIT" "$WORK/gate.txt")
+if [ "$N" = 0 ]; then
+    result G6.10 PASS "corrupted handle form '$FORBIDDEN_LIT' absent from the text layer"
+else
+    result G6.10 FAIL "corrupted handle present in the text layer: '$FORBIDDEN_LIT' on $N line(s) (U+2013 EN DASH) -- LaTeX converted the source double hyphen; break the ligature in the anchor text at docs/main.tex:134. Owner: Phase 2 / EXP-06"
+fi
+
+# ---------------------------------------------------------------------------
+# G6.11 -- -raw mode divergence. INFO only and permanently so: gating on -raw is
+# provably unfixable in LaTeX, so the divergence is reported, never asserted.
+# ---------------------------------------------------------------------------
+
+pdftotext -raw "$PDF" "$WORK/rawmode.txt" 2>/dev/null
+if [ -s "$WORK/rawmode.txt" ]; then
+    tr -cs '[:alnum:]@.:/' '\n' < "$WORK/rawmode.txt" | LC_ALL=C sort -u > "$WORK/rawmode.tok"
+    tr -cs '[:alnum:]@.:/' '\n' < "$WORK/gate.txt"    | LC_ALL=C sort -u > "$WORK/gate.tok"
+    comm -23 "$WORK/rawmode.tok" "$WORK/gate.tok" > "$WORK/glued.tok"
+    GLUED_N=$(grep -c . "$WORK/glued.tok")
+    GLUED_SAMPLE=$(LC_ALL=C grep -E '.{12,}' "$WORK/glued.tok" | head -3 | tr '\n' ' ' | sed 's/[[:space:]]*$//')
+    info G6.11 "-raw extraction diverges: $GLUED_N token(s) exist only in -raw output (word gluing), e.g. ${GLUED_SAMPLE:-none} -- reported only, never gated"
+else
+    info G6.11 "-raw extraction produced no text, so divergence is not measurable -- reported only, never gated"
+fi
 
 # ---------------------------------------------------------------------------
 # Human summary. Machine-readable RESULT lines come first; this block uses the
