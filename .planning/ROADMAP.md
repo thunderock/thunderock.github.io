@@ -35,7 +35,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. `make verify` exits non-zero when the `pdftotext` layer is missing a required keyword, contains a corrupted glyph/ligature, or fails to yield the LinkedIn handle and portfolio URL as literal text
   4. `make verify` exits non-zero if any of the five employment date strings or printed titles differs by a single byte from the recorded baseline, or if page geometry / `\setlist` values have drifted
   5. `make verify` run against today's committed PDF **FAILS and names each live defect** (en-dash handle, zero literal URLs, Education parse order) — and refuses to verify a PDF older than `docs/main.tex` instead of greenlighting a stale artifact
-**Plans**: TBD
+**Plans**: 3 plans (sequential, waves 1→2→3)
+- [ ] 01-01-PLAN.md — Baseline manifests, harness scaffolding, G0 preconditions + freshness proof
+- [ ] 01-02-PLAN.md — Structure gates (G1–G3), geometry + honesty freezes (G4–G5), ATS text layer (G6)
+- [ ] 01-03-PLAN.md — Overflow self-test (G7), negative controls, Makefile integration
 
 ### Phase 2: Page-1 Budget & Text-Layer Defects
 **Goal**: The page-1 line budget every later phase spends actually exists, and the three live text-layer defects are gone — with `make verify` green for the first time
@@ -105,7 +108,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 (Phase 4 may ru
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Verification Harness | 0/TBD | Not started | - |
+| 1. Verification Harness | 0/3 | Planned | - |
 | 2. Page-1 Budget & Text-Layer Defects | 0/TBD | Not started | - |
 | 3. Adobe Rebuild & Staff-Signal Bullets | 0/TBD | Not started | - |
 | 4. Page-2 Restructure & GitHub Presence | 0/TBD | Not started | - |
