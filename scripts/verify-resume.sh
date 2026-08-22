@@ -11,7 +11,8 @@
 # Note: GNU Make 3.81 exits 2 for ANY failed recipe, so the 1-vs-2 distinction is
 # observable only when this script is invoked directly, not through a Make target.
 #
-# This plan (01-01) implements G0.1-G0.4 only. G1-G8 land in Plans 02 and 03.
+# Implemented here: G0.1-G0.4 (preconditions), G1-G3 (structural page gates).
+# G4-G6 land later in Plan 02; G7-G8 land in Plan 03.
 #
 # Written for bash 3.2.57 (a clean macOS box ships nothing newer). That rules out
 # associative arrays, the bash-4 line-slurp read builtins, case-converting parameter
@@ -155,6 +156,46 @@ manifest_get() {  # manifest_get <KEY> -> single value, trailing "# annotation" 
 
 manifest_list() {  # manifest_list <KEY> -> one pipe-separated item per line
     manifest_get "$1" | tr '|' '\n'
+    return 0
+}
+
+# warn_owner <ID> -> the owner token the manifest records for a WARN-tier
+# assertion. Never hardcode a phase number in an assertion: a promotion must be
+# a one-line manifest edit, not a script change. An ID with no entry degrades to
+# the "unassigned" sentinel so a WARN can never print an empty owner.
+warn_owner() {
+    _wo=$(manifest_list WARN_OWNERS | grep -m1 "^$1:" | sed "s/^$1://")
+    if [ -z "$_wo" ]; then
+        printf 'unassigned\n'
+    else
+        printf '%s\n' "$_wo"
+    fi
+    return 0
+}
+
+# emit_row <id> <status> <message> -- dispatches one "ID|STATUS|MESSAGE" row
+# produced by an inlined python block onto the right emitter, so the RESULT
+# contract and the BLOCKERS tally stay in one place. Callers MUST feed this from
+# a file redirect, never a pipe: a pipe would run result() in a subshell and the
+# BLOCKERS increment would be lost.
+emit_row() {
+    case "$2" in
+        WARN) warn "$1" "$(warn_owner "$1")" "$3" ;;
+        INFO) info "$1" "$3" ;;
+        *)    result "$1" "$2" "$3" ;;
+    esac
+    return 0
+}
+
+# frozen_section <[section]> -> the non-blank value lines of one honesty-freeze
+# section. Comment lines and every other section are dropped, so a caller can
+# never accidentally match the [geometry-sha256] value against the text layer.
+frozen_section() {
+    awk -v want="$1" '
+        /^[[:space:]]*#/ { next }
+        /^\[/            { inside = ($0 == want) ? 1 : 0; next }
+        inside && NF     { print }
+    ' "$FROZEN"
     return 0
 }
 
@@ -383,7 +424,9 @@ fi
 
 # ---------------------------------------------------------------------------
 # Deferred modes. The argument surface is stable now so later plans can fill in
-# behaviour without restructuring the entry path.
+# behaviour without restructuring the entry path. These short-circuit BEFORE the
+# content assertions so a --selftest or --write-baseline run never pays for the
+# extra extractions.
 # ---------------------------------------------------------------------------
 
 if [ "$MODE" = selftest ]; then
@@ -397,6 +440,211 @@ if [ "$MODE" = write-baseline ]; then
     printf '>> Baseline writer argument surface only in this plan; writer lands in Plan 03.\n'
     exit 0
 fi
+
+# ===========================================================================
+# CONTENT ASSERTIONS
+#
+# Everything below runs only after G0 proved the artifacts exist and (unless
+# explicitly waived) that the PDF was built from the current source. The extra
+# extractions live here rather than next to the whole-document one so a
+# --selftest or --write-baseline run never pays for them.
+# ===========================================================================
+
+pdftotext -f 1 -l 1 "$PDF" "$WORK/p1.txt" 2>/dev/null
+pdftotext -f 2 -l 2 "$PDF" "$WORK/p2.txt" 2>/dev/null
+pdftotext -bbox "$PDF" "$WORK/bbox.xml" 2>/dev/null || die2 "pdftotext -bbox failed to measure $PDF"
+
+# A 1-page artifact makes the page-2 extraction empty rather than fatal: G2.1
+# must be able to report a moved boundary as a FAIL, not be pre-empted by an
+# exit 2 that would read as "cannot verify".
+[ -f "$WORK/p1.txt" ] || : > "$WORK/p1.txt"
+[ -f "$WORK/p2.txt" ] || : > "$WORK/p2.txt"
+tr '\f' '\n' < "$WORK/p1.txt" > "$WORK/p1gate.txt" || die2 "page-1 form-feed normalization failed"
+tr '\f' '\n' < "$WORK/p2.txt" > "$WORK/p2gate.txt" || die2 "page-2 form-feed normalization failed"
+
+# ---------------------------------------------------------------------------
+# G1 -- page count. This is the PRIMARY fit gate and it reads the PDF page tree.
+#
+# Do not substitute a fill or headroom measurement for it, and do not read the
+# LaTeX log. Measured four times against this document: a build whose content
+# spills onto a third page still exits 0 and emits no warning at all -- TeX has
+# no page-spill diagnostic, and \raggedbottom (main.tex:46) suppresses the
+# vertical-underfill complaint that would otherwise hint at it. The page count is
+# the only reliable signal, which is also why G4.5 reports \raggedbottom.
+#
+# The threshold comes from the manifest (PAGES), never a literal. Note that
+# docs/transcript.pdf is NOT a usable negative control for this gate: measured
+# with pdfinfo it is itself 2 pages, so the gate PASSES on it. The real
+# discrimination proof is Plan 03's G7.3 overflow probe, which builds a genuine
+# 3-page artifact in a scratch directory.
+# ---------------------------------------------------------------------------
+
+PAGES_WANT=$(manifest_get PAGES)
+PAGES_GOT=$(pdfinfo "$PDF" 2>/dev/null | awk '/^Pages:/ {print $2; exit}')
+
+if [ -z "$PAGES_GOT" ]; then
+    result G1.1 FAIL "could not read a page count from the page tree of $PDF"
+elif [ "$PAGES_GOT" = "$PAGES_WANT" ]; then
+    result G1.1 PASS "page tree reports $PAGES_GOT page(s), manifest PAGES=$PAGES_WANT"
+else
+    result G1.1 FAIL "page tree reports $PAGES_GOT page(s) but manifest PAGES=$PAGES_WANT -- content no longer fits the page budget; cut content or raise PAGES in $MANIFEST"
+fi
+
+# pdftotext emits one form feed per page INCLUDING the last, so the raw count
+# equals the page count -- do not add one. Cross-check only, never a gate.
+FF_COUNT=$(tr -cd '\f' < "$WORK/raw.txt" | wc -c | tr -d ' ')
+if [ "$FF_COUNT" = "$PAGES_GOT" ]; then
+    info G1.2 "form-feed cross-check agrees with the page tree ($FF_COUNT == $PAGES_GOT)"
+else
+    info G1.2 "form-feed count $FF_COUNT diverges from the page tree $PAGES_GOT -- reported only, G1.1 is authoritative"
+fi
+
+# ---------------------------------------------------------------------------
+# G2 -- page-1 boundary. G2.1 is a POSITIVE assertion, which is the whole point.
+# \scshape round-trips to real uppercase, so the match is anchored and
+# case-insensitive. Per-page extraction reads clean, so this does not need the
+# form-feed-normalized whole-document text.
+# ---------------------------------------------------------------------------
+
+PAGE2_OPENS=$(manifest_get PAGE2_OPENS_WITH)
+P2_FIRST=$(grep -m1 . "$WORK/p2gate.txt" 2>/dev/null)
+
+if [ -z "$P2_FIRST" ]; then
+    result G2.1 FAIL "page 2 has no extractable text, so the page-1 boundary cannot be confirmed to open at '$PAGE2_OPENS'"
+elif printf '%s\n' "$P2_FIRST" | LC_ALL=C grep -Fxqi -- "$PAGE2_OPENS"; then
+    result G2.1 PASS "page 2 opens at '$P2_FIRST' as required by manifest PAGE2_OPENS_WITH=$PAGE2_OPENS"
+else
+    result G2.1 FAIL "page 2 opens at '$P2_FIRST', expected '$PAGE2_OPENS' -- the page-1 boundary moved; content spilled past the \\newpage"
+fi
+
+EXP_HEADING=$(manifest_get EXPERIENCE_HEADING)
+N=$(LC_ALL=C grep -Fxc "$EXP_HEADING" "$WORK/p1gate.txt")
+if [ "$N" != 0 ]; then
+    result G2.2 PASS "page 1 carries the experience heading '$EXP_HEADING'"
+else
+    result G2.2 FAIL "page 1 does not carry the experience heading '$EXP_HEADING' as a whole extracted line"
+fi
+
+LAST_EMPLOYER=$(manifest_get LAST_EXPERIENCE_EMPLOYER)
+N=$(LC_ALL=C grep -Fxc "$LAST_EMPLOYER" "$WORK/p1gate.txt")
+if [ "$N" != 0 ]; then
+    result G2.3 PASS "page 1 carries the last experience employer '$LAST_EMPLOYER'"
+else
+    result G2.3 FAIL "page 1 does not carry the last experience employer '$LAST_EMPLOYER' -- the experience section no longer fits page 1"
+fi
+
+# G2.4 is INFO and must NEVER become a gate. Testing for the ABSENCE of company
+# names on page 2 returns a false OK, reproduced independently: a +4-line probe
+# produced a 3-page document whose page 2 began with a role TITLE rather than an
+# employer; a +5-line probe's page 2 opened with the sentence fragment "Groupon
+# operates."; a third recorded probe opened with "Breakdown.", matching no
+# company name at all. The spill fragment is a function of the injection point
+# and cannot be enumerated, so a negative test passes on a broken document.
+# G2.1's positive assertion discriminated correctly on every probe state
+# measured. Do not "strengthen" this into a gate.
+frozen_section '[employers]' > "$WORK/employers.txt"
+P2_EMP=0
+while IFS= read -r EMP; do
+    [ -n "$EMP" ] || continue
+    C=$(LC_ALL=C grep -Fc "$EMP" "$WORK/p2gate.txt")
+    P2_EMP=$((P2_EMP + C))
+done < "$WORK/employers.txt"
+info G2.4 "experience employer names appearing on page 2: $P2_EMP (reported only -- absence is a false OK as a gate; G2.1 is the real boundary assertion)"
+
+# ---------------------------------------------------------------------------
+# G3 -- fill and headroom, from pdftotext -bbox parsed with stdlib xml.etree.
+#
+# G3.1 alone can NEVER replace G1.1: measured on the 3-page artifact, page-1
+# headroom reads POSITIVE, because once content spills page 1 is no longer the
+# binding page. G3.1 is the "did anything cross the text-block ceiling" gate;
+# G1.1 is the "did the document still fit" gate. Both are required.
+#
+# Manifest-derived values are passed as argv, never interpolated into the
+# heredoc body, so a manifest value can never become python source.
+# ---------------------------------------------------------------------------
+
+CEILING_PT=$(manifest_get CEILING_PT)
+LINE_PT=$(manifest_get LINE_PT)
+P1_WS_PT=$(manifest_get P1_BOTTOM_WS_PT)
+
+python3 - "$WORK/bbox.xml" "$CEILING_PT" "$LINE_PT" "$P1_WS_PT" <<'PY' > "$WORK/bbox.rows"
+import sys
+import xml.etree.ElementTree as ET
+
+
+def localname(elem):
+    # pdftotext -bbox emits a namespaced document; strip the namespace before
+    # comparing tag names so the parse does not depend on poppler's URI.
+    return elem.tag.split('}')[-1]
+
+
+xml_path, ceil_s, line_s, ws_s = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
+CEIL, LINE, WSBASE = float(ceil_s), float(line_s), float(ws_s)
+
+root = ET.parse(xml_path).getroot()
+pages = []
+for page in [p for p in root.iter() if localname(p) == 'page']:
+    width, height = float(page.get('width')), float(page.get('height'))
+    words = [w for w in page.iter() if localname(w) == 'word']
+    if not words:
+        continue
+    pages.append({
+        'w': width,
+        'h': height,
+        'top': min(float(w.get('yMin')) for w in words),
+        'bottom': max(float(w.get('yMax')) for w in words),
+        'outside': sum(1 for w in words
+                       if float(w.get('xMin')) < 0 or float(w.get('yMin')) < 0
+                       or float(w.get('xMax')) > width or float(w.get('yMax')) > height),
+        'n': len(words),
+    })
+
+rows = []
+if not pages:
+    rows.append(('G3.1', 'FAIL', 'no positioned words in the bbox extraction; page fill cannot be measured'))
+    rows.append(('G3.4', 'FAIL', 'no positioned words in the bbox extraction; the page box cannot be checked'))
+else:
+    deepest = max(p['bottom'] for p in pages)
+    per_page = ', '.join('p%d %.1fpt' % (i + 1, p['bottom']) for i, p in enumerate(pages))
+    rows.append(('G3.1', 'FAIL' if deepest > CEIL else 'PASS',
+                 'deepest content bottom %.1fpt vs ceiling %.1fpt (%s)' % (deepest, CEIL, per_page)))
+
+    headroom = ', '.join(
+        'p%d %+.1fpt (%+.2f lines)' % (i + 1, CEIL - p['bottom'], (CEIL - p['bottom']) / LINE)
+        for i, p in enumerate(pages))
+    rows.append(('G3.2', 'INFO', 'headroom at %.1fpt/line: %s' % (LINE, headroom)))
+
+    first = pages[0]
+    rows.append(('G3.3', 'INFO',
+                 'page-1 bottom whitespace %.1fpt vs baseline %.1fpt -- the same measurement as G3.1 '
+                 'read from the physical page edge, kept for traceability only'
+                 % (first['h'] - first['bottom'], WSBASE)))
+
+    outside = sum(p['outside'] for p in pages)
+    total = sum(p['n'] for p in pages)
+    rows.append(('G3.4', 'FAIL' if outside else 'PASS',
+                 '%d words outside the page box, of %d positioned words across %d page(s)'
+                 % (outside, total, len(pages))))
+
+    rows.append(('META', 'p1top', '%.1f' % first['top']))
+
+for row in rows:
+    print('%s|%s|%s' % row)
+PY
+
+# Read the rows from a FILE, not a pipe: result() must run in this shell or the
+# BLOCKERS tally silently stays at zero.
+P1_TOP_MEASURED=""
+while IFS='|' read -r ROW_ID ROW_STATUS ROW_MSG; do
+    [ -n "$ROW_ID" ] || continue
+    if [ "$ROW_ID" = META ]; then
+        case "$ROW_STATUS" in
+            p1top) P1_TOP_MEASURED="$ROW_MSG" ;;
+        esac
+        continue
+    fi
+    emit_row "$ROW_ID" "$ROW_STATUS" "$ROW_MSG"
+done < "$WORK/bbox.rows"
 
 # ---------------------------------------------------------------------------
 # Human summary. Machine-readable RESULT lines come first; this block uses the
