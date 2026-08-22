@@ -1,9 +1,12 @@
 ---
-status: issues_found
+status: resolved
 blockers: 1
 warnings: 3
 notes: 6
 reviewed: 2026-08-22
+resolved: 2026-08-22
+resolved_commits: [b0d0a6e, 9e1edd2, 60b96d3, 4d68aa2, 78365ac]
+deferred: [CR-06, CR-07]
 ---
 
 # Phase 1: Code Review — Verification Harness
@@ -52,3 +55,55 @@ Pre-acknowledged context NOT re-reported as findings: exit 1 on today's PDF is c
 ---
 _Reviewer: gsd-code-reviewer_
 _Depth: deep_
+
+## Resolution
+
+**Resolved 2026-08-22.** All four actionable findings (1 BLOCKER, 3 WARNING) are fixed, and four of the six NOTEs are closed; two NOTEs are deliberately deferred with reasons below. Every fix was first reproduced FAILING against the reviewed commit (`12782d7`) and then re-run passing, so each entry below is an A/B, not a claim. `docs/` is byte-identical to `12782d7` (`git diff 12782d7 HEAD -- docs/` is empty) and the committed PDF still hashes to `123d02e3…60d1`.
+
+| ID | Sev | Status | Fix commit | What changed |
+|----|-----|--------|-----------|--------------|
+| CR-01 | BLOCKER | **fixed** | `b0d0a6e` | New `die_group`: a measurement block that fails emits `RESULT <id> FAIL` first, echoes the block's stderr, then exits **2** ("cannot verify"). Exit status is now checked for every inlined python block — glyph census (both call sites), page-fill parse, invisible-text scan, geometry hash, baseline bbox measurement — and the `return 0` masks in `glyph_census`/`geom_hash` are gone, with their stderr captured so the python error can be named. `emit_rows` closes the same channel from the other side by failing on zero matching rows, and the baseline writer refuses to stage an empty threshold or freeze a partial geometry hash. `p1_headroom` feeds a message only, so it degrades to `unknown` rather than dying inside a command substitution. |
+| CR-02 | WARNING | **fixed** | `9e1edd2` | The duplicated normalization became `arb_normalize`, which returns non-zero when its input is unusable **or its output is empty** — killing the empty-vs-empty `cmp` that read as agreement. Delimiter switched from `@` to `/`, which a basename can never contain, making the metacharacter escape set complete. Both `pdftotext -bbox` calls and both normalizations are exit-checked; any failure yields a new `ERROR <why>` verdict that the caller turns into `G0.3 FAIL` + exit 2. A broken arbiter can no longer answer FRESH. |
+| CR-03 | WARNING | **fixed** (comment) | `4d68aa2` | Comment-only, as scoped: the prerequisite and every recipe line are untouched because build-when-missing is wanted. The text now states the real build-then-verify semantics, explains why mtime cannot be the freshness proof in either direction, and points at `bash $(VERIFY)` for gating the committed artifact with no chance of rebuilding it first. |
+| CR-04 | WARNING | **fixed** | `60b96d3` | G8.3 now checks for an md5 record for the source basename *before* running the control. Absent record → `SKIP` naming `make build` as the remedy and explaining why L2 cannot substitute; `SKIP` leaves `BLOCKERS` untouched, so an unexercisable control is no longer a failing one. `--pdf` is forwarded to the inner run so the record the pre-check reads is exactly the one the inner run looks up, and both verdict messages now name the L1 record. The `clean` target documents the degradation beside the deletion that causes it. |
+| CR-05 | NOTE | **fixed** | `78365ac` | Both over-broad header claims are qualified where they are made: no *asserting* mode writes (only the explicit `--write-baseline` does), and no mode rebuilds the artifact under test (`--selftest` and the L2 arbiter build scratch copies under their own jobnames). |
+| CR-06 | NOTE | **deferred** | — | Escaping the `.` in `emit_rows`/`warn_owner` needs a per-call escape subshell at two sites, which is neither one line nor zero-risk. Re-measured while fixing: the cited collision does not occur, because both patterns are anchored on the delimiter that follows the ID (`^G6.1\|` cannot match `G6.15\|`, `^G6.1:` cannot match `G6.13:`). Latent, no live instance, no live path to one. |
+| CR-07 | NOTE | **deferred** | — | Unifying the three bbox-XML parses is a cross-block refactor of production measurement code, not a one-line change, and all three now fail loudly via CR-01's exit-status checks rather than silently. Worth doing as its own change with its own verification, not inside a review-fix pass. |
+| CR-08 | NOTE | **fixed** | `78365ac` | Empty `ROLE_TITLE`/`ROLE_DATE` now report unmeasurable like every other missing input, so `grep -Fx -- ""` can no longer match the first blank line of the extraction and produce a confident adjacency measurement against line 1. |
+| CR-09 | NOTE | **fixed** (documented) | `78365ac`, `60b96d3` | `--selftest` is documented as running against the default inputs, naming exactly which overrides are not forwarded. G8.3 additionally forwards `--pdf` because its pre-check and its inner run must agree on one record. Full forwarding remains a design change, not a note-level fix. |
+| CR-10 | NOTE | **fixed** | `78365ac` | The near-white luma cutoff is marked as a deliberate local constant, the same way `ROLE_BIND_WINDOW` is. |
+
+### A/B evidence per finding
+
+| Finding | Before (at `12782d7`) | After |
+|---|---|---|
+| CR-01, probe A: `--manifest` with `NONASCII_ALLOW=U+2013,2019` | **exit 1**, **0** `RESULT G6.[1-4]` lines, same 5 known blockers reported — the group vanished | **exit 2**, `RESULT G6.1 FAIL "the glyph census (G6.1-G6.4) assertion group could NOT RUN … ValueError: invalid literal for int() with base 16: 'U+2013'"`, traceback echoed |
+| CR-01, probe B: `--manifest` with `CEILING_PT=` | **exit 1**, **0** `RESULT G3.*` lines | **exit 2**, `RESULT G3.1 FAIL "… could NOT RUN … ValueError: could not convert string to float: ''"` |
+| CR-01, zero-row channel: freeze with an emptied `[titles]` | G5.2 silently absent | **exit 2**, `RESULT G5.2 FAIL "no G5.2 row was produced …"` |
+| CR-02: `docs/transcript.pdf` (a different document) copied to `a@b.pdf` | **exit 1** with `RESULT G0.3 PASS "L2 scratch rebuild proves the PDF matches the current source"` — while the same bytes named `plain.pdf` were correctly refused at exit 2 | **exit 2**, `RESULT G0.3 FAIL … DIVERGES` |
+| CR-02, no false negative: the CORRECT PDF copied to `ok@name.pdf` | `G0.3 PASS` | `G0.3 PASS` (unchanged — the legitimate path still works with `/` as the delimiter) |
+| CR-02, `ERROR` path: `pdftotext` fault-injected on the scratch measurement | pipeline failed silently → FRESH | **exit 2**, `RESULT G0.3 FAIL "… arbiter could not measure: pdftotext -bbox could not measure the scratch rebuild"` |
+| CR-03: `make -n -W docs/main.tex verify` (what-if, touches nothing) | printed the full build recipe, contradicting the comment | comment now describes exactly that |
+| CR-04: `--selftest` with `docs/AshutoshTiwari.fdb_latexmk` moved aside | **exit 1**, `RESULT G8.3 FAIL "the staleness refusal is broken: exit code 1 (want exactly 2) … G0.3 FAIL x0"` | **exit 0**, `RESULT G8.3 SKIP "… run 'make build' to restore the record"` |
+| CR-04: record present (normal) | `G8.3 PASS` | `G8.3 PASS`, now naming the L1 record `729318…44c4` |
+
+### Verification on the final tree
+
+| Check | Result |
+|---|---|
+| `make verify-selftest` | **exit 0** — 10/10 `G7.[1-4]` + `G8.[1-6]` PASS, 0 FAIL |
+| `bash scripts/verify-resume.sh` | **exit 1** — exactly 5 BLOCKER FAILs (`G6.9` ×3, `G6.10`, `G6.12`), 0 non-named blockers |
+| RESULT stream vs the pre-fix baseline | **byte-identical**, 83 lines — no assertion changed its verdict on the committed artifact |
+| `--census` on a corrupted fixture | exit 1 with three `G6.(1\|2\|3)` FAILs (G8.4's path intact) |
+| `--write-baseline` | exit 0, idempotent, wrote nothing |
+| `--skip-freshness`, `--help`, unknown option | `G0.3 SKIP` / exit 0 / exit 2 — vocabulary unchanged |
+| Regression sweep across all modes | 14/14 checks pass |
+| `shellcheck scripts/verify-resume.sh` | 1 finding, the pre-existing `SC2329` on `cleanup` — no new findings |
+| `LC_ALL=C grep -Fc -- '--skip-freshness'` | script 9, `Makefile` **0** (containment holds) |
+| `git status --short` | empty |
+| `docs/AshutoshTiwari.pdf` sha256 | `123d02e32403db204252419097e718cdb1d8dbd24e83658afa3f25f5b4ef60d1` — unchanged, and all of `docs/` is byte-identical to `12782d7` |
+
+### Note on exit-code semantics
+
+CR-01 and CR-02 both resolve toward **exit 2**, not exit 1, and that choice is load-bearing. An assertion group that failed to RUN, and a freshness arbiter that failed to MEASURE, are infrastructure failures: the document was never examined, so "the document is wrong" would be a fabrication and silence would be a false pass. This keeps the vocabulary the phase depends on intact — 0 every blocker passed, 1 the document is wrong, 2 the harness could not verify — and G8.3 continues to assert the 1-vs-2 distinction at script level.
+
