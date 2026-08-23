@@ -75,7 +75,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 03-03-PLAN.md — criterion-1 disposition record, figure→evidence traceability, budget ledger, EXP-08 drafts
 - [x] 03-04-PLAN.md — Adobe rebuild: fault-tolerance lead bullet, Rust governance topic, mechanisms + figures into free tails
 - [x] 03-05-PLAN.md — D-08 config-read checkpoint, retire both unverified figures for the Ray benchmark, `torch.compile` bridge + promotion
-- [ ] 03-06-PLAN.md — Swiggy/Flipkart staff-signal pass, rendered-line neutral
+- [x] 03-06-PLAN.md — Swiggy/Flipkart staff-signal pass, rendered-line neutral
 - [ ] 03-07-PLAN.md — EXP-08 blocking per-bullet sign-off against the rendered page
 - [ ] 03-08-PLAN.md — apply approved bullets, wire the P3 net into `make`, measure and record the end state
 
@@ -125,7 +125,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 (Phase 4 may ru
 |-------|----------------|--------|-----------|
 | 1. Verification Harness | 3/3 | Complete    | 2026-08-22 |
 | 2. Page-1 Budget & Text-Layer Defects | 2/2 | Complete    | 2026-08-22 |
-| 3. Adobe Rebuild & Staff-Signal Bullets | 5/8 | In Progress|  |
+| 3. Adobe Rebuild & Staff-Signal Bullets | 6/8 | In Progress|  |
 | 4. Page-2 Restructure & GitHub Presence | 0/TBD | Not started | - |
 | 5. Skills Rebuild | 0/TBD | Not started | - |
 | 6. Palette & Site Sync | 0/TBD | Not started | - |
