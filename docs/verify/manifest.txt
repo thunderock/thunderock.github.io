@@ -50,8 +50,8 @@ SKILLS_MAX_LINES=3                # measures 4 today; owner Phase 5 -> WARN unti
 
 # --- Keyword tiers. Promotion = move an entry from KEYWORDS_TARGET to KEYWORDS_REQUIRED
 # --- in the same commit that adds the keyword. Present today = BLOCKER; absent = WARN.
-KEYWORDS_REQUIRED=inference|distributed|Kubernetes|PyTorch|FSDP|Ray|vLLM|Rust|fault|KEDA|SQS|Spark|Flash Attention
-KEYWORDS_TARGET=torch.compile:3|A100:3|H100:3|ONNX:5|CUDA graphs:3|Iceberg:5|Triton:5
+KEYWORDS_REQUIRED=inference|distributed|Kubernetes|PyTorch|FSDP|Ray|vLLM|Rust|fault|KEDA|SQS|Spark|Flash Attention|A100|H100
+KEYWORDS_TARGET=torch.compile:3|ONNX:5|CUDA graphs:3|Iceberg:5|Triton:5
 
 # --- WARN owners. Every WARN-tier assertion needs an entry or it prints an empty owner.
 # --- Sentinels: none = corroborating only, nothing to promote; unassigned = real deviation

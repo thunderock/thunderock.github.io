@@ -149,11 +149,11 @@
     {{\href{https://www.linkedin.com/company/adobe/}{\textcolor{accentdark}{\underline{ADOBE FIREFLY}}}}}{GENERATIVE AI, COMPUTER VISION, LARGE LANGUAGE MODELS}
     \resumeItemListStart
       \resumeItem{Lead fault-tolerant distributed inference and training infrastructure for the org's ML platform: GPU pipelines on Kubernetes engineered to survive node loss and partial failure, from 40-node daily EMR ingestion through production model inference.}
-      \resumeTopic{Distributed Inference Frameworks}{Designed and led engineering for the org's online and offline inference systems powering experimentation and production at scale.}
+      \resumeTopic{Distributed Inference Frameworks}{Designed and led engineering for the org's online and offline inference systems powering experimentation and production at scale, reaching 24$\times$A100-40GB per model job across 9 model queues and 64 H100s in one parallel wave.}
         \resumeItemListStart
           \resumeItem{Built online inference on vLLM + Ray for rapid experimentation with LLMs such as Falcon-40B and Llama~2~70B.}
           \resumeItem{Built offline inference on Ray Data + PyTorch Lightning, achieving 10--50$\times$ faster image loading and 3--8K images/sec on 32 GPUs.}
-          \resumeItem{Modeled pipelines as horizontally-scaling Source $\to$ Transform $\to$ Sink plugins with no pod-to-pod communication, KEDA-autoscaled on SQS queue depth.}
+          \resumeItem{Modeled pipelines as horizontally-scaling Source $\to$ Transform $\to$ Sink plugins with no pod-to-pod communication, KEDA-autoscaled on SQS queue depth; batched sends retry on exponential backoff with full jitter, and undeliverable work drains to a DLQ.}
         \resumeItemListEnd
       \resumeTopic{Foundation Model Training Framework}{Leading development of a PyTorch-based training framework adopted across the org for training generative models on billions of images and videos.}
         \resumeItemListStart
@@ -161,9 +161,9 @@
           \resumeItem{Integrated Flash Attention 2/3, context parallelism, and distributed attention for DiT text-to-image and text-to-video training.}
         \resumeItemListEnd
       \resumeTopic{Build \& Deployment System}{Built a CLI-driven build system (BuildKit images on KEDA-scaled Kubernetes jobs, pushed to ECR), fronted by a Rust control plane and an MCP interface for AI-agent-driven builds, deployments, and inference.}
-      \resumeTopic{Enrichment Service}{Orchestration and abstraction layer over the inference framework and other ML Platform offerings; runs fire-and-forget pipelines on datasets of billions of images and videos.}
+      \resumeTopic{Enrichment Service}{Orchestration over the inference framework; migrated its 202.6M-row and 24.8M-clip datasets on idempotent re-runs; ran fire-and-forget pipelines behind a concurrency-safe S3 checkpoint cache, lease/TTL heartbeats and a circuit breaker.}
       \resumeTopic{Training-Data Governance}{Solely authored the org's fault-tolerant training-data lineage subsystem in Rust (27,135 lines): idempotent claim/receipt registration, immutable S3 evidence layouts, and manifest-after-data publication, proven by a 9.7k-line integration test.}
-      \resumeTopic{Data Quality Framework}{Wrote the org's first data quality framework on Cerberus, used across enrichment pipelines to validate the correctness of feature-generation outputs.}
+      \resumeTopic{Data Quality Framework}{Wrote the org's first data quality framework on Cerberus, used across enrichment pipelines to validate the correctness of feature-generation outputs across a \textasciitilde{}700M-asset catalog growing 35--38M images/month.}
     \resumeItemListEnd
 
     \resumeSubheading
