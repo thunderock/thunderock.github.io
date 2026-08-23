@@ -144,3 +144,268 @@ count matters, put at least one digit on the owning bullet's **first** rendered 
 | 5 | `\pdfgentounicode=1` | `main.tex:60` | The ATS text layer exists because of this line. Remove it and every `G5`/`G6` text-layer assertion degrades — the PDF becomes visually identical and machine-unreadable, which is the exact failure the milestone's core value forbids. |
 | 6 | `\input{glyphtounicode}` | `main.tex:15` | Supplies the glyph→Unicode map `\pdfgentounicode` consumes. Without it the ligature and dash glyphs extract as garbage and `G6.4`'s census becomes meaningless rather than merely red. |
 | 7 | `\newpage` | `main.tex:211` | The page-1/page-2 boundary `G2.1` asserts (`PAGE2_OPENS_WITH=PUBLICATIONS`). It is the definition of "Experience fits page 1"; moving it would satisfy the gate by redefining the constraint. |
+
+---
+
+## Section A — figure → evidence traceability (criterion 3)
+
+Criterion 3's rule: **every figure the rebuild ships must trace to a named
+`.planning/research/CODEBASE-EVIDENCE.md` entry.** A row without a citation is a defect, not a
+stylistic omission — an unprovenanced figure is exactly what EXP-04 exists to remove. Line numbers
+below were resolved with `LC_ALL=C grep -Fn` against that file on 2026-08-23.
+
+| Rendered literal | LaTeX source form | Owning topic | Evidence |
+|---|---|---|---|
+| `1.09M` (rows) | `1.09M` | A4 offline inference (D-05) | `CODEBASE-EVIDENCE.md:58` — "1,087,682 rows @ 109 rows/s steady" |
+| `8×A100` | `8$\times$A100` | A4 offline inference (D-05) | `CODEBASE-EVIDENCE.md:58` — "1×p4d.24xlarge (8×A100)" |
+| `16 fractional-GPU actors` | `16 fractional-GPU actors` | A4 offline inference (D-05) | `CODEBASE-EVIDENCE.md:58` — "16 fractional-GPU actors (0.5 GPU each)" |
+| `24×A100-40GB` | `24$\times$A100-40GB` | A10 Enrichment / fleet ops (D-06) | `CODEBASE-EVIDENCE.md:62` — "24×A100-40GB per model job × 9 queues" |
+| `9 model queues` | `9 model queues` | A10 Enrichment / fleet ops (D-06) | `CODEBASE-EVIDENCE.md:62` (launch records) + `CODEBASE-EVIDENCE.md:61` (the 9 production modules enumerated) |
+| `64 H100s` | `64 H100s` | A10 Enrichment / fleet ops (D-06) | `CODEBASE-EVIDENCE.md:98` — "64 H100s across the parallel wave" |
+| `202.6M-row` | `202.6M-row` | A10 Enrichment / migration (D-06) | `CODEBASE-EVIDENCE.md:34` heading + `CODEBASE-EVIDENCE.md:35` — "~202.6M rows (README:12)" |
+| `24.8M` (video clips) | `24.8M` | A10 Enrichment / migration (D-06) | `CODEBASE-EVIDENCE.md:38` — "Video clips migration — 24.8M clips (#1139 merged)" |
+| `~700M` (asset catalog) | `\textasciitilde{}700M` ⚠ mandatory form | A10 or A11 data-platform scale (D-06) | `CODEBASE-EVIDENCE.md:88` — "~700M enriched assets" |
+| `35–38M` (images/month) | `35--38M` | same topic as `~700M` (D-06) | `CODEBASE-EVIDENCE.md:88` and `CODEBASE-EVIDENCE.md:107` |
+| `40-node` (EMR daily) | `40-node` | A10 / ingestion (D-06) | `CODEBASE-EVIDENCE.md:107` — "Prod ingestion runs on 40-node EMR daily" |
+| `27,135` (lines of Rust) | `27,135` | A12 governance (D-02) | `CODEBASE-EVIDENCE.md:29` — "+27,135 lines solely his" |
+| `9.7k-line` (integration test) | `9.7k-line` | A12 governance (D-02) | `CODEBASE-EVIDENCE.md:30` — "9,722-ln integration test" |
+| `torch.compile(mode="max-autotune")` | plain ASCII `"` — verified U+0022 | A2/A4 inference (D-07) | `CODEBASE-EVIDENCE.md:54` — "introduced `torch.compile(mode="max-autotune")` on encoder + classifier" |
+
+Supporting non-numeric claims the same rule covers, so the governance and mechanism vocabulary is
+provenanced too: `claim/receipt` and `immutable S3 evidence layouts` and `lineage` →
+`CODEBASE-EVIDENCE.md:30`; `exponential backoff` + `full jitter` → `CODEBASE-EVIDENCE.md:23`;
+`concurrency-safe S3 checkpoint` → `CODEBASE-EVIDENCE.md:24`; `lease/TTL heartbeat` and `DLQ` and
+`circuit breaker` → `CODEBASE-EVIDENCE.md:87`; `idempotent re-run` → `CODEBASE-EVIDENCE.md:95`.
+
+### The two attribution-safety rules — constraints on wording, not suggestions
+
+**Rule A-1 — the Ray Data engine is not his.** `CODEBASE-EVIDENCE.md:58` records that the Ray Data
+engine *and its benchmark document* are **Joel C.'s**; the **AIDE module** benchmarked on it is his.
+The sanctioned phrasing is therefore *his module **benchmarked on** the Ray Data engine* — and the
+bullet must **never** say "achieved". This is not a style preference: `achieving` is the exact word
+at `main.tex:155` today, and rewriting the figures while keeping that verb would convert an
+unprovenanced number into a **misattributed** one, which is strictly worse.
+`scripts/verify-phase3-regressions.sh` mechanizes it as the `achiev` absence needle (label
+`EXP-04d/03-05 attribution-safe wording`), matched **case-insensitively** in both `$TEX` and
+`$SQUEEZED` — because `achieving` / `achieved` / `Achievement` are one honesty violation, not three.
+
+**Rule A-2 — the Content Gate work is never framed as inference optimization.**
+`CODEBASE-EVIDENCE.md:12` is a binding honest-framing rule: Content Gate (#1706/#1870) is
+*training-data governance/lineage* — "strong for **fault-tolerant distributed systems in Rust**, not
+inference optimization." D-02 restates it. So the A12 topic may not carry `throughput`, `latency`,
+`speedup`, `faster` or `images/sec`, and `scripts/verify-phase3-regressions.sh` Group 3 slices the
+governance topic's rendered region out of the gate stream and asserts exactly that.
+
+### Retirement row — the two figures being removed
+
+| Retired literal | Source form | Where today | Reason | Assertion form |
+|---|---|---|---|---|
+| `10–50` (the "10–50× faster image loading" speedup) | `10--50$\times$` at `main.tex:155` | gate line 16 | **Unprovenanced.** No `CODEBASE-EVIDENCE.md` entry supports it; `PROJECT.md` Out of Scope names it as interview risk | absent in **both** `$GATE` and `$SQUEEZED`, **EN DASH U+2013 form** |
+| `3–8K images/sec on 32 GPUs` | `3--8K images/sec on 32 GPUs` at `main.tex:155` | gate line 16 | **Unprovenanced.** Same | absent in `$SQUEEZED` (multi-word, wraps) |
+
+**The EN-DASH rule, and why an ASCII assertion would be vacuous.** Measured today:
+
+| stream | `10–50` (U+2013) | `10--50` (ASCII) |
+|---|---|---|
+| text layer (`$GATE`) | **1** | 0 |
+| `docs/main.tex` (`$TEX`) | 0 | **1** |
+
+LaTeX converts the source `--` to an en dash, so **the ASCII form never appears in the text layer and
+the EN DASH form never appears in the source.** `assert_absent '10--50'` against the text layer
+therefore passes trivially on *today's* still-defective document and could never catch a
+reintroduction. Absence must be asserted against the **rendered EN DASH form** in the text streams,
+and separately against the **ASCII source form** in `$TEX` — which is why the net carries four
+retirement assertions, not two.
+
+### LaTeX encoding rules that are BLOCKER-grade
+
+1. **`~700M` must be written `\textasciitilde{}700M`.** `$\sim$` extracts as **U+223C**, which is
+   *not* in `NONASCII_ALLOW=2013,2019,2022,2192,2206,00D7,2014,201C,201D` → **`G6.4` FAIL, BLOCKER**.
+   `\textasciitilde{}` extracts as plain ASCII `~` (U+007E) and leaves the census clean. Verified
+   both ways.
+2. **A bare `~` is a non-breaking space and fails silently.** In LaTeX `~` is `\nobreakspace`, so
+   `~700M` extracts as `700M` with a leading space — *the tilde vanishes with no warning, no WARN and
+   no FAIL*. This is the more dangerous of the two because it is invisible: the approximation
+   qualifier disappears and the claim silently hardens from "about 700M" to "700M".
+3. **Allowed, no action needed:** `$\times$` → U+00D7 (census ×1 today) and `--` → U+2013 (census ×38)
+   are both already declared. Plain `"` renders and extracts as ASCII U+0022 — verified, zero
+   U+201C/U+201D added — so `torch.compile(mode="max-autotune")` needs no `\texttt{}` or `\char34`.
+
+---
+
+## Section B — the page-1 budget ledger
+
+**This section is the spend authority for waves 2–4.** Every content plan draws against it, and no
+plan may exceed it on the strength of its own estimate. Phase 2's core lesson: budget arithmetic is
+**measured, never predicted**.
+
+### Baseline and unit cost
+
+| Quantity | Measured value |
+|---|---|
+| `G3.2` page-1 headroom, committed baseline | **+50.5pt (+4.39 lines)** at `LINE_PT=11.5` |
+| Cost per rendered page-1 line | **11.4–11.5pt**, linear across the whole +1…+5 sweep |
+| Hard ceiling | **+4 rendered lines** |
+
+Verbatim from the harness on the committed artifact:
+
+```
+RESULT G3.1   PASS  deepest content bottom 713.9pt vs ceiling 764.4pt (p1 713.9pt, p2 710.9pt)
+RESULT G3.2   INFO  headroom at 11.5pt/line: p1 +50.5pt (+4.39 lines), p2 +53.5pt (+4.65 lines)
+```
+
+The ceiling is measured, not derived from `floor(50.5 / 11.5)`: **+4 rendered lines stays 2 pages
+with `G3.2` p1 at +4.7pt and zero BLOCKERs — the last safe step. +5 produces a 3-page PDF with
+`G1.1` FAIL and `G2.1` FAIL.** The full sweep: `50.5 → 39.0 → 27.6 → 16.1 → 4.7pt`.
+
+⚠ **`G3.1`/`G3.2` are NOT the overflow alarm — `G1.1` is.** At +5 lines the harness still printed
+`RESULT G3.1 PASS deepest content bottom 760.3pt vs ceiling 764.4pt`, because with `\raggedbottom`
+LaTeX **breaks the page** instead of overrunning `\textheight`. `G2.3` and `G2.4` also stayed green
+on that 3-page document. Read **`G1.1` first, always**; treat `G3.2` p1 as the remaining-headroom
+meter.
+
+### Spend table, in wave order
+
+| Wave item | Decision | Rendered-line spend | Note |
+|---|---|---|---|
+| A12 governance topic | D-02 | **+2** | `\resumeTopic` **only**. The `\resumeTopic`-plus-nested-`\resumeItem` form measures **4 rendered lines — the entire budget** — so that shape is **forbidden**. All of D-02's content (`27,135`, `claim/receipt`, `immutable S3 evidence layouts`, `9.7k-line`, `lineage`) fits the 2-line topic, measured with 0 overfull. |
+| D-04 fault-tolerance mechanisms | D-04 | **0pt target** | Written into the ≈484 characters of measured free tail room. |
+| D-06 spread figures | D-06 | **0pt target** | Same — into tails wherever the owning topic already wraps. |
+| A4 Ray swap | D-05 | **+1** | 1-line item → 2-line item. |
+| D-07 compiler bridge | D-07 | **0pt target** | Into an existing tail. |
+| Swiggy block | D-11 | **0** | Line-neutral by decision. |
+| Flipkart block | D-11 | **0** | Line-neutral by decision. |
+| **Expected end state** | | **+3** | `G3.2` p1 ≈ **+16.1pt**, leaving **one rendered line (11.5pt) as the EXP-08 approval fund**. |
+
+Reserving that line is deliberate. If the rebuild instead lands at the +4 ceiling (`G3.2` p1
++4.7pt) there is **no room for even one more rendered line**, and an EXP-08 approval would force
+either a compensating tightening or a 3-page overflow. The checkpoint's context must state which
+situation the user is deciding in.
+
+### Free tail room — ≈484 characters at zero pt cost
+
+An already-wrapped bullet's last rendered line has unused width; filling it costs **nothing**
+(verified: ~145 characters appended across three Adobe tails left `G3.2` p1 unchanged at +50.5pt,
+2 pages, 0 overfull). Capacities are per-shape: itemize-2 lines (lead + topics) ≈120–124 characters,
+itemize-3 lines (nested items) 128–130.
+
+| Adobe entry | source | last-line chars | free chars |
+|---|---|---|---|
+| A1 lead `\resumeItem` | `main.tex:151` | 76 | **~44** |
+| A2 `\resumeTopic{Distributed Inference Frameworks}` | `main.tex:152` | 40 | **~80** |
+| A3 vLLM + Ray item | `main.tex:154` | 110 | **~18** |
+| A4 offline-inference item (D-05 target) | `main.tex:155` | 128 | **~0 — at capacity** |
+| A5 KEDA/SQS item | `main.tex:156` | 16 | **~104** |
+| A6 `\resumeTopic{Foundation Model Training Framework}` | `main.tex:158` | 51 | **~69** |
+| A7 FSDP/FSDP2 item | `main.tex:160` | 109 | **~19** |
+| A8 Flash Attention item | `main.tex:161` | 130 | **~0 — at capacity** |
+| A9 `\resumeTopic{Build \& Deployment System}` | `main.tex:163` | 97 | **~23** |
+| A10 `\resumeTopic{Enrichment Service}` | `main.tex:164` | 71 | **~49** |
+| A11 `\resumeTopic{Data Quality Framework}` | `main.tex:165` | 42 | **~78** |
+| **total** | `main.tex:151-165` | | **≈484 free chars, 0pt** |
+
+⚠ **Measurement note for whoever re-derives this.** `awk '{print length}'` on the gate stream counts
+**bytes**, not characters, and the U+2013 bullet prefix is 3 bytes. Re-measuring naively yields
+2 extra on every bullet-led line (and 7 on A4, which also carries U+2013 ×2 and U+00D7 ×1). The
+figures above are **character** counts; the byte counts measured today were 76, 40, 112, 135, 16, 51,
+111, 132, 97, 71, 42. Both A4 and A8 are at or past capacity either way.
+
+### Contingency ladder — the authority every content plan spends against
+
+| Measured state after a batch | Verdict | Action |
+|---|---|---|
+| `G3.2` p1 **≥ +16.1pt** | reserve intact | proceed; the EXP-08 approval fund survives |
+| `G3.2` p1 between **+4.7pt and +16.1pt** | reserve consumed | proceed, but the EXP-08 checkpoint's `<context>` **must say so** — the user is then deciding whether to fund an approval by tightening |
+| `G3.2` p1 **below +4.7pt**, or `G1.1` reports **3 pages** | over budget | **back the edit out.** Do not tighten a frozen surface, do not lower a threshold |
+
+### Two hard rails
+
+1. **Never a fifth rendered line.** +5 is a measured 3-page PDF with `G1.1` FAIL and `G2.1` FAIL.
+2. **`G3.2` p1 must never RISE above +50.5pt.** Spending is safe and makes the self-test guard
+   *stronger* (margin = `57.5 − slack`). **Net-freeing a rendered line breaks it:** reproduced —
+   shortening one Adobe topic from 2 rendered lines to 1 took slack to **61.4pt**, and the
+   replicated `+5` probe then rendered **2 pages**, i.e. `G7.2` FAIL ("a +5 probe NO LONGER
+   overflows page 1 and the self-test would prove nothing"). Because `G7` runs only under
+   `--selftest`, `bash scripts/verify-resume.sh` stays green through this failure — so **spend
+   before you free, and no wave may end in a net-freed state.**
+
+Corollaries, both standing prohibitions:
+
+- **`PROBE_LINES` is raise-only and is NOT raised this phase.** Raise-only means a raise can never
+  be undone later. Under D-11 the end state leaves nowhere near 57.5pt of slack, so there is no
+  measured justification.
+- **`DIGIT_BULLET_FLOOR` is never lowered.** Lowering it to match a regression deletes the gate.
+
+### The one sanctioned lever, and its precondition
+
+The **Groupon** and **NetSpeed** folded descriptors (`main.tex:199` and the NetSpeed row) may be
+**reworded SHORTER** — never deleted — but only when **all three** hold:
+
+1. the Adobe rebuild has **measurably** run out of room (a recorded `G3.2` figure, not a prediction);
+2. **every** P2-protected literal survives — `scripts/verify-phase2-regressions.sh` P2.7–P2.27,
+   including the load-bearing multi-word `C++ graph algorithms` anchor that ROADMAP Phase 5
+   criterion 4 rests on;
+3. neither forbidden shortened form appears.
+
+**Same-commit rule.** If this lever is pulled to fund an EXP-08 approval, **the reword and the
+addition go in the SAME commit**, so the net rendered-line delta is zero and the `G7.2` margin is
+never transiently widened. A two-commit sequence would leave one commit in a net-freed state, which
+rail 2 forbids.
+
+---
+
+## Section C — Swiggy / Flipkart disposition (D-09 / D-10)
+
+| # | source | bullet | gate lines | rendered | notes |
+|---|---|---|---|---|---|
+| S1 | `main.tex:172` | Online Inference Platform | 36–37 | 2 | Carries the `18M+` adoption count on its **FIRST** rendered line (36) — which is precisely why `G5.4` can see it. D-09: platform-adoption framing. |
+| S2 | `main.tex:174` | dynamic request-routing item | 38–39 | 2 | Reworded in place; no new claim. |
+| S3 | `main.tex:175` | Akka-style actor framework item | 40–41 | 2 | ⚠ **Sole `fault` carrier** in the whole document (`fault isolation across clusters`, gate line 40). D-09's failure-class-closure clause names it verbatim, which is what protects it. |
+| S4 | `main.tex:177` | Feature Store | 42–43 | 2 | ⚠ **Sole page-1 `Spark` carrier** (gate line 43). Its `4Bn rows, 10K QPS` sits on a **continuation** line, so `G5.4` cannot see it (Pitfall 5's live proof). Keeps both figures. |
+| S5 | `main.tex:178` | Forecasting & Correlation Platform | 44–45 | 2 | Keeps "Founding member". |
+| S6 | `main.tex:179` | DAQ | 46 | 1 | Digit-bearing (`15M rows daily`) on its only line. |
+| **Swiggy total** | `main.tex:172-179` | | **36–46** | **11** | |
+| F1 | `main.tex:186` | Search Intent Models | 54–55 | 2 | Keeps "millions every day" (D-10). ⚠ It **wraps at "every / day"**, so it is ×0 in the raw gate stream and ×1 in the squeezed stream — squeezed-stream assertion **only**. This needle is the dual-stream rule proving itself. |
+| F2 | `main.tex:187` | Tail Query Classifier | 56 | 1 | Reworded in place. |
+| F3 | `main.tex:188` | ML Workflow Automation | 57–58 | 2 | **D-10's closure story.** Keeps `first workflow at Flipkart`; gains the error class it closed. |
+| F4 | `main.tex:190` | generic Airflow framework item | 59–60 | 2 | Keeps `validations`. |
+| F5 | `main.tex:192` | Large-Scale Data Pipelines | 61–62 | 2 | Digit-bearing (`4Bn+`) on its first line (61). |
+| **Flipkart total** | `main.tex:186-192` | | **54–62** | **9** | |
+
+### The binding constraint for both blocks: no new claims requiring new evidence
+
+`.planning/research/CODEBASE-EVIDENCE.md` covers **Adobe repos only** (orion, genie, colligo,
+asml-img-data-dags, ff-data-ingestion, ff-data-engineering, fetools). There is no mined evidence for
+Swiggy or Flipkart at all. Therefore **every Swiggy and Flipkart edit is a rewording of claim
+material already present in those lines** — a staff-signal reshaping of existing text, never an
+addition. D-09 says so directly ("No new claims requiring new evidence").
+
+**The one entailment that is licensed, and its exact limit.** D-10's closure needle is
+`manual deploys`. It is licensed by the claim already at `main.tex:188` — *"the first workflow at
+Flipkart to automate training and auto-deployment of search models"*. Automating a deploy entails
+the deploy was **manual before**; naming that prior state adds no fact. **Nothing beyond that
+entailment may be added** — no frequency, no duration, no incident count, no error rate. The same
+bound applies to the `validations` clause at `main.tex:190`, which already names data and model
+validations.
+
+### Line-neutrality is a RENDERED-line property
+
+D-11 requires the Swiggy and Flipkart edits to be line-neutral. Measured today:
+
+| block | gate region | rendered lines |
+|---|---|---|
+| Adobe | 11–28 | **18** |
+| Swiggy | 36–46 | **11** |
+| Flipkart | 54–62 | **9** |
+
+⚠ **`03-RESEARCH.md`'s "Swiggy 8 rendered lines" figure is SUPERSEDED by this measurement.** That
+row states the region as gate 36–46 and the count as 8, which is internally inconsistent — 36
+through 46 inclusive is **11** lines, and the per-bullet breakdown above sums to 11
+(2+2+2+2+2+1). Flipkart's 9 reproduces exactly.
+
+⚠ **Absolute gate line numbers SHIFT when Adobe grows.** Every Adobe rendered line the rebuild adds
+pushes Swiggy and Flipkart down by the same amount, so `36–46` and `54–62` are true **today only**.
+Line-neutrality must therefore be re-derived from **region boundaries** — the employer's subtitle
+anchor down to the next blank line — and **never** from fixed line numbers. A differential check
+pinned to literal numbers would report a false regression the moment the governance topic lands.
+Corroborating check: `G3.2` p1 must move by **exactly** the Adobe delta and nothing more.
