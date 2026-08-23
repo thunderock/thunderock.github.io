@@ -69,7 +69,15 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Neither "10–50×" nor "3–8K images/sec on 32 GPUs" survives anywhere in the PDF, and every figure that replaced them traces to a named entry in `CODEBASE-EVIDENCE.md`
   4. Swiggy and Flipkart bullets each carry an adoption-count or failure-class-closure claim, and the count of digit-bearing page-1 bullets is no lower than baseline (compression never silently ate the metrics)
   5. `make verify` passes with the rebuilt section in place, and the cost-savings / mentoring bullets are either shipped with the user's **explicit recorded sign-off** or absent — never present unapproved
-**Plans**: TBD
+**Plans**: 8 plans in 6 waves (wave 1 runs three plans in parallel; waves 2-6 serialize on `docs/main.tex`)
+- [ ] 03-01-PLAN.md — P3.x standing regression net, red on arrival, every assertion class observed failing
+- [ ] 03-02-PLAN.md — wire the Phase-2 net into `make`, claim the G6.13 WARN, record both on STATE.md (IG-01/IG-02/IG-03)
+- [ ] 03-03-PLAN.md — criterion-1 disposition record, figure→evidence traceability, budget ledger, EXP-08 drafts
+- [ ] 03-04-PLAN.md — Adobe rebuild: fault-tolerance lead bullet, Rust governance topic, mechanisms + figures into free tails
+- [ ] 03-05-PLAN.md — D-08 config-read checkpoint, retire both unverified figures for the Ray benchmark, `torch.compile` bridge + promotion
+- [ ] 03-06-PLAN.md — Swiggy/Flipkart staff-signal pass, rendered-line neutral
+- [ ] 03-07-PLAN.md — EXP-08 blocking per-bullet sign-off against the rendered page
+- [ ] 03-08-PLAN.md — apply approved bullets, wire the P3 net into `make`, measure and record the end state
 
 ### Phase 4: Page-2 Restructure & GitHub Presence
 **Goal**: Page 2 leads with current, click-through-safe artifacts instead of seven grad-school entries, and every repo it links to says what the resume says

@@ -1,8 +1,8 @@
 ---
 phase: 3
 slug: adobe-rebuild-staff-signal-bullets
-status: draft
-nyquist_compliant: false
+status: planned
+nyquist_compliant: true
 wave_0_complete: false
 created: 2026-08-22
 ---
@@ -40,22 +40,42 @@ Never gate on `make verify` (Make 3.81 collapses exit 1/2); never `make clean` (
 
 | Task ID | Plan | Wave | Requirement | Threat Ref | Secure Behavior | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|------------|-----------------|-----------|-------------------|-------------|--------|
-| TBD (planner fills) | — | 0 | IG-01/IG-03 wiring | — | regressions target added without weakening any gate | make + bash | `make verify-regressions` | ❌ W0 | ⬜ pending |
-| TBD (planner fills) | — | — | EXP-02 | — | frozen Adobe title/date/employer byte-identical (G5) | gate | `bash scripts/verify-resume.sh` | ✅ | ⬜ pending |
-| TBD (planner fills) | — | — | EXP-03 | — | no unevidenced accel claims (honesty rules) | gate + regression | `bash scripts/verify-resume.sh` (G6.5 after promotion) + P3.x | ❌ W0 | ⬜ pending |
-| TBD (planner fills) | — | — | EXP-04 | — | retired figures == 0; replacements evidence-traced | regression | P3.x forbidden/required literal assertions | ❌ W0 | ⬜ pending |
-| TBD (planner fills) | — | — | EXP-07 | — | digit-bearing bullets ≥ 8; frozen strings intact | gate + regression | `bash scripts/verify-resume.sh` (G5.4) + P3.x | ✅/❌ W0 | ⬜ pending |
-| TBD (planner fills) | — | — | EXP-08 | — | drafts absent from main.tex pre-approval; per-bullet record | checkpoint + regression | P3.x absence assertion + checkpoint:decision gate | ❌ W0 | ⬜ pending |
+| T1 net scaffold + retention group | 03-01 | 1 | EXP-02c | T-03-01/03 | assertion strengthened, never weakened; T-1 silent-death fixed | bash | `/bin/bash scripts/verify-phase3-regressions.sh` (exit 0) | ➕ created | ⬜ pending |
+| T2 six new-content groups | 03-01 | 1 | EXP-02a/b, EXP-03, EXP-04, EXP-07, EXP-08 | T-03-02/04 | red on arrival, every FAIL owned; promotion whole-field match | bash | net exits 1, every FAIL tagged `/03-0[456]` | ➕ created | ⬜ pending |
+| T3 crafted negative controls | 03-01 | 1 | all five | T-03-01/05 | retention, absence and promotion classes each observed failing | bash | fixture + scratch-manifest runs exit 1 | ➕ created | ⬜ pending |
+| T1 make target + WARN claim | 03-02 | 1 | EXP-02, EXP-07 (IG-01/IG-03) | T-03-08/09/10 | no waiver flag in any recipe; one manifest line changed | make + bash | `make verify-regressions` (27 PASS); five `G6.13 owner: Phase 3` | ✅ | ⬜ pending |
+| T2 canonical-surface record | 03-02 | 1 | EXP-02 (IG-02) | T-03-12 | site duplicate handed forward, not silently ignored | grep | `grep -F 'index.html:196' .planning/STATE.md` | ✅ | ⬜ pending |
+| T1 disposition table | 03-03 | 1 | EXP-02 | T-03-13 | no true claim dropped implicitly; written before any text edit | grep + git | needle sweep over the record; `git log` ordering | ➕ created | ⬜ pending |
+| T2 traceability + budget ledger | 03-03 | 1 | EXP-04, EXP-07 | T-03-14/17 | every figure cites an evidence line; ceiling and rails fixed | grep | figure/threshold needle sweep | ➕ created | ⬜ pending |
+| T3 EXP-08 drafts | 03-03 | 1 | EXP-08 | T-03-15/16 | drafts absent from main.tex; magnitudes evidence-implied only | bash | `grep -Fc` per needle in `docs/main.tex` = 0; P3 EXP-08 group PASS | ➕ created | ⬜ pending |
+| T1 lead-bullet voice | 03-04 | 2 | EXP-02 | T-03-18/22 | frozen cells byte-identical; 2 pages; line-neutral | gate + regression | `bash scripts/verify-resume.sh`; P3 EXP-02a PASS | ✅ | ⬜ pending |
+| T2 governance topic | 03-04 | 2 | EXP-02 | T-03-19/24 | Rust ≥2; never framed as inference optimization | gate + regression | P3 EXP-02b group PASS incl. framing slice | ✅ | ⬜ pending |
+| T3 mechanisms, figures, A100/H100 promotion | 03-04 | 2 | EXP-02, EXP-04 | T-03-20/23/25 | promotion suffix stripped; no line freed; glyphs declared | gate + regression | `G6.5` 15 PASS; `G6.4` PASS; `make verify-selftest` | ✅ | ⬜ pending |
+| T1 D-08 config read | 03-05 | 3 | EXP-03 | T-03-26 | CUDA-graph clause only on a confirmed read; fallback pre-authorized | checkpoint | `grep -Fc '[Phase 3 / D-08]' .planning/STATE.md` = 1 | ✅ | ⬜ pending |
+| T2 retire figures, land Ray benchmark | 03-05 | 3 | EXP-04 | T-03-27/28 | EN-DASH + source-form absence; attribution-safe phrasing | gate + regression | P3 EXP-04 group PASS; `grep -Ec '10--50\|3--8K' docs/main.tex` = 0 | ✅ | ⬜ pending |
+| T3 torch.compile bridge + promotion | 03-05 | 3 | EXP-03 | T-03-29/30/31/32 | branch-matched wording; promotion paired in one commit | gate + regression | `G6.5 'torch.compile'` PASS; P3 promotion triples PASS | ✅ | ⬜ pending |
+| T1 Swiggy pass | 03-06 | 4 | EXP-07 | T-03-34/35/37 | `fault` and `Spark` survive; region line count identical | gate + regression | `G6.5 'fault'`/`'Spark'` PASS; `G5.4` ≥8 | ✅ | ⬜ pending |
+| T2 Flipkart pass | 03-06 | 4 | EXP-07 | T-03-36/38/39 | closure by entailment only; no invented metric | gate + regression | `bash scripts/verify-phase3-regressions.sh` exit 0 | ✅ | ⬜ pending |
+| T1 evidence packet | 03-07 | 5 | EXP-08 | T-03-42/43 | decision taken against a proven-green document | gate | all four suites green before the ask | ➕ created | ⬜ pending |
+| T2 per-bullet sign-off | 03-07 | 5 | EXP-08 | T-03-40/41/44 | absence is the default; silence is not approval | checkpoint | `grep -Fc '[Phase 3 / EXP-08]' .planning/STATE.md` = 1 | ✅ | ⬜ pending |
+| T1 apply approved / assert rejected | 03-08 | 6 | EXP-08 | T-03-45/46/47/48/49 | both outcomes asserted; rejected pairs never deleted | regression | P3 net exit 0; P2 net 27 PASS | ✅ | ⬜ pending |
+| T2 wire the P3 net into make | 03-08 | 6 | EXP-02..08 | T-03-50 | Phase 3 does not recreate IG-01 for its own net | make | `make -n verify` shows both nets | ✅ | ⬜ pending |
+| T3 end-state record + checkboxes | 03-08 | 6 | all five | T-03-51/52 | no requirement ticked without a green suite; WR-01 measured not claimed | gate + grep | all five suites green; markers singular | ✅ | ⬜ pending |
 
-*Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky. The planner replaces TBD rows with concrete task IDs from the plans; RESEARCH.md §Validation Architecture carries the full 20-row requirement→test map this table condenses.*
+*Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky. `➕ created` = the file is produced by that task. RESEARCH.md §Validation Architecture carries the full 20-row requirement→test map this table expands on; threat refs resolve in each plan's `<threat_model>`.*
 
 ---
 
 ## Wave 0 Requirements
 
-- [ ] `Makefile` — `verify-regressions` target (PHONY) exposing `scripts/verify-phase2-regressions.sh` (IG-01)
-- [ ] `docs/verify/manifest.txt` — `WARN_OWNERS` `G6.13:unassigned` → `G6.13:3` (IG-03/WR-01 claim)
-- [ ] `scripts/verify-phase3-regressions.sh` — P3.x standing net mirroring the P2 pattern (dual gate/squeezed streams, bash-3.2-safe, shellcheck-clean, negative controls per class)
+Wave 0 is folded into **wave 1**, which runs three plans in parallel over disjoint file sets:
+
+- [ ] `Makefile` — `verify-regressions` target (PHONY) exposing `scripts/verify-phase2-regressions.sh`, chained first in `verify` (IG-01) → **03-02 Task 1**
+- [ ] `docs/verify/manifest.txt` — `WARN_OWNERS` `G6.13:unassigned` → `G6.13:3` (IG-03/WR-01 claim) → **03-02 Task 1**
+- [ ] `scripts/verify-phase3-regressions.sh` — P3.x standing net mirroring the P2 pattern (dual gate/squeezed streams plus a fourth `--manifest` stream, bash-3.2-safe, shellcheck-clean, negative controls per class) → **03-01 Tasks 1-3**
+- [ ] `03-DECISION-RECORD.md` — criterion-1 disposition, figure→evidence traceability, budget ledger, EXP-08 drafts (the spend authority waves 2-4 read) → **03-03 Tasks 1-3**
+
+The P3 net is deliberately **red on arrival**: its new-content and retirement assertions fail against the pre-rebuild artifact, which is simultaneously their anti-tautology negative control (Phase 1's proven design). Retention, EXP-08-absence and promotion classes pass on arrival and are proven failable by crafted fixtures in 03-01 Task 3. Plans 03-04, 03-05 and 03-06 drive the FAIL census to zero; the net exits 0 from the end of 03-06 onward. `scripts/verify-phase3-regressions.sh` is wired into `make` in **03-08 Task 2** — once green, so `make verify` is never red for a whole phase.
 
 ---
 
@@ -71,11 +91,12 @@ Never gate on `make verify` (Make 3.81 collapses exit 1/2); never `make clean` (
 
 ## Validation Sign-Off
 
-- [ ] All tasks have `<automated>` verify or Wave 0 dependencies
-- [ ] Sampling continuity: no 3 consecutive tasks without automated verify
-- [ ] Wave 0 covers all MISSING references
-- [ ] No watch-mode flags
-- [ ] Feedback latency < 25s
-- [ ] `nyquist_compliant: true` set in frontmatter
+- [x] All tasks have `<automated>` verify or Wave 0 dependencies — 21/21 tasks carry an `<automated>` command
+- [x] Sampling continuity: no 3 consecutive tasks without automated verify
+- [x] Wave 0 covers all MISSING references (folded into wave 1; the P3 net is red on arrival by design)
+- [x] No watch-mode flags (`latexmk -pvc` appears in no verify path)
+- [x] Feedback latency < 25s (quick ~5s, full ~20s)
+- [x] Every new P3 assertion class observed FAILING (03-01 Task 2 for new-content/retirement, Task 3 for retention/absence/promotion)
+- [x] `nyquist_compliant: true` set in frontmatter
 
-**Approval:** pending
+**Approval:** planned — 8 plans, 6 waves, 21 tasks; 2 blocking checkpoints (D-08 config read at 03-05 T1, EXP-08 sign-off at 03-07 T2)
