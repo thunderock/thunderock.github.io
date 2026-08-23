@@ -91,6 +91,59 @@
 # Every grep runs under LC_ALL=C so U+2013 / U+00D7 / U+2192 match byte-exactly.
 #
 # This script is read-only: it never writes inside docs/ and never rebuilds.
+#
+# NEGATIVE CONTROLS -- the record that no assertion in this file is a tautology.
+# Phase 1's rule (.planning/STATE.md): an assertion never observed FAILING is not
+# a gate. Every class below has been observed failing. All fixture runs happen
+# under `mktemp -d` and nothing is ever written into the working tree; the
+# scratch source copy MUST keep the basename main.tex, because the freshness
+# record is looked up by source filename and a renamed copy silently escalates to
+# the rebuild arbiter, disarming the staleness control.
+#
+#   new content, retirement, attribution (Classes A, B, the achiev needle)
+#     Proven by the arrival run itself against the REAL committed artifact: the
+#     needles are x0 (new content) and x1 (retired figures, achiev) today, so
+#     Groups 2-6 are red on arrival and no crafted fixture is needed.
+#       /bin/bash scripts/verify-phase3-regressions.sh   # exit 1
+#
+#   retention guards (Class C -- pass on arrival, so crafted)
+#     Extract the real text layer, delete ONE retention literal from it, and feed
+#     it back in. --gate-text replaces the RAW stream from which both derived
+#     streams are built, so a single deletion propagates to the squeezed stream
+#     too. Two fixtures, one per needle class:
+#       pdftotext docs/AshutoshTiwari.pdf "$SC/raw.txt"
+#       sed 's/Flash Attention//g' "$SC/raw.txt" > "$SC/fx.txt"   # multi-word / squeezed
+#       sed 's/FSDP//g'            "$SC/raw.txt" > "$SC/fx.txt"   # short token / raw lines
+#       bash scripts/verify-phase3-regressions.sh --gate-text "$SC/fx.txt"
+#     A --gate-text run prints the "does NOT certify the committed artifact"
+#     disclaimer on stdout and certifies nothing. No build target may pass it.
+#
+#   EXP-08 draft absence (Class D -- passes on arrival, so crafted; BOTH halves)
+#     Text-layer half, a fixture that INSERTS the draft literals:
+#       printf 'AssumeRole 6-week mentored\n' >> "$SC/fx.txt"
+#       bash scripts/verify-phase3-regressions.sh --gate-text "$SC/fx.txt"
+#     Source half -- the half that matters most, because it is the leak no
+#     text-layer gate in this repo can see. A draft parked behind a '%' comment
+#     never renders, so only a source-side needle catches it:
+#       cp docs/main.tex "$SC/src/main.tex"        # basename preserved, see above
+#       printf '%% draft: AssumeRole storm fix\n' >> "$SC/src/main.tex"
+#       bash scripts/verify-phase3-regressions.sh --tex "$SC/src/main.tex"
+#
+#   promotion pairing (a conjunction, not one test wearing three names)
+#     --pdf/--tex cannot vary the manifest, which is the second reason
+#     --manifest exists. Point it at a scratch copy instead. Conjunct 3 is only
+#     REPORTABLE when conjunct 1 holds, so its control pairs a scratch manifest
+#     with a text-layer fixture that lands the keyword:
+#       # conjunct 3: promoted into REQUIRED but the suffixed TARGET entry remains
+#       bash scripts/verify-phase3-regressions.sh --gate-text "$SC/kwfx.txt" \
+#            --manifest "$SC/manifest-A.txt"
+#       # conjunct 1: manifest moved correctly, keyword still absent from the text
+#       bash scripts/verify-phase3-regressions.sh --manifest "$SC/manifest-B.txt"
+#
+#   branch-conditional (Class E -- not in this file yet)
+#     The CUDA needle for D-08's triton-only-fallback branch is NOT asserted here;
+#     see the recorded gap at the end of Group 5. Its control is 03-05 Task 3's
+#     obligation and lands in the same commit as the needle.
 
 # No errexit on purpose: every assertion must run and aggregate into FAILURES, so
 # a single zero-count grep (which exits 1) may not abort the run. -u and pipefail
