@@ -30,7 +30,9 @@ tech-stack:
 key-files:
   created:
     - .planning/phases/03-adobe-rebuild-staff-signal-bullets/03-DECISION-RECORD.md
-  modified: []
+  modified:
+    - .planning/STATE.md
+    - .planning/ROADMAP.md
 
 key-decisions:
   - "Disposition totals are 9 retain-and-revise (5 topics + 4 nested items), 2 revise (A1 lead per D-01, A4 figure swap per D-05), 1 add (A12 governance per D-02) and ZERO retire; the two retired FIGURES live inside A4, whose entry is revised rather than removed"
@@ -61,7 +63,7 @@ completed: 2026-08-22
 - **Started:** 2026-08-23T03:47:00Z
 - **Completed:** 2026-08-23T03:57:22Z
 - **Tasks:** 3
-- **Files modified:** 1 (created)
+- **Files modified:** 3 (1 created: the decision record; 2 close-out metadata: STATE.md, ROADMAP.md)
 
 ## Accomplishments
 
@@ -188,10 +190,28 @@ Named as surviving: `Falcon-40B`, `Llama 2 70B`, KEDA-on-`SQS queue depth`, `Sou
 - **Verification:** Byte counts 76/40/112/135/16/51/111/132/97/71/42 reconcile to the character counts 76/40/110/128/16/51/109/130/97/71/42 by exactly the multi-byte glyph count on each line.
 - **Committed in:** `8711931` (Task 2 commit)
 
+**6. [Rule 1 - Bug] Repaired STATE.md `percent` after `state.update-progress` wrote a phase-based figure into a plan-based field**
+
+- **Found during:** Close-out (state updates)
+- **Issue:** After `gsd-sdk query state.advance-plan` + `state.update-progress`, STATE.md frontmatter read `percent: 33` while the body bar read `Progress: [██████░░░░] 62%`. The frontmatter field has been **plan-based** in every prior commit (`completed_plans: 7` / `percent: 54`, matching the body), and `8/13 = 62%` while `2/6 phases = 33%` — so the SDK wrote a phase-derived percentage into a plan-derived field, leaving the same file self-contradictory. Any consumer reading frontmatter instead of the rendered bar would report the milestone as 33% complete.
+- **Fix:** Set `percent: 62` to match both the body bar and the `completed_plans/total_plans` arithmetic.
+- **Files modified:** `.planning/STATE.md`
+- **Verification:** frontmatter `percent` and the body bar now both read 62%; asserted equal programmatically at close-out.
+- **Committed in:** the trailing `docs(03-03)` metadata commit
+
+**7. [Rule 1 - Bug] Restored the descriptive `last_activity` suffix that `state.record-session` flattened**
+
+- **Found during:** Close-out (state updates)
+- **Issue:** `state.record-session` reduced `last_activity` (frontmatter line 7) and `Last activity:` (body line 23) to a bare `2026-08-23`, dropping the descriptive suffix every prior entry carries (e.g. `2026-08-23 -- Phase 03 Plan 02 complete (P2 net wired into make, G6.13 WARN claimed)`). A bare date tells the next session which day work stopped but not what landed — which is the entire purpose of the field.
+- **Fix:** Restored the convention on both lines with this plan's description.
+- **Files modified:** `.planning/STATE.md`
+- **Verification:** both lines carry the `-- Phase 03 Plan 03 complete (…)` suffix; STATE.md is 117 lines, under the 150-line ceiling.
+- **Committed in:** the trailing `docs(03-03)` metadata commit
+
 ---
 
-**Total deviations:** 5 auto-fixed (3 missing-critical under Rule 2, 2 bugs under Rule 1)
-**Impact on plan:** All five strengthen the record's machine backing or correct a figure the plan itself flagged as suspect. Deviations 1 and 2 close gaps that would have made an EXP-08 assertion silently unfalsifiable — the precise failure class this phase's standing rule ("an assertion never observed failing is not a gate") exists to prevent. No scope creep: zero files outside the decision record were touched, and `docs/` is byte-unchanged.
+**Total deviations:** 7 auto-fixed (3 missing-critical under Rule 2, 4 bugs under Rule 1)
+**Impact on plan:** All seven strengthen the record's machine backing, correct a figure the plan itself flagged as suspect, or repair state metadata that the close-out tooling wrote inconsistently. Deviations 1 and 2 close gaps that would have made an EXP-08 assertion silently unfalsifiable — the precise failure class this phase's standing rule ("an assertion never observed failing is not a gate") exists to prevent. Deviations 6 and 7 were introduced by this plan's own `gsd-sdk` state writes and are repaired in the same close-out, so no commit ships a self-contradictory STATE.md. No scope creep: outside `.planning/`, zero files were touched, and `docs/` is byte-unchanged.
 
 ## Issues Encountered
 
