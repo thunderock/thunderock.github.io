@@ -29,10 +29,12 @@
 #            holds (no 'achiev*' anywhere: his module was BENCHMARKED ON the Ray
 #            Data engine, he did not achieve anything with it).
 #   EXP-07   the Flipkart closure clause landed.
-#   EXP-08   the provisional cost/mentoring draft literals are ABSENT BY DEFAULT
-#            -- asserted absent in the SOURCE as well as the text layer, so a
-#            '%'-commented draft is caught too. They flip to assert_present only
-#            on a recorded approval (D-14).
+#   EXP-08   the document carries exactly the drafts that were signed off. The
+#            two REJECTED cost/efficiency literals stay asserted ABSENT in the
+#            SOURCE as well as the text layer, so a '%'-commented draft is caught
+#            too; the one APPROVED mentoring needle is asserted PRESENT. Both
+#            outcomes are asserted, which is what proves nothing unapproved
+#            shipped and nothing approved was quietly dropped (D-14).
 #
 # WHY A SEPARATE FILE rather than new gates inside the harness. 02-02-PLAN.md
 # criterion 11 pinned scripts/verify-resume.sh at 83 RESULT lines and 39 distinct
@@ -118,9 +120,9 @@
 #     A --gate-text run prints the "does NOT certify the committed artifact"
 #     disclaimer on stdout and certifies nothing. No build target may pass it.
 #
-#   EXP-08 draft absence (Class D -- passes on arrival, so crafted; BOTH halves)
-#     Text-layer half, a fixture that INSERTS the draft literals:
-#       printf 'AssumeRole 6-week mentored\n' >> "$SC/fx.txt"
+#   EXP-08 rejected-draft absence (Class D -- passes on arrival, so crafted; BOTH halves)
+#     Text-layer half, a fixture that INSERTS the rejected draft literals:
+#       printf 'AssumeRole 6-week\n' >> "$SC/fx.txt"
 #       bash scripts/verify-phase3-regressions.sh --gate-text "$SC/fx.txt"
 #     Source half -- the half that matters most, because it is the leak no
 #     text-layer gate in this repo can see. A draft parked behind a '%' comment
@@ -994,15 +996,18 @@ H100
 ACCELERATORS
 
 # ---------------------------------------------------------------------------
-# GROUP 7 -- EXP-07 Flipkart closure (owner 03-06) and EXP-08 absent-by-default
-# (owners 03-07 for the sign-off, 03-08 for the flip).
+# GROUP 7 -- EXP-07 Flipkart closure (owner 03-06) and the EXP-08 sign-off
+# outcomes (owners 03-07 for the verdicts, 03-08 for shipping them).
 #
-# The EXP-08 half is the only group here that PASSES on arrival, and it is the
+# The EXP-08 half is the only group here that PASSED on arrival, and it is the
 # one whose SOURCE assertion no existing gate could ever replace: a draft bullet
 # parked behind a '%' comment in docs/main.tex is invisible to every text-layer
-# gate in the repo, because LaTeX never renders it. D-14 makes the drafts absent
-# by default; they flip to assert_present one needle at a time, in the commit
-# that ships an approved bullet, only on a recorded approval.
+# gate in the repo, because LaTeX never renders it. D-14 made the drafts absent
+# by default; the 03-07 checkpoint then rejected three and approved one, so this
+# group now asserts BOTH outcomes -- absence for what was rejected, presence for
+# what was approved. Neither half may be deleted: the absence assertions are what
+# prove nothing unapproved shipped, and the presence pair is what proves the
+# approved claim is really on the page.
 # ---------------------------------------------------------------------------
 
 assert_present "EXP-07a/03-06 Flipkart failure-class closure (whitespace-squeezed text layer)" \
@@ -1014,17 +1019,37 @@ assert_present "EXP-07a/03-06 Flipkart failure-class closure (whitespace-squeeze
 # same draft and carries no substring hazard.
 while IFS= read -r DRAFT; do
     [ -n "$DRAFT" ] || continue
-    assert_absent "EXP-08a/03-07 provisional draft literal absent by default (source)" \
+    assert_absent "EXP-08a/03-08 rejected draft literal stays absent per the recorded verdict (source)" \
         "$DRAFT" "$TEX" \
-        "D-14: the provisional cost/mentoring figures are absent by default and ship only on a recorded per-bullet approval at the 03-07 checkpoint. A '%'-commented draft counts as present here on purpose -- it is a leak no text-layer gate can see. If the bullet was approved, 03-08 Task 1 flips THIS needle from absent to present in the same commit that ships it; do not delete the assertion."
-    assert_absent "EXP-08a/03-07 provisional draft literal absent by default (text layer)" \
+        "The 03-07 checkpoint REJECTED this draft, so its absence is an enforced verdict rather than work not yet done. A '%'-commented draft counts as present here on purpose -- it is a leak no text-layer gate can see. Remove the draft; it must not ship in any wording or any length, and this assertion must not be deleted."
+    assert_absent "EXP-08a/03-08 rejected draft literal stays absent per the recorded verdict (text layer)" \
         "$DRAFT" "$GATE" \
-        "D-14 absent-by-default: this literal is in the rendered PDF without a recorded approval. Either remove the bullet, or -- if it was approved at the 03-07 checkpoint -- have 03-08 Task 1 flip this needle from absent to present in the commit that ships it."
+        "The 03-07 checkpoint REJECTED this draft, yet its literal is in the rendered PDF. Remove the bullet -- a rejected draft may not ship in any wording or any length. Reopening it needs a fresh recorded per-bullet approval, not an edit to this assertion."
 done <<'DRAFTS'
 AssumeRole
 6-week
-mentored
 DRAFTS
+
+# The mentoring claim was the ONE draft approved at the 03-07 checkpoint, so its
+# needle is flipped from absent to present rather than deleted -- both outcomes
+# stay asserted, which is what proves the document carries exactly what was
+# signed off. The three rejected drafts keep their assert_absent pairs above.
+#
+# Placed AFTER the loop on purpose: the loop now yields two drafts, so it emits
+# the four assertion IDs the rejected pair owned and these two keep the IDs the
+# mentoring pair has always had. Renumbering them would break every record that
+# cites the pair.
+#
+# 'mentored' must be lowercase and mid-sentence in the shipped bullet, per the
+# needle-casing table: gcount is a fixed-string CASE-SENSITIVE match, so a
+# sentence-initial 'Mentored' would read 0 here and report a false absence on a
+# bullet that is actually on the page. The text-layer half asserts the RAW gate
+# stream rather than the squeezed one because the needle is a single word that no
+# wrap point can split.
+assert_present "EXP-08a/03-08 approved mentoring claim shipped on a recorded verdict (source)" \
+    'mentored' "$TEX"
+assert_present "EXP-08a/03-08 approved mentoring claim shipped on a recorded verdict (text layer)" \
+    'mentored' "$GATE"
 
 # ---------------------------------------------------------------------------
 # Human summary. Machine-readable RESULT lines come first; this block uses the
