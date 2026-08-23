@@ -1,9 +1,9 @@
 ---
 phase: 3
 slug: adobe-rebuild-staff-signal-bullets
-status: planned
+status: complete
 nyquist_compliant: true
-wave_0_complete: false
+wave_0_complete: true
 created: 2026-08-22
 ---
 
@@ -40,30 +40,30 @@ Never gate on `make verify` (Make 3.81 collapses exit 1/2); never `make clean` (
 
 | Task ID | Plan | Wave | Requirement | Threat Ref | Secure Behavior | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|------------|-----------------|-----------|-------------------|-------------|--------|
-| T1 net scaffold + retention group | 03-01 | 1 | EXP-02c | T-03-01/03 | assertion strengthened, never weakened; T-1 silent-death fixed | bash | `/bin/bash scripts/verify-phase3-regressions.sh` (exit 0) | ➕ created | ⬜ pending |
-| T2 six new-content groups | 03-01 | 1 | EXP-02a/b, EXP-03, EXP-04, EXP-07, EXP-08 | T-03-02/04 | red on arrival, every FAIL owned; promotion whole-field match | bash | net exits 1, every FAIL tagged `/03-0[456]` | ➕ created | ⬜ pending |
-| T3 crafted negative controls | 03-01 | 1 | all five | T-03-01/05 | retention, absence and promotion classes each observed failing | bash | fixture + scratch-manifest runs exit 1 | ➕ created | ⬜ pending |
-| T1 make target + WARN claim | 03-02 | 1 | EXP-02, EXP-07 (IG-01/IG-03) | T-03-08/09/10 | no waiver flag in any recipe; one manifest line changed | make + bash | `make verify-regressions` (27 PASS); five `G6.13 owner: Phase 3` | ✅ | ⬜ pending |
-| T2 canonical-surface record | 03-02 | 1 | EXP-02 (IG-02) | T-03-12 | site duplicate handed forward, not silently ignored | grep | `grep -F 'index.html:196' .planning/STATE.md` | ✅ | ⬜ pending |
-| T1 disposition table | 03-03 | 1 | EXP-02 | T-03-13 | no true claim dropped implicitly; written before any text edit | grep + git | needle sweep over the record; `git log` ordering | ➕ created | ⬜ pending |
-| T2 traceability + budget ledger | 03-03 | 1 | EXP-04, EXP-07 | T-03-14/17 | every figure cites an evidence line; ceiling and rails fixed | grep | figure/threshold needle sweep | ➕ created | ⬜ pending |
-| T3 EXP-08 drafts | 03-03 | 1 | EXP-08 | T-03-15/16 | drafts absent from main.tex; magnitudes evidence-implied only | bash | `grep -Fc` per needle in `docs/main.tex` = 0; P3 EXP-08 group PASS | ➕ created | ⬜ pending |
-| T1 lead-bullet voice | 03-04 | 2 | EXP-02 | T-03-18/22 | frozen cells byte-identical; 2 pages; line-neutral | gate + regression | `bash scripts/verify-resume.sh`; P3 EXP-02a PASS | ✅ | ⬜ pending |
-| T2 governance topic | 03-04 | 2 | EXP-02 | T-03-19/24 | Rust ≥2; never framed as inference optimization | gate + regression | P3 EXP-02b group PASS incl. framing slice | ✅ | ⬜ pending |
-| T3 mechanisms, figures, A100/H100 promotion | 03-04 | 2 | EXP-02, EXP-04 | T-03-20/23/25 | promotion suffix stripped; no line freed; glyphs declared | gate + regression | `G6.5` 15 PASS; `G6.4` PASS; `make verify-selftest` | ✅ | ⬜ pending |
-| T1 D-08 config read | 03-05 | 3 | EXP-03 | T-03-26 | CUDA-graph clause only on a confirmed read; fallback pre-authorized | checkpoint | `grep -Fc '[Phase 3 / D-08]' .planning/STATE.md` = 1 | ✅ | ⬜ pending |
-| T2 retire figures, land Ray benchmark | 03-05 | 3 | EXP-04 | T-03-27/28 | EN-DASH + source-form absence; attribution safety MACHINE-asserted, not reviewer judgment | gate + regression | P3 EXP-04 group PASS incl. the `EXP-04d/03-05` attribution pair; `grep -Ec '10--50\|3--8K' docs/main.tex` = 0; `grep -Fci achiev docs/main.tex` = 0 | ✅ | ⬜ pending |
-| T3 torch.compile bridge + promotion | 03-05 | 3 | EXP-03 | T-03-29/30/31/32 | branch-matched wording; promotion paired in one commit; Triton unconditional | gate + regression | `G6.5 'torch.compile'` + `'Triton'` PASS, `G6.5` 17 PASS; P3 promotion triples PASS | ✅ | ⬜ pending |
-| T3 branch-conditional Class E CUDA absence | 03-05 | 3 | EXP-03 | T-03-26b | on `triton-only-fallback` the bridge names no CUDA graphs — asserted, never prose; needle appended in the SAME commit as the wording and proven failable by a crafted `--gate-text` fixture | regression | `EXP-03c/03-05` pair PASS; `grep -Fci CUDA docs/main.tex` = 0; control run exits 1 naming the P3 ID | ➕ appended | ⬜ conditional |
-| T1 Swiggy pass | 03-06 | 4 | EXP-07 | T-03-34/35/37 | `fault` and `Spark` survive; region line count identical | gate + regression | `G6.5 'fault'`/`'Spark'` PASS; `G5.4` ≥8 | ✅ | ⬜ pending |
-| T2 Flipkart pass | 03-06 | 4 | EXP-07 | T-03-36/38/39 | closure by entailment only; no invented metric | gate + regression | `bash scripts/verify-phase3-regressions.sh` exit 0 | ✅ | ⬜ pending |
-| T1 evidence packet | 03-07 | 5 | EXP-08 | T-03-42/43 | decision taken against a proven-green document | gate | all four suites green before the ask | ➕ created | ⬜ pending |
-| T2 per-bullet sign-off | 03-07 | 5 | EXP-08 | T-03-40/41/44, T-03-44b | absence is the default; silence is not approval; criterion-2 judgment captured, never assumed | checkpoint | `grep -Fc '[Phase 3 / EXP-08]' .planning/STATE.md` = 1; `grep -Fc 'staff-signal:'` ≥ 1 reading `yes` or `no — <change>` | ✅ | ⬜ pending |
-| T1 apply approved / assert rejected | 03-08 | 6 | EXP-08, EXP-02 | T-03-45/46/47/48/49 | both outcomes asserted; rejected pairs never deleted; Branch C bounded to the named change | regression | P3 net exit 0; P2 net 27 **anchored** `^RESULT P2\..*PASS` lines (never a bare PASS count — 28 lines match); Branch C writes the `EXP-02 tick rests on the applied revision` marker | ✅ | ⬜ pending |
-| T2 wire the P3 net into make | 03-08 | 6 | EXP-02..08 | T-03-50 | Phase 3 does not recreate IG-01 for its own net | make | `make -n verify` shows both nets | ✅ | ⬜ pending |
-| T3 end-state record + checkboxes | 03-08 | 6 | all five | T-03-51/52, T-03-51b | no requirement ticked without a green suite; EXP-02 never ticked against a negative read; WR-01 measured not claimed | gate + grep | all five suites green; markers singular; EXP-02 checkbox clause admits only `yes`, or `no` + gap record on BOTH STATE.md and ROADMAP, or `no` + the Branch C revision marker | ✅ | ⬜ pending |
+| T1 net scaffold + retention group | 03-01 | 1 | EXP-02c | T-03-01/03 | assertion strengthened, never weakened; T-1 silent-death fixed | bash | `/bin/bash scripts/verify-phase3-regressions.sh` (exit 0) | ➕ created | ✅ green |
+| T2 six new-content groups | 03-01 | 1 | EXP-02a/b, EXP-03, EXP-04, EXP-07, EXP-08 | T-03-02/04 | red on arrival, every FAIL owned; promotion whole-field match | bash | net exits 1, every FAIL tagged `/03-0[456]` | ➕ created | ✅ green |
+| T3 crafted negative controls | 03-01 | 1 | all five | T-03-01/05 | retention, absence and promotion classes each observed failing | bash | fixture + scratch-manifest runs exit 1 | ➕ created | ✅ green |
+| T1 make target + WARN claim | 03-02 | 1 | EXP-02, EXP-07 (IG-01/IG-03) | T-03-08/09/10 | no waiver flag in any recipe; one manifest line changed | make + bash | `make verify-regressions` (27 PASS); five `G6.13 owner: Phase 3` | ✅ | ✅ green |
+| T2 canonical-surface record | 03-02 | 1 | EXP-02 (IG-02) | T-03-12 | site duplicate handed forward, not silently ignored | grep | `grep -F 'index.html:196' .planning/STATE.md` | ✅ | ✅ green |
+| T1 disposition table | 03-03 | 1 | EXP-02 | T-03-13 | no true claim dropped implicitly; written before any text edit | grep + git | needle sweep over the record; `git log` ordering | ➕ created | ✅ green |
+| T2 traceability + budget ledger | 03-03 | 1 | EXP-04, EXP-07 | T-03-14/17 | every figure cites an evidence line; ceiling and rails fixed | grep | figure/threshold needle sweep | ➕ created | ✅ green |
+| T3 EXP-08 drafts | 03-03 | 1 | EXP-08 | T-03-15/16 | drafts absent from main.tex; magnitudes evidence-implied only | bash | `grep -Fc` per needle in `docs/main.tex` = 0; P3 EXP-08 group PASS | ➕ created | ✅ green |
+| T1 lead-bullet voice | 03-04 | 2 | EXP-02 | T-03-18/22 | frozen cells byte-identical; 2 pages; line-neutral | gate + regression | `bash scripts/verify-resume.sh`; P3 EXP-02a PASS | ✅ | ✅ green |
+| T2 governance topic | 03-04 | 2 | EXP-02 | T-03-19/24 | Rust ≥2; never framed as inference optimization | gate + regression | P3 EXP-02b group PASS incl. framing slice | ✅ | ✅ green |
+| T3 mechanisms, figures, A100/H100 promotion | 03-04 | 2 | EXP-02, EXP-04 | T-03-20/23/25 | promotion suffix stripped; no line freed; glyphs declared | gate + regression | `G6.5` 15 PASS at wave 2 (17 final); `G6.4` PASS; `make verify-selftest` | ✅ | ✅ green |
+| T1 D-08 config read | 03-05 | 3 | EXP-03 | T-03-26 | CUDA-graph clause only on a confirmed read; fallback pre-authorized | checkpoint | `grep -Fc '[Phase 3 / D-08]' .planning/STATE.md` = 1 | ✅ | ✅ green |
+| T2 retire figures, land Ray benchmark | 03-05 | 3 | EXP-04 | T-03-27/28 | EN-DASH + source-form absence; attribution safety MACHINE-asserted, not reviewer judgment | gate + regression | P3 EXP-04 group PASS incl. the `EXP-04d/03-05` attribution pair; `grep -Ec '10--50\|3--8K' docs/main.tex` = 0; `grep -Fci achiev docs/main.tex` = 0 | ✅ | ✅ green |
+| T3 torch.compile bridge + promotion | 03-05 | 3 | EXP-03 | T-03-29/30/31/32 | branch-matched wording; promotion paired in one commit; Triton unconditional | gate + regression | `G6.5 'torch.compile'` + `'Triton'` PASS, `G6.5` 17 PASS; P3 promotion triples PASS | ✅ | ✅ green |
+| T3 branch-conditional Class E CUDA absence | 03-05 | 3 | EXP-03 | T-03-26b | on `triton-only-fallback` the bridge names no CUDA graphs — asserted, never prose; needle appended in the SAME commit as the wording and proven failable by a crafted `--gate-text` fixture | regression | `EXP-03c/03-05` pair PASS; `grep -Fci CUDA docs/main.tex` = 0; control run exits 1 naming the P3 ID | ➕ appended | ➖ n/a — branch not taken (cudagraphs-confirmed) |
+| T1 Swiggy pass | 03-06 | 4 | EXP-07 | T-03-34/35/37 | `fault` and `Spark` survive; region line count identical | gate + regression | `G6.5 'fault'`/`'Spark'` PASS; `G5.4` ≥8 | ✅ | ✅ green |
+| T2 Flipkart pass | 03-06 | 4 | EXP-07 | T-03-36/38/39 | closure by entailment only; no invented metric | gate + regression | `bash scripts/verify-phase3-regressions.sh` exit 0 | ✅ | ✅ green |
+| T1 evidence packet | 03-07 | 5 | EXP-08 | T-03-42/43 | decision taken against a proven-green document | gate | all four suites green before the ask | ➕ created | ✅ green |
+| T2 per-bullet sign-off | 03-07 | 5 | EXP-08 | T-03-40/41/44, T-03-44b | absence is the default; silence is not approval; criterion-2 judgment captured, never assumed | checkpoint | `grep -Fc '[Phase 3 / EXP-08]' .planning/STATE.md` = 1; `grep -Fc 'staff-signal:'` ≥ 1 reading `yes` or `no — <change>` | ✅ | ✅ green |
+| T1 apply approved / assert rejected | 03-08 | 6 | EXP-08, EXP-02 | T-03-45/46/47/48/49 | both outcomes asserted; rejected pairs never deleted; Branch C bounded to the named change | regression | P3 net exit 0; P2 net 27 **anchored** `^RESULT P2\..*PASS` lines (never a bare PASS count — 28 lines match); Branch C writes the `EXP-02 tick rests on the applied revision` marker | ✅ | ✅ green |
+| T2 wire the P3 net into make | 03-08 | 6 | EXP-02..08 | T-03-50 | Phase 3 does not recreate IG-01 for its own net | make | `make -n verify` shows both nets | ✅ | ✅ green |
+| T3 end-state record + checkboxes | 03-08 | 6 | all five | T-03-51/52, T-03-51b | no requirement ticked without a green suite; EXP-02 never ticked against a negative read; WR-01 measured not claimed | gate + grep | all five suites green; markers singular; EXP-02 checkbox clause admits only `yes`, or `no` + gap record on BOTH STATE.md and ROADMAP, or `no` + the Branch C revision marker | ✅ | ✅ green |
 
-*Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky · ⬜ conditional = fires only on one D-08 branch. `➕ created` = the file is produced by that task; `➕ appended` = added to an existing Wave-0 file by that task. The `Class E CUDA absence` row is a branch-conditional sub-obligation of 03-05 Task 3, not a 22nd task — the task count stays 21. RESEARCH.md §Validation Architecture carries the full 20-row requirement→test map this table expands on; threat refs resolve in each plan's `<threat_model>`.*
+*Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky · ➖ n/a = branch-conditional obligation whose branch was not taken (D-08 resolved cudagraphs-confirmed, so the Class E needle would assert the opposite of the truth — non-addition recorded as a decision). `➕ created` = the file is produced by that task; `➕ appended` = added to an existing Wave-0 file by that task. The `Class E CUDA absence` row is a branch-conditional sub-obligation of 03-05 Task 3, not a 22nd task — the task count stays 21. RESEARCH.md §Validation Architecture carries the full 20-row requirement→test map this table expands on; threat refs resolve in each plan's `<threat_model>`.*
 
 ---
 
@@ -71,10 +71,10 @@ Never gate on `make verify` (Make 3.81 collapses exit 1/2); never `make clean` (
 
 Wave 0 is folded into **wave 1**, which runs three plans in parallel over disjoint file sets:
 
-- [ ] `Makefile` — `verify-regressions` target (PHONY) exposing `scripts/verify-phase2-regressions.sh`, chained first in `verify` (IG-01) → **03-02 Task 1**
-- [ ] `docs/verify/manifest.txt` — `WARN_OWNERS` `G6.13:unassigned` → `G6.13:3` (IG-03/WR-01 claim) → **03-02 Task 1**
-- [ ] `scripts/verify-phase3-regressions.sh` — P3.x standing net mirroring the P2 pattern (dual gate/squeezed streams plus a fourth `--manifest` stream, bash-3.2-safe, shellcheck-clean, negative controls per class) → **03-01 Tasks 1-3**
-- [ ] `03-DECISION-RECORD.md` — criterion-1 disposition, figure→evidence traceability, budget ledger, EXP-08 drafts (the spend authority waves 2-4 read) → **03-03 Tasks 1-3**
+- [x] `Makefile` — `verify-regressions` target (PHONY) exposing `scripts/verify-phase2-regressions.sh`, chained first in `verify` (IG-01) → **03-02 Task 1**
+- [x] `docs/verify/manifest.txt` — `WARN_OWNERS` `G6.13:unassigned` → `G6.13:3` (IG-03/WR-01 claim) → **03-02 Task 1**
+- [x] `scripts/verify-phase3-regressions.sh` — P3.x standing net mirroring the P2 pattern (dual gate/squeezed streams plus a fourth `--manifest` stream, bash-3.2-safe, shellcheck-clean, negative controls per class) → **03-01 Tasks 1-3**
+- [x] `03-DECISION-RECORD.md` — criterion-1 disposition, figure→evidence traceability, budget ledger, EXP-08 drafts (the spend authority waves 2-4 read) → **03-03 Tasks 1-3**
 
 The P3 net is deliberately **red on arrival**: its new-content and retirement assertions fail against the pre-rebuild artifact, which is simultaneously their anti-tautology negative control (Phase 1's proven design). Retention, EXP-08-absence and promotion classes pass on arrival and are proven failable by crafted fixtures in 03-01 Task 3. Plans 03-04, 03-05 and 03-06 drive the FAIL census to zero; the net exits 0 from the end of 03-06 onward. `scripts/verify-phase3-regressions.sh` is wired into `make` in **03-08 Task 2** — once green, so `make verify` is never red for a whole phase.
 
@@ -100,4 +100,16 @@ The P3 net is deliberately **red on arrival**: its new-content and retirement as
 - [x] Every new P3 assertion class observed FAILING (03-01 Task 2 for new-content, retirement and the `EXP-04d` attribution needle — all red on arrival; 03-01 Task 3 for retention/absence/promotion; 03-05 Task 3 for the branch-conditional Class E `CUDA` needle, which passes on arrival and therefore carries its own crafted control)
 - [x] `nyquist_compliant: true` set in frontmatter
 
-**Approval:** planned — 8 plans, 6 waves, 21 tasks; 2 blocking checkpoints (D-08 config read at 03-05 T1, EXP-08 sign-off at 03-07 T2)
+**Approval:** approved 2026-08-23 — executed 8/8 plans; both blocking checkpoints discharged with recorded markers (D-08: cudagraphs-confirmed via sha256-verified production wheel; EXP-08: 3 rejections + 1 approval + staff-signal: yes)
+
+---
+
+## Validation Audit 2026-08-23
+
+| Metric | Count |
+|--------|-------|
+| Gaps found | 0 |
+| Resolved | 0 |
+| Escalated | 0 |
+
+Post-execution audit (State A). Every per-task automated command re-run or re-verified green: harness exit 0 (83 RESULT, 0 FAIL/SKIP) · P2 net 27 anchored PASS · P3 net exit 0, 72 anchored PASS / 0 FAIL · `make verify-selftest` exit 0 (10 G7/G8 PASS) · shellcheck 0 findings on the P3 net · `make -n verify` emits both nets · wave-0 artifacts all present (`verify-regressions` target, `G6.13:3`, executable net, decision record). Runtime: quick ~4s, full ~19s — within the 25s latency budget. All 21 task rows flipped to green; the branch-conditional Class E row is n/a (cudagraphs-confirmed branch taken; non-addition recorded as a decision in STATE.md and SECURITY.md T-03-26b). Every assertion class was observed failing during execution (46-FAIL red-on-arrival census + crafted controls + the verifier's 4 independent negative controls). Manual-only items: all three discharged at their checkpoints with greppable records — no outstanding manual verification. No new tests needed; no auditor spawn required.
