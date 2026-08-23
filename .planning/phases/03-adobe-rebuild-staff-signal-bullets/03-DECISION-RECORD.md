@@ -409,3 +409,178 @@ Line-neutrality must therefore be re-derived from **region boundaries** — the 
 anchor down to the next blank line — and **never** from fixed line numbers. A differential check
 pinned to literal numbers would report a false regression the moment the governance topic lands.
 Corroborating check: `G3.2` p1 must move by **exactly** the Adobe delta and nothing more.
+
+---
+
+## Section D — EXP-08 draft families (⚠ UNVERIFIED, D-12 / D-13 / D-14)
+
+**These drafts live here and nowhere else.** They are **never** written into `docs/main.tex` — **not
+even as a `%`-commented line.** Three reasons, and the third is the decisive one:
+
+1. A `%`-commented draft never renders, so `pdftotext` cannot see it and **no `G`-gate in this repo
+   can see it either**.
+2. Nothing would then catch it graduating from a comment to live text — the leak would be a one-character
+   edit with zero gate coverage.
+3. The `⚠ UNVERIFIED` marker itself would be **unassertable**, because a marker that lives only in a
+   LaTeX comment cannot be measured in the text layer.
+
+The only machine cover for this is the **source-side** half of the P3 net's Class D assertions
+(`assert_absent` against `$TEX`), and 03-01 Task 3 proved it fires: appending a commented
+`AssumeRole` draft to a basename-preserved scratch `main.tex` flipped **P3.67 alone**, with every
+text-layer assertion still green. That is the leak no other gate in this repo can see.
+
+### Needle-casing constraint (applies to every draft below)
+
+`assert_absent` in `scripts/verify-phase3-regressions.sh` counts with `gcount -Fc` — a **fixed-string,
+case-SENSITIVE** match. So a needle only flips from absent to present if the shipped bullet carries
+it **byte-for-byte**:
+
+| Needle | Must be written | Must NOT be written |
+|---|---|---|
+| `AssumeRole` | exactly `AssumeRole` (CamelCase, one word) | `assume-role`, `Assume Role`, `assumerole` |
+| `6-week` | exactly `6-week` (digit, ASCII hyphen, lowercase) | `six-week`, `6 week`, `6--week` (which renders as an en dash) |
+| `mentored` | lowercase `mentored`, **mid-sentence** | sentence-initial `Mentored` — the capital M makes the needle read 0 on a shipped bullet |
+
+That last row is a real trap, not pedantry: a draft approved and shipped as *"Mentored applied-ML
+engineers…"* would leave `assert_absent 'mentored'` reading count 0 forever, so 03-08's
+`assert_absent`→`assert_present` flip would report a **false absence on a bullet that is actually on
+the page**. Every draft below is worded to satisfy this table.
+
+### Why `STS` is NOT a needle
+
+`STS` is rejected as an assertion needle because **a fixed-string search for it matches inside
+`TESTS`** — verified: `printf 'RUNNING TESTS\n' | LC_ALL=C grep -Fc 'STS'` returns **1**. Any file,
+comment or bullet containing the word `TESTS` would make an `STS` absence assertion FAIL for a reason
+that has nothing to do with the draft. The **wording may still say STS** (it is the correct service
+name and reads naturally); the **needle is `AssumeRole`**.
+
+---
+
+### Family 1 — COST / EFFICIENCY (three candidates, D-12)
+
+The user gets a real choice, so all three are drafted rather than one being pre-selected.
+
+#### ⚠ UNVERIFIED — candidate (a): STS assume-role storm fix · needle `AssumeRole`
+
+> Closed a credential-refresh failure class in the feature-registry client library where a failed
+> AssumeRole never populated the session cache, driving thousands of throttled STS calls per second
+> under role chaining; fixed with a shared negative cache on a 60s cooldown and exactly-one
+> half-open retry, proven by an 8-thread thundering-herd collapse test.
+
+- **What the user is being asked to confirm:** that "thousands of throttled calls per second
+  eliminated" is a fair characterisation of the storm this fix ended — the magnitude leans on
+  `CODEBASE-EVIDENCE.md:111` ("thousands of STS calls/sec + throttling").
+- **Owning role if approved:** **A10 `\resumeTopic{Enrichment Service}`** — the feature-registry
+  session layer is what every enrichment pipeline writes through (`CODEBASE-EVIDENCE.md:22`), as a
+  nested `\resumeItem` under that topic.
+- **Estimated rendered cost:** **2 lines** (longest of the three).
+- **Every figure cited:** `thousands … per second`, `60s cooldown`, `exactly-one half-open retry`,
+  `8-thread` → all `CODEBASE-EVIDENCE.md:111`. No dollar amount, no headcount, no percentage.
+
+#### ⚠ UNVERIFIED — candidate (b): 6-week silent outage root-cause + smoke-test CI · needle `6-week`
+
+> Root-caused a 6-week silent enrichment outage — dependency rot had broken the framework's venv
+> installs with no failing signal — and closed the class with install/import smoke-test CI plus
+> SHA-pinned builds, so the same rot now fails the build instead of the data.
+
+- **What the user is being asked to confirm:** that "a 6-week silent-outage class closed" is a fair
+  framing of a root-cause plus the CI that would have caught it — the magnitude leans on
+  `CODEBASE-EVIDENCE.md:94` ("Root-caused 6-week silent outage … added install/import smoke-test CI
+  that would have caught it; SHA-pinned genie builds").
+- **Owning role if approved:** **A9 `\resumeTopic{Build \& Deployment System}`** — the remedy is
+  build-and-CI reliability, which is that topic's subject.
+- **Estimated rendered cost:** **1–2 lines**.
+- **Every figure cited:** `6-week` → `CODEBASE-EVIDENCE.md:94`. No dollar amount, no headcount, no
+  percentage.
+
+#### ⚠ UNVERIFIED — candidate (c): preemptible-fleet idempotent autorecovery · ⚠ NO LOCKED NEEDLE
+
+> Made preemptible-GPU enrichment backfills survive node loss: queue drain promoted to the
+> authoritative success signal over preemption-noisy job state, idempotent re-runs, stale-queue
+> drop-before-create, and window fallback to the last successful day.
+
+- **What the user is being asked to confirm:** that a fault-tolerance claim with **no magnitude at
+  all** is worth a page-1 line. The mechanisms lean on `CODEBASE-EVIDENCE.md:95`.
+- **Owning role if approved:** **A10 `\resumeTopic{Enrichment Service}`** — the same topic D-06's
+  `64 H100s` fleet figure lands in.
+- **Estimated rendered cost:** **1–2 lines**.
+- ⚠ **RECORDED GAP — this candidate has no Class D absence needle.** `03-01-PLAN.md`
+  `<locked_literals>` Class D locks exactly three needles (`AssumeRole`, `6-week`, `mentored`), and
+  none of them belongs to (c). So (c) is **not currently covered by an absent-by-default
+  assertion**. Consequence, stated rather than left to be rediscovered: **if candidate (c) is the one
+  approved, 03-08 must add its needle in the SAME commit that ships it** — otherwise the bullet
+  enters the document with no machine record that it was ever gated. Suggested needle:
+  `drop-before-create` (distinctive, whitespace-free after hyphenation, ×0 in `docs/main.tex`
+  today, and it survives a wrap because `pdftotext` does not hyphenate it). This mirrors the Class E
+  `CUDA` precedent: a gap that is written down is a decision; a gap that is not is an omission.
+
+---
+
+### Family 2 — MENTORING / LEADERSHIP (one draft, D-12)
+
+#### ⚠ UNVERIFIED — mentoring line · needle `mentored` (lowercase, mid-sentence)
+
+> Grew the platform's engineering bench: mentored applied-ML and platform engineers onto the
+> training and inference frameworks, authoring the architecture guide, runbook and multi-node launch
+> templates teams onboard with, and reviewing their module integrations through to production.
+
+- **What the user is being asked to confirm:** **the people relationship itself.** This is a
+  *stronger* ask than the cost family's — see the honesty note below. The supporting artifacts lean on
+  `CODEBASE-EVIDENCE.md:26` (425-line ARCHITECTURE.md + 364-line runbook), `CODEBASE-EVIDENCE.md:61`
+  (multi-node launch templates across 9 production modules), `CODEBASE-EVIDENCE.md:30` (the 422-line
+  frozen cross-runtime contract doc) and `CODEBASE-EVIDENCE.md:53` (production model onboarding).
+- **Owning role if approved:** **A6 `\resumeTopic{Foundation Model Training Framework}`** — the topic
+  whose claim the people dimension extends.
+- **Estimated rendered cost:** **1–2 lines**.
+- **No magnitude at all, deliberately.** The draft carries **no numeral**: D-13 forbids an invented
+  headcount, and "mentored N engineers" is precisely the invented headcount it forbids. The claim is
+  qualitative on purpose.
+
+**How it differs from what the document already says.** The existing lines make *artifact* and
+*self-role* claims; none of them carries a people dimension, so the draft is additive rather than a
+restatement:
+
+| Existing line | What it already claims | What it does NOT claim |
+|---|---|---|
+| `main.tex:158` (A6) | a training framework **"adopted across the org"** | **adoption of an artifact.** Says nothing about who was brought along, or that he grew anyone's capability |
+| `main.tex:178` (Swiggy S5) | **"Founding member"** of the forecasting platform | **his own role.** A founding-member claim is about his seat, not about other engineers' growth |
+| `main.tex:192` (Flipkart F5) | Cascading/HDFS pipelines, `4Bn+` datapoints | nothing about people or leadership at all — checked, so the "already covered" objection is closed for this line too |
+
+The draft's added dimension is **other engineers' capability**: people onboarded, artifacts authored
+*for them*, and their integrations reviewed to production. That is the axis all three existing lines
+are silent on.
+
+⚠ **Honesty note, recorded because it changes what the checkpoint is asking.** The cost-family drafts
+restate facts that are *already in* `CODEBASE-EVIDENCE.md` and ask the user only to approve the
+**framing and the magnitude**. The mentoring draft is different: the mined commits show the
+*artifacts* (guides, runbooks, templates, model onboardings) but **cannot show a mentoring
+relationship** — commit history does not record who learned what from whom. So this draft asks the
+user to confirm a **fact the evidence pass could not reach**, not merely a framing. The checkpoint
+must present it that way. Rejecting it is entirely reasonable and costs the phase nothing (D-14).
+
+---
+
+### Ship rule and budget consequence
+
+**D-14, absent-by-default.** The rebuilt Adobe section ships **without** every draft above. A draft
+enters `docs/main.tex` only after **explicit recorded per-bullet approval**, and the record is a
+`[Phase 3 / EXP-08]` marker whose presence is itself machine-checked. **The phase can close green
+with all four drafts rejected — rejection is a valid outcome, not a failure.** Both branches are
+asserted: approved → `assert_present` its needle; rejected → `assert_absent` stays green exactly as
+it is today (P3.67–P3.72, all six PASS).
+
+**Cost is estimated here and RE-MEASURED at the conditional wave.** The 1–2-line figures above are
+estimates from the measured per-shape capacities in Section B, not measurements of the real drafts at
+their real position. Phase 2's lesson applies without exception: **the real cost is measured after the
+build, never trusted from an estimate.** The conditional wave rebuilds and reads `G1.1`, then `G3.2`
+p1, before accepting any approval.
+
+**The ceiling case.** Section B reserves **one rendered line (11.5pt)** as the EXP-08 approval fund,
+so the expected end state (+3 lines, `G3.2` p1 ≈ +16.1pt) can absorb a one-line approval. But if the
+rebuild instead lands at the **+4 ceiling** (`G3.2` p1 **+4.7pt**, +0.40 lines) then **there is no
+room for even one more rendered line** — and the next line is a 3-page PDF with `G1.1` FAIL. In that
+situation an approval requires the **sanctioned Groupon/NetSpeed reword-shorter**, and per Section B's
+same-commit rule **the reword and the added bullet must land in the SAME commit**, so the net
+rendered-line delta is zero and the `G7.2` margin is never transiently widened. The checkpoint's
+`<context>` must state which of the two situations the user is deciding in, with the measured `G3.2`
+figure quoted.
