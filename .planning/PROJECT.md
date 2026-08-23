@@ -26,8 +26,8 @@ The resume gets past ATS keyword screens and recruiter scans for Staff MLE / inf
 
 - [x] Verification harness: page-1 fit, ATS text-layer, honesty invariants machine-enforced (`make verify` / `verify-selftest`) — Validated in Phase 1: Verification Harness
 - [x] Career-break entry removed from Experience (Swiggy → Adobe; Education carries the master's) — Validated in Phase 2
-- [ ] Adobe Firefly section rebuilt on commit-verified evidence, positioned for inference-framework/optimization roles
-- [ ] Language keyword-optimized against Staff MLE / inference-framework job postings (research-driven)
+- [x] Adobe Firefly section rebuilt on commit-verified evidence, positioned for inference-framework/optimization roles — Validated in Phase 3: Adobe Rebuild & Staff-Signal Bullets (fault-tolerance/distributed-inference lead, Rust governance topic, torch.compile compiler bridge, all figures evidence-traced; EXP-08: 3 drafts rejected, mentoring line approved+shipped)
+- [ ] Language keyword-optimized against Staff MLE / inference-framework job postings (research-driven — page-1 half landed in Phase 3: G6.5 at 17 required keywords incl. torch.compile/Triton/A100/H100; Skills half is Phase 5)
 - [ ] Skills section stretched only to interview-defensible adjacent tech (user approves final list)
 - [ ] 2–3 accent palette proposals rendered as PDF samples; user picks (teal stays if none win)
 - [ ] `index.html` hero/about synced with new resume positioning
@@ -102,4 +102,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-08-22 after Phase 2 (Page-1 Budget & Text-Layer Defects) completion*
+*Last updated: 2026-08-23 after Phase 3 (Adobe Rebuild & Staff-Signal Bullets) completion — page-1 budget spent to +5.9pt headroom; single-file main.tex constraint recorded*
