@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Staff MLE Resume Optimization
 status: ready_to_plan
-last_updated: 2026-08-23T07:06:47.204Z
-last_activity: "2026-08-23 -- Phase 03 COMPLETE (plan 08: the approved mentoring claim shipped compressed to one rendered line, both sign-off outcomes machine-asserted, the P3 net wired into make, end state measured at G3.2 p1 +5.9pt with all five suites green; EXP-02/03/04/07/08 all ticked)"
+last_updated: 2026-08-23T10:45:16Z
+last_activity: "2026-08-23 -- Page-1 FINALIZED by owner (798c0fb, external review) then gates RECONCILED to it (b6f8011): H100 demoted to a Phase-5 KEYWORDS_TARGET, the 10 removed-figure needles retired to assert_absent, every P3.xx id preserved (P3_SEQ still 72). All suites green; page 1 is closed. Ready to start Phase 4 (page-2 restructure & GitHub presence)."
 progress:
   total_phases: 6
   completed_phases: 3
@@ -38,6 +38,7 @@ See: .planning/PROJECT.md (updated 2026-08-21)
 
 Decisions are logged in PROJECT.md Key Decisions table. Affecting current work:
 
+- [Post-Phase-3 / Page-1 Finalization + Gate Reconciliation]: The owner finalized the page-1 Work Experience block in commit `798c0fb` after an external review — precise internal figures generalized (fleet → "1000s×GPUs per model job across many model queues"; ingestion → "hyperscaled daily EMR ingestion"; "~700M" → "a Billion asset catalog"; the figures 27,135 / 9.7k-line / idempotent re-run / 24×A100-40GB / 9 model queues / 64 H100s / 202.6M-row / 24.8M / 40-node removed), **`H100` removed (A100 kept)**, Groupon subtitle gained "RECOMMENDATION SYSTEMS", PDF regenerated with source. Honesty flags on "1000s×GPUs per model job" and "a Billion asset catalog" were raised and **DISMISSED by the owner** — **page 1 is FINAL; never edit `docs/main.tex` lines 140–210 to satisfy a red gate.** The gates were then reconciled TO that document in `b6f8011` (gates follow the document, never the reverse): `docs/verify/manifest.txt` demoted `H100` KEYWORDS_REQUIRED → `KEYWORDS_TARGET` (`H100:5`, owner Phase 5); `scripts/verify-phase3-regressions.sh` retired the 10 removed-figure needles to `assert_absent` and demoted the two H100 keyword needles, with the here-doc loops expanded to explicit calls so **every pinned `P3.xx` id is preserved (`P3_SEQ` still 72)** — `P3.44`/`P3.65` are now the H100-demotion slots, `P3.62` still guards the surviving `35–38M`. All suites green (`verify-resume` 0 blockers, G6.6 now WARNs `H100` as a Phase-5 target; P3 net 72 PASS/0 FAIL; P2 net 27 PASS; self-test 10 G7/G8 PASS). ⚠ **PHASE-5 OBLIGATION (do not lose):** `$GATE`/`$SQUEEZED` are whole-document, so when the Skills rebuild (PG2-04) re-adds `H100` on page 2 it MUST, in the SAME commit, flip **`P3.44`** back to `assert_promoted 'H100'` and **`P3.65`** back to `assert_present 'H100' "$GATE"`, and re-promote `H100` KEYWORDS_TARGET → KEYWORDS_REQUIRED (`:5` suffix stripped) — otherwise the P3 net reddens mid-Phase-5. — why: the harness exists to protect the owner's chosen content; strengthen-never-weaken applies to assertion logic, not to superseded needle literals, so the net follows the finalized document.
 - [Roadmap]: Gate → budget → content ordering is forced by measurement, not preference — page 1 has 0.15pt slack and `make build` is silent on a 3-page overflow (exit 0, zero warnings)
 - [Roadmap]: Phase 1 is **expected to FAIL** on today's committed PDF (5 live defects) — that is the harness working, not a regression
 - [Roadmap]: Summary/headline section stays Out of Scope (user chose fold-only) despite the research recommending it — do not re-add during planning
@@ -106,6 +107,7 @@ None yet.
 - [Requirements]: `REQUIREMENTS.md` stated "21 total" v1 requirements but enumerates **23** IDs (3 VERIFY + 8 EXP + 6 PG2 + 3 GH + 1 VIS + 2 SITE). Corrected to 23 during roadmap creation; all 23 are mapped.
 - [Phase 3]: EXP-08 carries a hard user sign-off checkpoint on provisional cost/mentoring figures — cannot auto-advance past it
 - [Phase 5]: ~~`torch.compile` production config still needs one read to confirm CUDA graphs are not disabled (`max-autotune-no-cudagraphs` / `triton.cudagraphs=False` would invalidate the EXP-03 compiler bridge)~~ — **RESOLVED / SUPERSEDED** by the D-08 decision record in `### Decisions` (search that section for `D-08`): the read was performed against a sha256-verified genie wheel, neither disabling form is present, and the full compiler bridge shipped in 03-05.
+- [Phase 5]: ⚠ **H100 needle flip owed.** The page-1 finalization removed `H100`; the gate reconciliation (`b6f8011`) demoted it to `KEYWORDS_TARGET` (`H100:5`) and set `P3.44`/`P3.65` to `assert_absent 'H100'`. When PG2-04 re-adds `H100` in Skills, the SAME commit MUST flip both needles back (`assert_promoted` / `assert_present`) and re-promote `H100` → `KEYWORDS_REQUIRED`. `$GATE`/`$SQUEEZED` are whole-document, so skipping the flip reddens the P3 net mid-Phase-5. Full record in `### Decisions` under `[Post-Phase-3 / Page-1 Finalization + Gate Reconciliation]`.
 - [Phase 6]: Site contradicts the resume on retired content — `index.html:196` (both figures Phase 3 retires) and `index.html:207-225` (SITE-02 career-break timeline entry); both live behind `.github/workflows/jekyll.yml` on push to `master`. Full record in `### Decisions` under `[Phase 3 / 03-02]`.
 
 ## Deferred Items
@@ -121,9 +123,9 @@ Items acknowledged and carried forward:
 
 ## Session Continuity
 
-Last session: 2026-08-23T06:28:26.321Z
-Stopped at: Completed 03-07-PLAN.md
-Resume file: None
+Last session: 2026-08-23T10:45:16Z
+Stopped at: Gate reconciliation complete (b6f8011) — page 1 FINAL (798c0fb), all suites green. Ready to start Phase 4 (page-2 restructure & GitHub presence).
+Resume file: None (HANDOFF.json + .continue-here.md consumed on resume and removed)
 
 ## Performance Metrics
 
