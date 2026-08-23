@@ -3,33 +3,33 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Staff MLE Resume Optimization
 status: executing
-last_updated: "2026-08-23T03:02:35.628Z"
-last_activity: 2026-08-23 -- Phase 3 planning complete
+last_updated: "2026-08-23T03:32:07.129Z"
+last_activity: 2026-08-23 -- Phase 03 Plan 01 complete (P3.x regression net, red on arrival)
 progress:
   total_phases: 6
   completed_phases: 2
   total_plans: 13
-  completed_plans: 5
-  percent: 33
+  completed_plans: 6
+  percent: 46
 ---
 
 # Project State
 
 ## Current Position
 
-Phase: 3
-Plan: Not started
+Phase: 03 (adobe-rebuild-staff-signal-bullets) — EXECUTING
+Plan: 2 of 8
 Status: Ready to execute
-Last activity: 2026-08-23 -- Phase 3 planning complete
+Last activity: 2026-08-23 -- Phase 03 Plan 01 complete (P3.x regression net, red on arrival)
 
-Progress: [██████████] 100%
+Progress: [█████░░░░░] 46%
 
 ## Project Reference
 
 See: .planning/PROJECT.md (updated 2026-08-21)
 
 **Core value:** Resume passes ATS keyword screens for Staff MLE / inference-framework roles — every claim interview-defensible.
-**Current focus:** Phase 3 — adobe rebuild & staff signal bullets
+**Current focus:** Phase 03 — adobe-rebuild-staff-signal-bullets
 
 ## Accumulated Context
 
@@ -58,6 +58,12 @@ Decisions are logged in PROJECT.md Key Decisions table. Affecting current work:
 - [Phase 02]: [Phase 2 / 02-02]: G6.12's ordering clause is now ANCHOR-FREE and strictly stronger: the institution must BE the first non-empty extracted line inside the EDUCATION region (new helper `region_first_nonempty`, defined at :405 beside `region_nonempty_count`, before the --census short-circuit at :504). `EDU_CITY` was deleted from `docs/verify/manifest.txt` in the SAME commit (232abc2) as its only reader -- the seven references were all inside the G6.12 block, and a needle key left behind after its string leaves the document degrades into `grep -n -Fx -m1 -- ""`, which matches the region's first BLANK line. The rejected alternative (repoint the needle at the degree line) would have gone GREEN on the measured date-first document, silently un-asserting the defect. The `EDU_DATE`/`EDU_BIND_WINDOW` window clause is retained with `EDU_LO`/`EDU_HI`/`EDU_SPAN` byte-untouched. NEGATIVE CONTROL: the edited harness run against the pre-Phase-2 main.tex+PDF pair (f278020, `mktemp -d`, basename preserved, --skip-freshness) still emits `RESULT G6.12 FAIL` naming `Bloomington, IN` at line 100, with `RESULT G0.3 SKIP` confirming the override was the only waiver -- so the clause was fixed, not weakened, and is not a tautology. — A green gate reached by weakening a clause is worse than the red one you started with, so the plan required the replacement clause to be at least as strong and to be proven still-failing on the pre-change artifact.
 - [Phase 02]: [Phase 2 / 02-02]: `PROBE_LINES` stays 5 -- TRAP T-2 confirmed NOT triggered, matching Plan 01's measurement. `RESULT G7.2 PASS the probe PDF is 3 page(s), above the manifest PAGES=2 budget, so the +5 probe is a genuine overflow`. Recorded margin proving the anti-rot guard is ARMED rather than merely quiet: probe height 5 x LINE_PT 11.5 = 57.5pt against measured page-1 slack 50.5pt (G3.2, +4.39 lines) -- the probe exceeds available slack by 7.0pt (0.61 lines). Raising `PROBE_LINES` here would enlarge a probe that already overflows and weaken the guard for no reason; the raise-only rule means it can never be lowered later either. `PAGES`, `CEILING_PT`, `LINE_PT` untouched; the whole-phase manifest diff is exactly the EDU_CITY removal plus its explanatory comment. — 02-PATTERNS 5.5 predicted the trap would fire on a 10-11 line (115-127pt) recovery. The measured recovery was 50.4pt, below the probe's 57.5pt, so the self-test still proves something and the remedy the plan pre-assigned to Task 3 was correctly not applied.
 - [Phase 02]: [Phase 2 / 02-02]: The regenerated artifacts ride in the SOURCE commit (29999ff: main.tex + .pdf + .log + .fdb_latexmk together), so HEAD -- the doc-only `docs(02-02)` commit -- does not itself list `.fdb_latexmk`/`.pdf`. This continues Plan 01's Decision 5 and 02-PATTERNS 6: `.fdb_latexmk` carries the md5 `G0.3` reads, so a source-only commit would make a fresh checkout of THAT commit refuse at exit 2. The property Task 3 criterion 7 protects (T-02-12, stale greenlight) was verified substantively instead of by grepping HEAD: a genuine `git clone` of HEAD has a clean tree and its `bash scripts/verify-resume.sh` emits `RESULT G0.3 PASS PDF provably built from current main.tex (latexmk md5 eff2ec04067eb8fa60b775424a0a3a53)` and exits 0. `.aux`/`.fls`/`.out` are tracked but were byte-unchanged by the Education edit. `make clean` was never run. — Deferring artifacts to a trailing build(resume): commit would satisfy criterion 7's literal HEAD wording but leave 29999ff carrying a stale PDF -- strictly worse, and contradicting the read_first guidance the plan itself cites.
+- [Phase 03]: [Phase 3 / 03-01]: `scripts/verify-phase3-regressions.sh` is Phase 3's acceptance oracle and is RED ON ARRIVAL BY DESIGN: 72 assertions, 26 PASS, **46 FAIL**, exit 1, **zero unowned FAILs**. Owner split is the standing contract: **32 -> 03-04**, **13 -> 03-05**, **1 -> 03-06**. `grep -E '^RESULT P3\.[0-9]+ +FAIL' | grep -vcE '/03-0[456] '` returning 0 is a gate. A 47th FAIL, or any FAIL whose label carries no owner tag, means the NET is wrong -- investigate the assertion before touching `docs/`. P3.29-P3.33 currently FAIL as **unmeasurable** (the governance region cannot be sliced until `Training-Data Governance` extracts), so 03-04 converts them to real framing assertions rather than merely flipping their status. Every needle measured EXACTLY as `03-01-PLAN.md <locked_literals>` states; no count differed. — Phase 1 established that a gate written after the content it checks tends to be shaped by that content. Writing the oracle first, red, with each FAIL naming its owner, makes the phase contract machine-readable instead of prose.
+- [Phase 03]: [Phase 3 / 03-01]: The EXP-02a lead anchors (`fault-tolerant` / `fault-tolerance` / `distributed inference`) are an **ANY-OF set, not all-of**, matched case-insensitively against ONE extracted line -- the first non-blank line after the Adobe subtitle. Three sources agree on any-of: `03-04-PLAN.md` Task 1 ("MUST contain at least one of"), `03-RESEARCH.md`'s EXP-02a row ("must match one of"), `03-PATTERNS.md` 3.1 (a regex alternation). Do NOT "strengthen" this to all-of: `fault-tolerant` and `fault-tolerance` are morphological variants of one word, so all-of is unsatisfiable in English and 03-04's own gate would be unreachable. The line SCOPING is the real strength and must not be relaxed to a document-wide needle: lowercase `distributed inference` is x0 on the lead line but x1 in the gate stream, because the title-case topic heading `Distributed Inference Frameworks` sits three lines below -- a document-wide needle would be GREEN today, before the rewrite it gates. — The plan text "match the three anchors against it" admits an all-of reading that would have made the assertion a permanent FAIL its owner could not clear, and a document-wide needle would have been a tautology.
+- [Phase 03]: [Phase 3 / 03-01]: A Class E gap is RECORDED, not forgotten: the branch-conditional `CUDA` absence needle for D-08's `triton-only-fallback` branch is deliberately NOT in the net at wave 1, because on `cudagraphs-confirmed` the bridge clause legitimately names CUDA-graph capture and the needle would assert the opposite of the truth. Owner **03-05 Task 3**, label `EXP-03c/03-05 fallback bridge names no CUDA graphs`, streams `$SQUEEZED` (per the `03-RESEARCH.md` `P3.12` spec) and `$TEX`, appended in the SAME commit that ships the fallback wording. Because it PASSES on arrival it also owes a crafted control (insert `CUDA` into a scratch text layer, `--gate-text`, require exit 1). On `cudagraphs-confirmed`, 03-05 must record in its SUMMARY that the needle was deliberately not added. The gap is written into the script at the end of Group 5. — D-08's fallback honesty constraint would otherwise be acceptance prose with no machine backing, and a later reader would have to rediscover why the phase asserts CUDA nowhere.
+- [Phase 03]: [Phase 3 / 03-01]: Every P3 assertion class has been observed FAILING. Classes A/B and the D-05 `achiev` needle by the arrival run against the real committed artifact; retention, EXP-08 draft absence and the promotion conjunction by six crafted controls under `mktemp -d`. Two findings worth carrying: (1) the **source-side** EXP-08 needle catches a leak NO text-layer gate in this repo can see -- a draft behind a `%` comment never renders (proven: appending a commented AssumeRole draft to a basename-preserved scratch `main.tex` flips P3.67 alone); (2) a conjunction assertion cannot be controlled by an ID delta -- P3.42 is already FAIL at baseline, so the evidence is the CONJUNCT the FAIL names. All three conjuncts were observed naming themselves and a fourth configuration makes P3.42 PASS, so it is neither stuck-red nor stuck-green. Conjunct 3 is only reportable when conjunct 1 holds, so its control must pair `--gate-text` with `--manifest`. — An assertion never observed failing is not a gate (Phase 1 rule); an assertion that can never pass is equally useless, and a conjunction proven by exit code alone is one test wearing three names.
+- [Phase 03]: [Phase 3 / 03-01]: `requirements-completed` for 03-01 is deliberately **EMPTY** and `requirements mark-complete` was NOT run, despite the plan's `requirements: [EXP-02, EXP-03, EXP-04, EXP-07, EXP-08]`. This plan builds those requirements' acceptance oracle; it does not satisfy them, and the oracle is red with 46 FAILs. EXP-02/03/04/07 close when 03-04/03-05/03-06 drive the census to zero; EXP-08 closes at 03-07/03-08, and **03-08 Task 3 owns the EXP-02 tick**. This follows the recorded Phase-2 precedent: a requirement shared across plans completes when the LAST plan lands, not the first. — Ticking five requirements while their own oracle reports 46 failures would misreport the phase -- exactly the error Phase 2 Plan 01 avoided by leaving EXP-01 open for Plan 02.
+- [Phase 03]: [Phase 3 / 03-01]: TRAP T-1 from `03-PATTERNS.md` is FIXED in the P3 copy and the fix must not be reverted: the template's `assert_whole_line_once` documents 3 args but dereferences `$4`, so under `/bin/bash` 3.2.57 with `set -u` a 3-arg call whose assertion FAILS aborts the script -- no RESULT line, no `FAILURES` increment, every remaining assertion skipped -- while exiting 1, which reads in a log as "the document is wrong" rather than "the net stopped running". Now `${4:-...}` with the signature documented as 4-arg. Also fixed forward: the P3 header records that nothing in the file may contain the Phase-2 ID prefix literal, because the plan gates on a whole-file grep for it (the mechanical catch for T-2, a copy that renames the counter but forgets the `emit` printf or the failed-ID append). — T-1 is invisible while the document is green and only fires the day an assertion legitimately fails, which is precisely when the run must not die silently.
 
 ### Pending Todos
 
@@ -82,9 +88,9 @@ Items acknowledged and carried forward:
 
 ## Session Continuity
 
-Last session: 2026-08-22T20:52:43.810Z
-Stopped at: Phase 3 context gathered
-Resume file: .planning/phases/03-adobe-rebuild-staff-signal-bullets/03-CONTEXT.md
+Last session: 2026-08-23T03:30:54.057Z
+Stopped at: Completed 03-01-PLAN.md
+Resume file: None
 
 ## Performance Metrics
 
@@ -95,3 +101,4 @@ Resume file: .planning/phases/03-adobe-rebuild-staff-signal-bullets/03-CONTEXT.m
 | 01 | 03 | 33 min | 3 tasks, 2 files |
 | Phase 02 P01 | 6 min | 3 tasks | 5 files |
 | Phase 02 P02 | 11 min | 3 tasks | 6 files |
+| Phase 03 P01 | 18 min | 3 tasks | 1 files |

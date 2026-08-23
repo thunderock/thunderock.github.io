@@ -70,7 +70,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. Swiggy and Flipkart bullets each carry an adoption-count or failure-class-closure claim, and the count of digit-bearing page-1 bullets is no lower than baseline (compression never silently ate the metrics)
   5. `make verify` passes with the rebuilt section in place, and the cost-savings / mentoring bullets are either shipped with the user's **explicit recorded sign-off** or absent — never present unapproved
 **Plans**: 8 plans in 6 waves (wave 1 runs three plans in parallel; waves 2-6 serialize on `docs/main.tex`)
-- [ ] 03-01-PLAN.md — P3.x standing regression net, red on arrival, every assertion class observed failing
+- [x] 03-01-PLAN.md — P3.x standing regression net, red on arrival, every assertion class observed failing
 - [ ] 03-02-PLAN.md — wire the Phase-2 net into `make`, claim the G6.13 WARN, record both on STATE.md (IG-01/IG-02/IG-03)
 - [ ] 03-03-PLAN.md — criterion-1 disposition record, figure→evidence traceability, budget ledger, EXP-08 drafts
 - [ ] 03-04-PLAN.md — Adobe rebuild: fault-tolerance lead bullet, Rust governance topic, mechanisms + figures into free tails
@@ -125,7 +125,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 (Phase 4 may ru
 |-------|----------------|--------|-----------|
 | 1. Verification Harness | 3/3 | Complete    | 2026-08-22 |
 | 2. Page-1 Budget & Text-Layer Defects | 2/2 | Complete    | 2026-08-22 |
-| 3. Adobe Rebuild & Staff-Signal Bullets | 0/TBD | Not started | - |
+| 3. Adobe Rebuild & Staff-Signal Bullets | 1/8 | In Progress|  |
 | 4. Page-2 Restructure & GitHub Presence | 0/TBD | Not started | - |
 | 5. Skills Rebuild | 0/TBD | Not started | - |
 | 6. Palette & Site Sync | 0/TBD | Not started | - |
