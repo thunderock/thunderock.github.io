@@ -45,7 +45,7 @@ Requirements for milestone v1.0. Each maps to roadmap phases.
 
 ### Site Sync
 
-- [ ] **SITE-01**: `index.html` hero/about text synced with the new resume positioning
+- [ ] **SITE-01**: `index.html` synced with the finalized resume across **all mirrored surfaces**, not just hero/about — the site mirrors Experience, **Projects** (must become `rollout` + `graph_ml`, dropping the grad-school projects), **Education** (GPAs/cities dropped), and **Publication**, and still carries the retired page-1 figures at `index.html:196` (`3–8K images/sec`, `10–50×`). No occurrence of any title, figure, or claim the rebuilt resume contradicts. (Scope expanded 2026-08-23 per owner directive "keep website in sync as well"; kept in Phase 6 so it syncs against the fully-settled resume — Phases 5–6 still change it — rather than syncing twice.)
 - [ ] **SITE-02**: Site's own career-break timeline entry (index.html:207-225) removed for resume/site consistency
 
 ## v2 Requirements

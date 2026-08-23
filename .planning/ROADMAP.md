@@ -112,7 +112,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Success Criteria** (what must be TRUE):
   1. 2–3 palette proposals plus grayscale conversions render as side-by-side PDF samples **of the final content**, each measured against text ≥7:1, rules ≥3:1, grayscale ≥4.5:1 / ≥3:1
   2. The user has picked a palette (teal staying is a legitimate outcome), it is applied via the 2 hex literals, and no unused color definition (`accentlight`) remains
-  3. `index.html` hero and about text match the new resume positioning, with no remaining occurrence of a title or claim the rebuilt resume contradicts
+  3. `index.html` matches the finalized resume across **all mirrored sections** (hero/about, Experience, Projects → `rollout` + `graph_ml`, Education, Publication), with no remaining occurrence of a title, figure, or claim the rebuilt resume contradicts — including the retired page-1 figures still at `index.html:196` (`3–8K images/sec`, `10–50×`). (SITE-01 scope expanded 2026-08-23 per owner directive; site syncs here against the fully-settled resume rather than twice.)
   4. The site's own career-break timeline entry is gone from `index.html`, so resume and site agree
   5. A final `make verify` passes, and the PDF pasted as plain text into a form field reads in correct order with the handle and URLs intact
 **Plans**: TBD
