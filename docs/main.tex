@@ -170,14 +170,14 @@
       {Software Dev Engineer II (ML Platform)}{Jan. 2019 -- Jul. 2021}
       {{\href{https://www.linkedin.com/company/swiggy-in/}{\textcolor{accentdark}{\underline{SWIGGY}}}}}{DATA SCIENCE PLATFORM, TIME SERIES FORECASTING}
       \resumeItemListStart
-        \resumeTopic{Online Inference Platform}{Core contributor to the online inference platform serving 18M+ monthly transacting users across food delivery and quick commerce, with models autoscaled by real-time load metrics.}
+        \resumeTopic{Online Inference Platform}{Core contributor to the platform that served real-time model inference to 18M+ monthly transacting users across food delivery and quick commerce, autoscaled on live load metrics.}
           \resumeItemListStart
-            \resumeItem{Engineered a dynamic request-routing layer that evaluated incoming API calls against geo-tags, traffic profiles, and service metadata, then dispatched them to model clusters partitioned by region and load domain.}
-            \resumeItem{Implemented routing/dispatch on an Akka-style actor framework for resilient asynchronous invocation, fault isolation across clusters, and backpressure-aware scheduling at sustained low P99 under high QPS.}
+            \resumeItem{Engineered the dynamic request-routing layer that matched incoming API calls against geo-tags, traffic profile and service metadata, then dispatched them to model clusters partitioned by region and load domain.}
+            \resumeItem{Implemented routing and dispatch on an Akka-style actor framework: resilient asynchronous invocation, fault isolation across clusters, and backpressure-aware scheduling that held sustained low P99 under high QPS.}
           \resumeItemListEnd
-        \resumeTopic{Feature Store}{Built and maintained a Feature Store and pipeline serving on-demand features to deployed ML models at production scale (4Bn rows, 10K QPS), with multichannel ingestion via Spark, Flink, and user files.}
-        \resumeTopic{Forecasting \& Correlation Platform}{Founding member of the platform used by many teams to forecast time series; forecasts powered critical scaling decisions across the org in real time.}
-        \resumeTopic{DAQ}{Led DAQ, a tool used to scrape APIs at scale, collecting 15M rows daily for analysis and model training.}
+        \resumeTopic{Feature Store}{Built and maintained the feature store and its pipelines, serving on-demand features to production ML models at 4Bn rows and 10K QPS, with multichannel ingestion via Spark, Flink, and user files.}
+        \resumeTopic{Forecasting \& Correlation Platform}{Founding member of the time-series forecasting platform adopted by teams across the org; its forecasts drove critical scaling decisions in real time.}
+        \resumeTopic{DAQ}{Led DAQ, a large-scale API scraping tool collecting 15M rows daily for analysis and model training.}
       \resumeItemListEnd
 
     \resumeSubheading
