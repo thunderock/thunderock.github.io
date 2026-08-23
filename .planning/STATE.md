@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Staff MLE Resume Optimization
 status: executing
-last_updated: "2026-08-23T03:32:07.129Z"
-last_activity: 2026-08-23 -- Phase 03 Plan 01 complete (P3.x regression net, red on arrival)
+last_updated: "2026-08-23T03:44:24.210Z"
+last_activity: 2026-08-23 -- Phase 03 Plan 02 complete (P2 net wired into make, G6.13 WARN claimed)
 progress:
   total_phases: 6
   completed_phases: 2
   total_plans: 13
-  completed_plans: 6
-  percent: 46
+  completed_plans: 7
+  percent: 54
 ---
 
 # Project State
@@ -18,11 +18,11 @@ progress:
 ## Current Position
 
 Phase: 03 (adobe-rebuild-staff-signal-bullets) — EXECUTING
-Plan: 2 of 8
+Plan: 3 of 8
 Status: Ready to execute
-Last activity: 2026-08-23 -- Phase 03 Plan 01 complete (P3.x regression net, red on arrival)
+Last activity: 2026-08-23 -- Phase 03 Plan 02 complete (P2 net wired into make, G6.13 WARN claimed)
 
-Progress: [█████░░░░░] 46%
+Progress: [█████░░░░░] 54%
 
 ## Project Reference
 
@@ -67,6 +67,7 @@ Decisions are logged in PROJECT.md Key Decisions table. Affecting current work:
 
 - [Phase 03]: [Phase 3 / 03-02]: The Phase-2 content-regression net `scripts/verify-phase2-regressions.sh` is now REACHABLE and is recorded here rather than only in the phase-local `02-VALIDATION.md` (audit IG-01/IG-02). It protects two invariants no assertion in `scripts/verify-resume.sh` covers: career-break absence (source and text layer, Work Experience running ADOBE FIREFLY -> SWIGGY with no employer between, master's dates still extracting from Education) and every locked **Phase-2** D-05/D-06 descriptor literal — the folded Groupon and NetSpeed descriptors. Read "Phase-2 D-05/D-06" literally: the identifier is overloaded, and **Phase-3's own D-05/D-06 are a different namespace** (the Ray swap and the figure spread, both live in this phase), so a bare "D-05/D-06" here would name the wrong content. The load-bearing literal in that set is the multi-word `C++ graph algorithms` anchor, which ROADMAP Phase 5 criterion 4 rests on: bare `C++` was already x2 from page 2, so the multi-word form is the only non-vacuous anchor and losing it has to be a BLOCKER now rather than a silent diff three phases later. New invocation surfaces: `make verify-regressions` runs the net standalone, and `@bash $(REGRESS)` is chained as the FIRST recipe line of `make verify`, above the harness (content-only and sub-second, and GNU Make 3.81 aborts a recipe at its first failing line, so a net chained second would never run whenever the harness is red). STANDING RULE, unchanged by this wiring: the gating invocation remains `bash scripts/verify-resume.sh && bash scripts/verify-phase2-regressions.sh` run directly, because GNU Make 3.81 collapses a recipe's exit 1 and exit 2 into its own exit 2 — `make verify` therefore cannot distinguish "the document is wrong" from "cannot verify" and is a convenience, not an oracle. Separately (audit IG-03 / WR-01), `G6.13`'s WARN is now owned by Phase 3 via the one-line `WARN_OWNERS` edit `G6.13:unassigned` -> `G6.13:3`, so all five role-block lines read `(owner: Phase 3)`. That claim is a WARN only: the gate is NOT promoted to a BLOCKER, and `ROLE_BIND_WINDOW` stays a deliberate local constant at `scripts/verify-resume.sh:1936` — per 01-02, the commit that promotes `G6.13` is the commit that adds the manifest key. — A protection nothing runs is not a protection, and IG-02's complaint was specifically that a planner reading the documented resume surfaces could not learn the net exists; naming the script, the anchor, the target and the gating rule on a canonical surface is what closes it.
 - [Phase 03]: [Phase 3 / 03-02]: SITE HANDOFF TO PHASE 6 — `index.html:196` duplicates BOTH figures this phase retires. Verified still present at write time: `3–8K images/sec on 32 GPUs` (count 1) and `10–50× faster image loading` (count 1), inside the site's own parallel Adobe block at `index.html:194-200`. That file is published to GitHub Pages by `.github/workflows/jekyll.yml` on every push to `master`, so the strings are live and public. This is deliberately **NOT Phase-3 scope**: ROADMAP criterion 3 is PDF-scoped ("survives anywhere in the PDF"), and the site requirements are Phase 6. State the consequence plainly rather than leaving it implicit — until SITE-01 lands, the live public site contradicts the resume on exactly the two claims the honesty requirement removed, and the audit already records that no assertion anywhere checks resume-to-site agreement. The same obligation covers the site's second defect: `index.html:207-225`, the site's own career-break timeline entry (SITE-02), which until this record existed was written down ONLY at `.planning/REQUIREMENTS.md:49` — `grep -c 'index.html' .planning/STATE.md` returned 0 before this line, so this record is what first puts both site defects on the canonical surface, not a pointer to an entry that was already here. Phase 6 should treat `index.html:196` and `index.html:207-225` as one greppable site-sync obligation. — OQ-2 resolved as "Phase 3 records, Phase 6 fixes": the duplicate is the one retired-string location a grep of `docs/` would miss entirely, and recording it beats both silently ignoring it and pulling unscoped site edits into a PDF phase.
+- [Phase 03]: [Phase 3 / 03-02]: `requirements-completed` for 03-02 is deliberately **EMPTY** and `requirements mark-complete` was NOT run, despite the plan's `requirements: [EXP-02, EXP-07]`. This plan wires the Phase-2 net into make, claims the G6.13 WARN and writes two records; it lands no Adobe content (EXP-02) and tightens no Swiggy/Flipkart bullet (EXP-07). EXP-02 is claimed by 03-01/03-02/03-03/03-04/03-08 and EXP-07 by 03-01/03-02/03-03/03-06/03-08, and **03-08 Task 3 owns the EXP-02 tick**. — Same rule 03-01 and Phase 2 Plan 01 followed: a requirement shared across plans completes when the LAST plan lands, not the first. Ticking a content requirement from a harness-wiring plan would misreport the phase.
 
 ### Pending Todos
 
@@ -92,8 +93,8 @@ Items acknowledged and carried forward:
 
 ## Session Continuity
 
-Last session: 2026-08-23T03:30:54.057Z
-Stopped at: Completed 03-01-PLAN.md
+Last session: 2026-08-23T03:43:45.152Z
+Stopped at: Completed 03-02-PLAN.md
 Resume file: None
 
 ## Performance Metrics
@@ -106,3 +107,4 @@ Resume file: None
 | Phase 02 P01 | 6 min | 3 tasks | 5 files |
 | Phase 02 P02 | 11 min | 3 tasks | 6 files |
 | Phase 03 P01 | 18 min | 3 tasks | 1 files |
+| Phase 03 P02 | 8min | 2 tasks | 3 files |
