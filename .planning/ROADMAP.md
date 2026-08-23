@@ -89,7 +89,9 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. `github.com/thunderock/random_walk` returns 404 to an anonymous visitor
   4. The publication entry is citation + one contribution line (abstract paragraph gone); Research and Teaching each render as one line; Education emits institution before city with no GPAs and the `2021–2023` range retained
   5. The user has confirmed the `rollout` capability wording against a spoken "walk me through it" prompt, and `make verify` still passes
-**Plans**: TBD
+**Plans**: 2 plans (sequential, waves 1→2). Owner overrides recorded: criteria 2 & 3 (GH-02/GH-01) deferred per D-08; criterion 4's "Teaching → one line" overridden per D-05 (Teaching kept as three items).
+- [ ] 04-01-PLAN.md — page-2 content restructure (tracer-led): Education tighten + manifest sync (D-06/D-07), Publication trim (D-03), Research one-line compress (D-04), Selected Projects 7→2 rollout+graph_ml verbatim (D-01/D-02); Teaching left as-is (D-05)
+- [ ] 04-02-PLAN.md — page-2 content regression net (`verify-phase4-regressions.sh`, wired into make) + GH-01/GH-02 owner deferrals and GH-03 confirmation (D-08)
 
 ### Phase 5: Skills Rebuild
 **Goal**: Skills earns maximum ATS keyword coverage from the finalized bullet vocabulary without a single item the user cannot defend in an interview
@@ -126,7 +128,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 (Phase 4 may ru
 | 1. Verification Harness | 3/3 | Complete    | 2026-08-22 |
 | 2. Page-1 Budget & Text-Layer Defects | 2/2 | Complete    | 2026-08-22 |
 | 3. Adobe Rebuild & Staff-Signal Bullets | 8/8 | Complete    | 2026-08-23 |
-| 4. Page-2 Restructure & GitHub Presence | 0/TBD | Not started | - |
+| 4. Page-2 Restructure & GitHub Presence | 0/2 | Not started | - |
 | 5. Skills Rebuild | 0/TBD | Not started | - |
 | 6. Palette & Site Sync | 0/TBD | Not started | - |
 
