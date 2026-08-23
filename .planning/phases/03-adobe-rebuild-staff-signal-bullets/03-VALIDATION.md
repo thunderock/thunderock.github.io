@@ -52,17 +52,18 @@ Never gate on `make verify` (Make 3.81 collapses exit 1/2); never `make clean` (
 | T2 governance topic | 03-04 | 2 | EXP-02 | T-03-19/24 | Rust ≥2; never framed as inference optimization | gate + regression | P3 EXP-02b group PASS incl. framing slice | ✅ | ⬜ pending |
 | T3 mechanisms, figures, A100/H100 promotion | 03-04 | 2 | EXP-02, EXP-04 | T-03-20/23/25 | promotion suffix stripped; no line freed; glyphs declared | gate + regression | `G6.5` 15 PASS; `G6.4` PASS; `make verify-selftest` | ✅ | ⬜ pending |
 | T1 D-08 config read | 03-05 | 3 | EXP-03 | T-03-26 | CUDA-graph clause only on a confirmed read; fallback pre-authorized | checkpoint | `grep -Fc '[Phase 3 / D-08]' .planning/STATE.md` = 1 | ✅ | ⬜ pending |
-| T2 retire figures, land Ray benchmark | 03-05 | 3 | EXP-04 | T-03-27/28 | EN-DASH + source-form absence; attribution-safe phrasing | gate + regression | P3 EXP-04 group PASS; `grep -Ec '10--50\|3--8K' docs/main.tex` = 0 | ✅ | ⬜ pending |
-| T3 torch.compile bridge + promotion | 03-05 | 3 | EXP-03 | T-03-29/30/31/32 | branch-matched wording; promotion paired in one commit | gate + regression | `G6.5 'torch.compile'` PASS; P3 promotion triples PASS | ✅ | ⬜ pending |
+| T2 retire figures, land Ray benchmark | 03-05 | 3 | EXP-04 | T-03-27/28 | EN-DASH + source-form absence; attribution safety MACHINE-asserted, not reviewer judgment | gate + regression | P3 EXP-04 group PASS incl. the `EXP-04d/03-05` attribution pair; `grep -Ec '10--50\|3--8K' docs/main.tex` = 0; `grep -Fci achiev docs/main.tex` = 0 | ✅ | ⬜ pending |
+| T3 torch.compile bridge + promotion | 03-05 | 3 | EXP-03 | T-03-29/30/31/32 | branch-matched wording; promotion paired in one commit; Triton unconditional | gate + regression | `G6.5 'torch.compile'` + `'Triton'` PASS, `G6.5` 17 PASS; P3 promotion triples PASS | ✅ | ⬜ pending |
+| T3 branch-conditional Class E CUDA absence | 03-05 | 3 | EXP-03 | T-03-26b | on `triton-only-fallback` the bridge names no CUDA graphs — asserted, never prose; needle appended in the SAME commit as the wording and proven failable by a crafted `--gate-text` fixture | regression | `EXP-03c/03-05` pair PASS; `grep -Fci CUDA docs/main.tex` = 0; control run exits 1 naming the P3 ID | ➕ appended | ⬜ conditional |
 | T1 Swiggy pass | 03-06 | 4 | EXP-07 | T-03-34/35/37 | `fault` and `Spark` survive; region line count identical | gate + regression | `G6.5 'fault'`/`'Spark'` PASS; `G5.4` ≥8 | ✅ | ⬜ pending |
 | T2 Flipkart pass | 03-06 | 4 | EXP-07 | T-03-36/38/39 | closure by entailment only; no invented metric | gate + regression | `bash scripts/verify-phase3-regressions.sh` exit 0 | ✅ | ⬜ pending |
 | T1 evidence packet | 03-07 | 5 | EXP-08 | T-03-42/43 | decision taken against a proven-green document | gate | all four suites green before the ask | ➕ created | ⬜ pending |
-| T2 per-bullet sign-off | 03-07 | 5 | EXP-08 | T-03-40/41/44 | absence is the default; silence is not approval | checkpoint | `grep -Fc '[Phase 3 / EXP-08]' .planning/STATE.md` = 1 | ✅ | ⬜ pending |
-| T1 apply approved / assert rejected | 03-08 | 6 | EXP-08 | T-03-45/46/47/48/49 | both outcomes asserted; rejected pairs never deleted | regression | P3 net exit 0; P2 net 27 PASS | ✅ | ⬜ pending |
+| T2 per-bullet sign-off | 03-07 | 5 | EXP-08 | T-03-40/41/44, T-03-44b | absence is the default; silence is not approval; criterion-2 judgment captured, never assumed | checkpoint | `grep -Fc '[Phase 3 / EXP-08]' .planning/STATE.md` = 1; `grep -Fc 'staff-signal:'` ≥ 1 reading `yes` or `no — <change>` | ✅ | ⬜ pending |
+| T1 apply approved / assert rejected | 03-08 | 6 | EXP-08, EXP-02 | T-03-45/46/47/48/49 | both outcomes asserted; rejected pairs never deleted; Branch C bounded to the named change | regression | P3 net exit 0; P2 net 27 **anchored** `^RESULT P2\..*PASS` lines (never a bare PASS count — 28 lines match); Branch C writes the `EXP-02 tick rests on the applied revision` marker | ✅ | ⬜ pending |
 | T2 wire the P3 net into make | 03-08 | 6 | EXP-02..08 | T-03-50 | Phase 3 does not recreate IG-01 for its own net | make | `make -n verify` shows both nets | ✅ | ⬜ pending |
-| T3 end-state record + checkboxes | 03-08 | 6 | all five | T-03-51/52 | no requirement ticked without a green suite; WR-01 measured not claimed | gate + grep | all five suites green; markers singular | ✅ | ⬜ pending |
+| T3 end-state record + checkboxes | 03-08 | 6 | all five | T-03-51/52, T-03-51b | no requirement ticked without a green suite; EXP-02 never ticked against a negative read; WR-01 measured not claimed | gate + grep | all five suites green; markers singular; EXP-02 checkbox clause admits only `yes`, or `no` + gap record on BOTH STATE.md and ROADMAP, or `no` + the Branch C revision marker | ✅ | ⬜ pending |
 
-*Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky. `➕ created` = the file is produced by that task. RESEARCH.md §Validation Architecture carries the full 20-row requirement→test map this table expands on; threat refs resolve in each plan's `<threat_model>`.*
+*Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky · ⬜ conditional = fires only on one D-08 branch. `➕ created` = the file is produced by that task; `➕ appended` = added to an existing Wave-0 file by that task. The `Class E CUDA absence` row is a branch-conditional sub-obligation of 03-05 Task 3, not a 22nd task — the task count stays 21. RESEARCH.md §Validation Architecture carries the full 20-row requirement→test map this table expands on; threat refs resolve in each plan's `<threat_model>`.*
 
 ---
 
@@ -85,7 +86,7 @@ The P3 net is deliberately **red on arrival**: its new-content and retirement as
 |----------|-------------|------------|-------------------|
 | D-08 CUDA-graphs config read | EXP-03 | Evidence lives in the user's ~/code/genie checkout, not this repo | Confirm `glimmer/modules/dp/content_type_classifier/module.py:76-77` compile config carries no `max-autotune-no-cudagraphs` / `triton.cudagraphs=False`; record outcome; fallback = bridge-minus-CUDA-graphs wording |
 | EXP-08 per-bullet sign-off | EXP-08 | Honesty gate requires explicit human approval | Blocking checkpoint:decision after Adobe rebuild verified green; review drafts against rendered PDF; per-bullet approve/reject recorded in SUMMARY |
-| Criterion-2 qualitative half | EXP-02 | "Opens on fault-tolerance/distributed-inference language rather than job-description voice" is a judgment call | Read the rendered lead bullet at the checkpoint; literals are machine-asserted, voice is not |
+| Criterion-2 qualitative half | EXP-02 | "Opens on fault-tolerance/distributed-inference language rather than job-description voice" is a judgment call | Read the rendered lead bullet at the 03-07 T2 checkpoint and answer as a literal `staff-signal: yes` or `staff-signal: no — <what still reads as job description, and what it should say instead>` token, recorded in the `[Phase 3 / EXP-08]` STATE.md bullet. Literals are machine-asserted (P3 `EXP-02a` lead anchor); voice is not. The token is not advisory: on `no` with an actionable change, 03-08 T1 **Branch C** applies exactly that change line-neutrally and writes the `EXP-02 tick rests on the applied revision` marker; otherwise 03-08 T3 leaves EXP-02 unticked and records `EXP-02 qualitative gap` on both STATE.md and the ROADMAP Phase 3 entry |
 
 ---
 
@@ -96,7 +97,7 @@ The P3 net is deliberately **red on arrival**: its new-content and retirement as
 - [x] Wave 0 covers all MISSING references (folded into wave 1; the P3 net is red on arrival by design)
 - [x] No watch-mode flags (`latexmk -pvc` appears in no verify path)
 - [x] Feedback latency < 25s (quick ~5s, full ~20s)
-- [x] Every new P3 assertion class observed FAILING (03-01 Task 2 for new-content/retirement, Task 3 for retention/absence/promotion)
+- [x] Every new P3 assertion class observed FAILING (03-01 Task 2 for new-content, retirement and the `EXP-04d` attribution needle — all red on arrival; 03-01 Task 3 for retention/absence/promotion; 03-05 Task 3 for the branch-conditional Class E `CUDA` needle, which passes on arrival and therefore carries its own crafted control)
 - [x] `nyquist_compliant: true` set in frontmatter
 
 **Approval:** planned — 8 plans, 6 waves, 21 tasks; 2 blocking checkpoints (D-08 config read at 03-05 T1, EXP-08 sign-off at 03-07 T2)
