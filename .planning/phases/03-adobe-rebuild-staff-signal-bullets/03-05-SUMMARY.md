@@ -206,10 +206,23 @@ Replacement literals present ×1 each in the squeezed text layer: `1.09M`, `8×A
 - **Verification:** unanchored → **2** (the two offending lines are `!! FAIL: 1 of 72 …` and `!! Every RESULT … FAIL line above names its owning plan and its remedy.`); anchored → **0** unowned FAILs, 71 PASS, sole FAIL `P3.66` owned by `/03-06`.
 - **Committed in:** `b056a4a` (Task 3 commit).
 
+**3. [Rule 1 - Bug] The plan-close-out decision records duplicated the `[Phase 3 / D-08]` marker and broke its own uniqueness invariant (self-introduced, caught and fixed)**
+
+- **Found during:** post-SUMMARY metadata recording (`state.add-decision`, then the `[Phase 5]` blocker tidy).
+- **Issue:** Two texts written during close-out quoted the marker literal verbatim — the deviation-1 lesson entry reproduced its fix command `grep -F '[Phase 3 / D-08]' …`, and the blocker supersession note pointed at "the `[Phase 3 / D-08]` record". Each added an occurrence, taking `grep -Fc '[Phase 3 / D-08]' .planning/STATE.md` from 1 to **2** and then to 3 — which fails Task 1 acceptance criterion 1 and, worse, makes the marker-line scoping that deviation 1 prescribes match multiple lines. Ironic and exactly the hazard being documented.
+- **Fix:** Both references de-literalised — the lesson entry now shows `grep -F '<the D-08 marker literal>' …` with an inline note explaining why the literal is not reproduced, and the blocker note says "the D-08 decision record in `### Decisions` (search that section for `D-08`)". `.planning/STATE.md:63` and the marker bullet itself were left untouched.
+- **Files modified:** `.planning/STATE.md`
+- **Verification:** `grep -Fc '[Phase 3 / D-08]'` back to **1** at line 82; marker-line counts `cudagraphs-confirmed`=1 / `triton-only-fallback`=0; the full marker-line-scoped Task 1 gate exits **0**; the branch detector still resolves to `cudagraphs-confirmed`. The whole suite re-run after the edit: resume exit 0 with 17 `G6.5` PASS, P2 27 anchored PASS, P3 71 PASS / 1 FAIL with 0 not owned by `/03-06`, selftest exit 0 with ten G7/G8 PASS and zero anchored SKIP.
+- **Committed in:** the trailing `docs(03-05)` metadata commit.
+
 ---
 
-**Total deviations:** 2 auto-fixed (both Rule 1 — broken verification clauses; zero content deviations)
-**Impact on plan:** Both fixes were mandatory for correctness, and deviation 1 was load-bearing: without it the plan would have shipped the wrong D-08 branch's wording and honesty gate on a `cudagraphs-confirmed` decision. Neither fix weakened an assertion — deviation 1 made the branch detector *more* precise, and deviation 2 replaced an unsatisfiable clause with the one the plan's own sibling already mandates. No scope creep; no content departure from D-05, D-07 or D-08; no threshold raised or lowered; no locked literal dropped.
+**Total deviations:** 3 auto-fixed (all Rule 1 — broken or self-broken verification clauses; zero content deviations)
+**Impact on plan:** All three fixes were mandatory for correctness, and deviation 1 was load-bearing: without it the plan would have shipped the wrong D-08 branch's wording and honesty gate on a `cudagraphs-confirmed` decision. No fix weakened an assertion — deviation 1 made the branch detector *more* precise, deviation 2 replaced an unsatisfiable clause with the one the plan's own sibling already mandates, and deviation 3 restored an invariant the close-out prose had broken. No scope creep; no content departure from D-05, D-07 or D-08; no threshold raised or lowered; no locked literal dropped.
+
+### Close-out note
+
+The `[Phase 5]` entry in STATE.md `### Blockers/Concerns` was struck through in place and marked **RESOLVED / SUPERSEDED** (pointing at the D-08 decision record) rather than deleted, so the supersession stays auditable. `requirements.mark-complete` was deliberately not run — see Decisions Made #5.
 
 ## Issues Encountered
 
