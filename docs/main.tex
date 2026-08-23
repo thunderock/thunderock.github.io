@@ -148,8 +148,8 @@
     {Senior Machine Learning Engineer (ML Platform \& Frameworks)}{Jul. 2024 -- Present}
     {{\href{https://www.linkedin.com/company/adobe/}{\textcolor{accentdark}{\underline{ADOBE FIREFLY}}}}}{GENERATIVE AI, COMPUTER VISION, LARGE LANGUAGE MODELS}
     \resumeItemListStart
-      \resumeItem{Lead fault-tolerant distributed inference and training infrastructure for the org's ML platform: GPU pipelines on Kubernetes engineered to survive node loss and partial failure, from 40-node daily EMR ingestion through production model inference.}
-      \resumeTopic{Distributed Inference Frameworks}{Designed and led engineering for the org's online and offline inference systems powering experimentation and production at scale, reaching 24$\times$A100-40GB per model job across 9 model queues and 64 H100s in one parallel wave.}
+      \resumeItem{Lead fault-tolerant distributed inference and training infrastructure for the org's ML platform: GPU pipelines on Kubernetes engineered to survive node loss and partial failure, from hyperscaled daily EMR ingestion through production model inference.}
+      \resumeTopic{Distributed Inference Frameworks}{Designed and led engineering for the org's online and offline inference systems powering experimentation and production at scale, reaching 1000s$\times$GPUs per model job across many model queues in one parallel wave.}
         \resumeItemListStart
           \resumeItem{Built online inference on vLLM + Ray for rapid experimentation with LLMs such as Falcon-40B and Llama~2~70B.}
           \resumeItem{Built offline inference on Ray Data + PyTorch Lightning; a module benchmarked on that engine at 1.09M rows, 8$\times$A100, 16 fractional-GPU actors. Introduced torch.compile(mode="max-autotune") in production: compiler-generated Triton kernels, fusion, CUDA-graph capture.}
@@ -162,9 +162,9 @@
           \resumeItem{Grew the engineering bench: mentored engineers onto the framework, authored its onboarding guides, and reviewed their integrations.}
         \resumeItemListEnd
       \resumeTopic{Build \& Deployment System}{Built a CLI-driven build system (BuildKit images on KEDA-scaled Kubernetes jobs, pushed to ECR), fronted by a Rust control plane and an MCP interface for AI-agent-driven builds, deployments, and inference.}
-      \resumeTopic{Enrichment Service}{Orchestration over the inference framework; migrated its 202.6M-row and 24.8M-clip datasets on idempotent re-runs; ran fire-and-forget pipelines behind a concurrency-safe S3 checkpoint cache, lease/TTL heartbeats and a circuit breaker.}
-      \resumeTopic{Training-Data Governance}{Solely authored the org's fault-tolerant training-data lineage subsystem in Rust (27,135 lines): idempotent claim/receipt registration, immutable S3 evidence layouts, and manifest-after-data publication, proven by a 9.7k-line integration test.}
-      \resumeTopic{Data Quality Framework}{Wrote the org's first data quality framework on Cerberus, used across enrichment pipelines to validate the correctness of feature-generation outputs across a \textasciitilde{}700M-asset catalog growing 35--38M images/month.}
+      \resumeTopic{Enrichment Service}{Orchestration over the inference framework; ran fire-and-forget pipelines behind a concurrency-safe S3 checkpoint cache, lease/TTL heartbeats and a circuit breaker.}
+      \resumeTopic{Training-Data Governance}{Solely authored the org's fault-tolerant training-data lineage subsystem in Rust: idempotent claim/receipt registration, immutable S3 evidence layouts, and manifest-after-data publication.}
+      \resumeTopic{Data Quality Framework}{Wrote the org's first data quality framework on Cerberus, used across enrichment pipelines to validate the correctness of feature-generation outputs across a Billion asset catalog growing 35--38M images/month.}
     \resumeItemListEnd
 
     \resumeSubheading
@@ -196,7 +196,7 @@
 
     \resumeSubheading
       {Software Development Engineer}{Sep. 2016 -- Sep. 2017}
-      {{\href{https://www.linkedin.com/company/groupon/}{\textcolor{accentdark}{\underline{GROUPON}}}}}{BACKEND ENGINEERING}
+      {{\href{https://www.linkedin.com/company/groupon/}{\textcolor{accentdark}{\underline{GROUPON}}}}}{BACKEND ENGINEERING, RECOMMENDATION SYSTEMS}
       \resumeItemListStart
         \resumeItem{\textit{Customer segmentation and deal-recommendation ML (NSVD unsupervised collaborative filtering on Neo4j); Cyclops customer-service platform live in every Groupon country.}}
       \resumeItemListEnd
@@ -327,8 +327,3 @@ In this work, we propose a non-parametric contrastive learning framework to lear
 
 %-------------------------------------------
 \end{document}
-
-
-
-
-
