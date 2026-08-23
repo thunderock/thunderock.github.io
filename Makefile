@@ -9,7 +9,7 @@
 #   make view             - open docs/AshutoshTiwari.pdf in macOS Preview
 #   make watch            - latexmk -pvc continuous build
 #   make verify           - gate the PDF: page budget, ATS text layer, honesty freeze
-#   make verify-regressions - standing content-regression assertions (P2.x)
+#   make verify-regressions - standing content-regression assertions (P2.x + P3.x)
 #   make verify-selftest  - prove the gates fire (overflow probe + negative controls)
 #   make verify-baseline  - regenerate docs/verify/manifest.txt from live measurement
 #   make clean            - remove auxiliary build artifacts
@@ -28,6 +28,7 @@ JOBNAME    := AshutoshTiwari
 PDF        := $(TEX_DIR)/$(JOBNAME).pdf
 VERIFY     := scripts/verify-resume.sh
 REGRESS    := scripts/verify-phase2-regressions.sh
+REGRESS3   := scripts/verify-phase3-regressions.sh
 
 # Make sure /Library/TeX/texbin is reachable even in non-login shells.
 export PATH := /Library/TeX/texbin:$(PATH)
@@ -180,37 +181,49 @@ watch:  ## Continuous build with latexmk -pvc
 # inside the script, and must never appear here: a target carrying it would turn
 # `make verify` into a run that cannot refuse a stale artifact.
 #
-# The content-regression net is chained FIRST in this recipe, above the harness.
-# It is content-only and sub-second, so a content regression is reported before
+# The content-regression nets are chained FIRST in this recipe, above the harness.
+# They are content-only and sub-second, so a content regression is reported before
 # the slower page/geometry harness runs at all. Order matters for a second
 # reason: GNU Make 3.81 aborts a recipe at its first failing line, so a net
 # chained second would simply never run whenever the harness is red -- which is
 # the normal state mid-edit, exactly when a content regression most needs
-# reporting. Never prefix either line with `-` or `|| true`: that hides the
-# failure and defeats both scripts. Note the harness remains the oracle -- make
+# reporting. Never prefix any line with `-` or `|| true`: that hides the
+# failure and defeats the scripts. Note the harness remains the oracle -- make
 # collapses the scripts' 1-vs-2 exit vocabulary into its own 2, so the gating
-# invocation stays `bash $(VERIFY) && bash $(REGRESS)` run directly. To run only
-# the net, without building or gating the PDF, use `make verify-regressions`.
+# invocation stays `bash $(VERIFY) && bash $(REGRESS) && bash $(REGRESS3)` run
+# directly. To run only the nets, without building or gating the PDF, use
+# `make verify-regressions`.
 verify: $(PDF)  ## Gate the PDF: page budget, page-1 boundary, ATS text layer, honesty freeze
 	@bash $(REGRESS)
+	@bash $(REGRESS3)
 	@bash $(VERIFY)
 
-# Standing content-regression net for the two Phase 2 invariants no assertion in
-# $(VERIFY) covers: career-break absence, and the locked folded-descriptor
-# literals -- including the `C++ graph algorithms` anchor a later phase's
-# keyword criterion rests on.
+# Standing content-regression nets for the invariants no assertion in $(VERIFY)
+# covers. $(REGRESS) holds the two Phase 2 ones: career-break absence, and the
+# locked folded-descriptor literals -- including the `C++ graph algorithms`
+# anchor a later phase's keyword criterion rests on. $(REGRESS3) holds the
+# Phase 3 ones: the rebuilt Adobe block's retained claims, lead-bullet voice,
+# governance topic, fault-tolerance mechanisms, compiler bridge, evidenced
+# replacement figures and the sign-off outcomes -- what was approved asserted
+# present, what was rejected asserted absent.
+#
+# Both are wired here rather than left standalone because an uninvoked net is an
+# unenforced invariant, which is the defect the milestone audit named for the
+# Phase 2 net. A net authored and then never called is worse than no net: it
+# reads as coverage while asserting nothing.
 #
 # Deliberately carries NO $(PDF) prerequisite, which is the majority pattern in
 # this section rather than an exception: verify-selftest and verify-baseline
-# carry none either, and only `verify` does. The net's own contract is to read
-# whatever artifact is already on disk and never rebuild -- it reports "cannot
+# carry none either, and only `verify` does. Each net's own contract is to read
+# whatever artifact is already on disk and never rebuild -- they report "cannot
 # verify" with a `make build` remedy when the PDF is missing -- so adding a
-# prerequisite would convert it into build-then-verify, the same wart the
-# comment block above documents on `verify`. The waiver flag named only inside
-# that script must never appear in this recipe either: the script's own help
-# says a run carrying it certifies nothing.
-verify-regressions:  ## Standing content-regression net (P2.x): career-break absence + locked descriptor literals
+# prerequisite would convert this into build-then-verify, the same wart the
+# comment block above documents on `verify`. The waiver flags named only inside
+# those scripts must never appear in this recipe either: a run carrying one
+# certifies nothing.
+verify-regressions:  ## Standing content-regression nets (P2.x + P3.x): career-break absence, locked descriptor literals, Adobe rebuild invariants
 	@bash $(REGRESS)
+	@bash $(REGRESS3)
 
 verify-selftest:  ## Prove the gates fire: overflow probe + five negative controls
 	@bash $(VERIFY) --selftest
