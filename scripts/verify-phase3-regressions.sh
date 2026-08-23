@@ -60,13 +60,16 @@
 #       reported as a pass, and never conflated with "the document is wrong"
 #
 # RED ON ARRIVAL, by design. This net is written BEFORE the content it gates, so
-# every later plan in Phase 3 is verified against it. Group 1 (retention) ships
-# in the first commit and passes today. The new-content, retirement, promotion
-# and draft-absence groups arrive in the next commit and are RED on the committed
-# artifact on purpose: each FAIL message names the plan that owns the fix, so the
-# FAIL census is an auditable contract that 03-04, 03-05 and 03-06 drive to zero.
-# That red state is also the anti-tautology control for those classes -- an
-# assertion never observed failing is not a gate (Phase 1's rule, STATE.md).
+# every later plan in Phase 3 is verified against it. Group 1 (retention) passes
+# today. Groups 2-7 are RED on the committed artifact ON PURPOSE: each FAIL
+# message names the plan that OWNS the fix -- /03-04, /03-05 or /03-06 -- so the
+# FAIL census is an auditable contract those plans drive to zero, not noise. That
+# red state is simultaneously the anti-tautology control for the new-content,
+# retirement and attribution classes: an assertion never observed failing is not
+# a gate (Phase 1's rule, recorded in .planning/STATE.md). The classes that PASS
+# on arrival -- retention, EXP-08 draft absence, and the promotion conjunction --
+# are proven failable by crafted negative controls instead; see NEGATIVE CONTROLS
+# at the bottom of this header.
 #
 # WHY TWO TEXT STREAMS. pdftotext breaks a multi-word literal at whatever wrap
 # point the renderer chose, so a raw whole-line grep for a phrase returns 0 on a
@@ -221,6 +224,7 @@ display_of() {
     case "$1" in
         "${GATE:-}")     printf '%s\n' 'the extracted text layer' ;;
         "${SQUEEZED:-}") printf '%s\n' 'the whitespace-squeezed text layer' ;;
+        "${GOVSLICE:-}") printf '%s\n' 'the rendered governance-topic region of the text layer' ;;
         "${MANIFEST:-}") printf '%s\n' 'the verification manifest' ;;
         *)               printf '%s\n' "$1" ;;
     esac
@@ -266,9 +270,6 @@ assert_present_i() {
 # assert_absent <label> <needle> <file> <remedy> -- the fixed string must not
 # appear at all. Used for the retired EXP-04 figures (both text streams AND the
 # source) and for the EXP-08 draft literals that stay absent until approved.
-#
-# First caller lands with Group 6 in the next commit of this plan.
-# shellcheck disable=SC2329
 assert_absent() {
     _aa=$(gcount -Fc "$2" "$3")
     _aad=$(display_of "$3")
@@ -278,6 +279,27 @@ assert_absent() {
         emit FAIL "$1: '$2' appears $_aa time(s) in $_aad -- want 0. $4"
     else
         emit FAIL "$1: '$2' could not be measured against $_aad (unreadable or missing input) -- the verdict is UNKNOWN, which is never a pass"
+    fi
+    return 0
+}
+
+# assert_absent_i <label> <needle> <file> <remedy> -- case-INSENSITIVE absence.
+#
+# Used by exactly ONE needle in this net, deliberately: the D-05 attribution stem
+# 'achiev'. 'achieving', 'achieved' and 'Achievement' are ONE honesty violation,
+# not three, so folding case is what makes the assertion match the rule instead
+# of matching a spelling. Every OTHER absence needle here is case-sensitive on
+# purpose -- the retired figures and the EXP-08 draft literals are exact rendered
+# or exact source forms, and widening them would start catching unrelated words.
+assert_absent_i() {
+    _aai=$(gcount -Fic "$2" "$3")
+    _aaid=$(display_of "$3")
+    if [ "$_aai" -eq 0 ]; then
+        emit PASS "$1: '$2' is absent from $_aaid case-insensitively (count 0)"
+    elif [ "$_aai" -ge 1 ]; then
+        emit FAIL "$1: '$2' appears $_aai time(s) case-insensitively in $_aaid -- want 0. $4"
+    else
+        emit FAIL "$1: '$2' could not be measured against $_aaid (unreadable or missing input) -- the verdict is UNKNOWN, which is never a pass"
     fi
     return 0
 }
@@ -330,9 +352,6 @@ assert_whole_line_once() {
 # remedies. Nothing here is measurable from the text layer alone: this is the
 # only assertion in the net that reads the verification manifest as DATA to
 # cross-check rather than as configuration, which is why --manifest exists.
-#
-# First caller lands with Group 5 in the next commit of this plan.
-# shellcheck disable=SC2329
 assert_promoted() {
     _apr_gate=$(gcount -Fc "$2" "$GATE")
     if [ -s "$WORK/kw-required.txt" ]; then
@@ -365,9 +384,6 @@ assert_promoted() {
 
 # gate_line_of <string> -- first line number in the gate stream whose WHOLE
 # content equals <string>, or empty when absent.
-#
-# First caller lands with Group 2 in the next commit of this plan.
-# shellcheck disable=SC2329
 gate_line_of() {
     LC_ALL=C grep -n -Fx -m1 -- "$1" "$WORK/gate.txt" 2>/dev/null | cut -d: -f1
     return 0
@@ -377,7 +393,9 @@ gate_line_of() {
 # whole-line match INSIDE the inclusive range, or empty. An inverted or empty
 # range yields empty.
 #
-# First caller lands with Group 3 in the next commit of this plan.
+# Kept from the template: no Phase-3 clause needs it yet. The governance-region
+# slice (Group 3) anchors on a topic line that CONTAINS its needle rather than
+# equalling it, so it cannot use a whole-line lookup.
 # shellcheck disable=SC2329
 region_line_of() {
     if [ "$1" -lt 1 ] || [ "$1" -gt "$2" ]; then
@@ -404,9 +422,6 @@ region_line_of() {
 # empty or non-numeric operand reaching `[ -lt ]` errors out and returns 2 --
 # which, with no errexit, would sail past as neither PASS nor FAIL. Bailing to
 # "no line" here makes the caller's unmeasurable branch fire instead.
-#
-# First caller lands with Group 2 in the next commit of this plan.
-# shellcheck disable=SC2329
 region_first_nonempty() {
     case "$1$2" in
         ''|*[!0-9]*) return 0 ;;
@@ -579,11 +594,391 @@ assert_present "EXP-02c/03-01 retained true claim (whitespace-squeezed text laye
     'millions every day' "$SQUEEZED"
 
 # ---------------------------------------------------------------------------
+# GROUP 2 -- EXP-02a Adobe lead-bullet voice. Owner 03-04.
+#
+# ROADMAP criterion 2's SECOND clause: the Adobe block must OPEN on
+# fault-tolerance / distributed-inference language rather than job-description
+# voice. No existing gate covers it.
+#
+# WHY THIS IS SCOPED TO THE EXTRACTED LEAD LINE and not to the document. Measured
+# on the committed artifact: lowercase 'distributed inference' is x0 on the lead
+# line but x1 in the gate stream as a whole, because the title-case topic heading
+# 'Distributed Inference Frameworks' sits three lines below it. A document-wide
+# needle would therefore be GREEN today, before the rewrite it is supposed to
+# gate -- a tautology. The anchor has to be EARNED BY THE OPENING LINE, so the
+# clause extracts exactly one line and matches against that.
+#
+# The region is resolved anchor-free: the subtitle is a frozen \resumeSubheading
+# cell (the harness's G5.5 asserts it extracts exactly once as a whole line), and
+# the measured extraction contract puts the lead bullet on the very next
+# non-blank line -- gate line 10 -> 11, with no blank between. A window of four
+# lines past the subtitle absorbs a future blank line or a reflow without
+# reaching the next bullet.
+#
+# ANY-OF, not all-of. The three anchors are one SET and the verdict is that at
+# least one of them is carried: 03-04-PLAN.md Task 1 states the rewritten line
+# "MUST contain at least one of" them, 03-RESEARCH.md's validation row for
+# EXP-02a says it "must match one of the locked lead anchors", and 03-PATTERNS.md
+# section 3.1 renders them as a regex alternation. Requiring all three would be
+# unsatisfiable in ordinary English -- 'fault-tolerant' and 'fault-tolerance' are
+# morphological variants of one word -- so the owning plan could never turn this
+# green. All three are still MATCHED, and the PASS message names which ones hit,
+# so the census records what the line actually carries.
+#
+# Case-insensitive: whether the phrase lands sentence-initial or mid-clause is a
+# wording choice, not part of the claim.
+# ---------------------------------------------------------------------------
+
+SUB='GENERATIVE AI, COMPUTER VISION, LARGE LANGUAGE MODELS'
+SUB_AT=$(gate_line_of "$SUB")
+LEAD_AT=''
+if [ -n "$SUB_AT" ]; then
+    LEAD_AT=$(region_first_nonempty "$((SUB_AT + 1))" "$((SUB_AT + 4))")
+fi
+
+if [ -z "$SUB_AT" ]; then
+    emit FAIL "EXP-02a/03-04 lead-bullet voice: the Adobe subtitle '$SUB' does not extract as a whole gate line, so the block's opening line cannot be located and the clause is unmeasurable -- check the harness's G5.5 (frozen employer/subtitle cells) FIRST, because this is a harness-level or frozen-cell failure rather than a content one. The verdict is UNKNOWN, which is never a pass"
+elif [ -z "$LEAD_AT" ]; then
+    emit FAIL "EXP-02a/03-04 lead-bullet voice: the Adobe subtitle extracts at gate line $SUB_AT but no non-blank line follows it within 4 lines, so the block's opening line is unmeasurable -- the itemize list under docs/main.tex:149 is empty or the extraction convention changed. The verdict is UNKNOWN, which is never a pass"
+else
+    sed -n "${LEAD_AT}p" "$GATE" > "$WORK/lead.txt"
+    LEAD_HIT=''
+    while IFS= read -r ANCHOR; do
+        [ -n "$ANCHOR" ] || continue
+        LEAD_N=$(gcount -Fic "$ANCHOR" "$WORK/lead.txt")
+        if [ "$LEAD_N" -ge 1 ]; then
+            LEAD_HIT="$LEAD_HIT '$ANCHOR'"
+        fi
+    done <<'ANCHORS'
+fault-tolerant
+fault-tolerance
+distributed inference
+ANCHORS
+
+    if [ -n "$LEAD_HIT" ]; then
+        emit PASS "EXP-02a/03-04 lead-bullet voice: the Adobe block's opening extracted line (gate line $LEAD_AT, the first non-blank after the subtitle at line $SUB_AT) carries the lead anchor(s)$LEAD_HIT case-insensitively"
+    else
+        emit FAIL "EXP-02a/03-04 lead-bullet voice: the Adobe block's opening extracted line (gate line $LEAD_AT, the first non-blank after the subtitle at line $SUB_AT) carries NONE of the lead anchors 'fault-tolerant', 'fault-tolerance' or 'distributed inference', even case-insensitively -- the block still opens in job-description voice. Rewrite the lead \\resumeItem at docs/main.tex:151 so one of them lands on its FIRST rendered line (D-01); a topic heading further down does not earn this anchor"
+    fi
+fi
+
+# ---------------------------------------------------------------------------
+# GROUP 3 -- EXP-02b Rust training-data governance topic. Owner 03-04.
+#
+# Three separable clauses: the topic landed with its evidenced figures; the
+# single-point-of-failure 'Rust' keyword gained a second carrier; and the topic is
+# framed as fault-tolerant distributed systems rather than as inference
+# optimization.
+# ---------------------------------------------------------------------------
+
+while IFS= read -r LIT; do
+    [ -n "$LIT" ] || continue
+    assert_present "EXP-02b/03-04 governance topic literal (whitespace-squeezed text layer)" "$LIT" "$SQUEEZED"
+done <<'GOVLITERALS'
+Training-Data Governance
+27,135
+claim/receipt
+immutable S3 evidence layouts
+9.7k-line
+lineage
+GOVLITERALS
+
+# 'Rust' is a BLOCKER keyword (KEYWORDS_REQUIRED) with exactly ONE carrier today
+# -- 'a Rust control plane' in the Build & Deployment topic. A single carrier is a
+# single point of failure: any reword of that one topic can silently drop a
+# BLOCKER keyword and only the harness's G6.5 would notice, one commit too late.
+# D-02's governance group adds the second carrier, so requiring >= 2 does double
+# duty: it proves the group actually landed, and it retires the concentration.
+#
+# Counted as OCCURRENCES, not as matching lines. `grep -Fc` counts lines, so a
+# governance clause that happened to render its 'Rust' on the same wrapped line
+# as another would read as 1 and FAIL for a fabricated reason. The sentinel guard
+# is still taken from gcount, because `grep -Fo` on an unreadable file prints
+# nothing and would otherwise be indistinguishable from a genuine zero.
+RUST_LINES=$(gcount -Fc 'Rust' "$GATE")
+if [ "$RUST_LINES" -lt 0 ]; then
+    RUST_N=-1
+else
+    RUST_N=$(LC_ALL=C grep -Fo -- 'Rust' "$GATE" 2>/dev/null | LC_ALL=C grep -c '.')
+    case "$RUST_N" in
+        ''|*[!0-9]*) RUST_N=-1 ;;
+    esac
+fi
+
+if [ "$RUST_N" -lt 0 ]; then
+    emit FAIL "EXP-02b/03-04 Rust keyword has more than one carrier: the occurrence count could not be measured against the extracted text layer -- the verdict is UNKNOWN, which is never a pass"
+elif [ "$RUST_N" -ge 2 ]; then
+    emit PASS "EXP-02b/03-04 Rust keyword has more than one carrier: 'Rust' occurs $RUST_N time(s) in the extracted text layer (want 2 or more), so the BLOCKER keyword is no longer single-carrier"
+else
+    emit FAIL "EXP-02b/03-04 Rust keyword has more than one carrier: 'Rust' occurs $RUST_N time(s) in the extracted text layer, want 2 or more -- the governance topic has not landed its own Rust carrier yet. Until it does, 'Rust' is a BLOCKER keyword with a single point of failure at docs/main.tex:163, and any reword of that one topic drops it (D-02, and 03-RESEARCH.md Pitfall 7: land the second carrier before or with any reword of the first)"
+fi
+
+# The framing clause. CODEBASE-EVIDENCE.md:12 is BINDING, not stylistic: the
+# Content Gate work is "strong for 'fault-tolerant distributed systems in Rust',
+# not inference optimization". Framing the topic around performance would be the
+# honesty violation this phase exists to avoid, and no G-gate can see it, so it
+# is mechanized as a REGION-SCOPED absence: whatever else the resume says about
+# throughput belongs to the inference topics, never to this one.
+#
+# The region runs from the topic's own rendered line through the last line before
+# the next bullet-prefixed line (the measured extraction contract puts a
+# U+2013 + space prefix on the FIRST rendered line of every Adobe bullet at both
+# itemize depths; continuation lines start with a word). The Adobe block is
+# bounded by the next employer line; if that anchor cannot be resolved the bound
+# falls back to the end of the stream, which WIDENS the slice -- a wider slice can
+# only make these absence assertions stricter, never produce a false pass.
+#
+# Case-SENSITIVE on purpose. These five are exact lowercase prose tokens, and
+# 'achiev' in Group 6 is deliberately the only case-insensitive absence needle in
+# this net.
+GOV_TOPIC='Training-Data Governance'
+GOV_AT=$(LC_ALL=C grep -n -F -m1 -- "$GOV_TOPIC" "$GATE" 2>/dev/null | cut -d: -f1)
+GOV_STOP=$(gate_line_of 'SWIGGY')
+GOV_TAIL=$(LC_ALL=C grep -c '' "$GATE")
+GOV_END=''
+GOVSLICE=''
+
+if [ -n "$GOV_AT" ]; then
+    if [ -n "$GOV_STOP" ] && [ "$GOV_STOP" -gt "$GOV_AT" ]; then
+        GOV_LIM=$((GOV_STOP - 1))
+    else
+        GOV_LIM="$GOV_TAIL"
+    fi
+    GOV_NEXT=$(sed -n "$((GOV_AT + 1)),${GOV_LIM}p" "$GATE" 2>/dev/null | LC_ALL=C grep -n -m1 '^– ' | cut -d: -f1)
+    if [ -n "$GOV_NEXT" ]; then
+        GOV_END=$((GOV_AT + GOV_NEXT - 1))
+    else
+        GOV_END="$GOV_LIM"
+    fi
+    sed -n "${GOV_AT},${GOV_END}p" "$GATE" > "$WORK/govslice.txt"
+    GOVSLICE="$WORK/govslice.txt"
+fi
+
+while IFS= read -r BAD; do
+    [ -n "$BAD" ] || continue
+    if [ -z "$GOV_AT" ]; then
+        emit FAIL "EXP-02b/03-04 governance topic is not framed as inference optimization: '$BAD' is unmeasurable -- no extracted line contains '$GOV_TOPIC', so the topic's rendered region cannot be sliced. The topic has not landed yet; until it does this framing rule has nothing to measure, and the verdict is UNKNOWN, which is never a pass"
+    else
+        assert_absent "EXP-02b/03-04 governance topic is not framed as inference optimization (rendered region, gate lines $GOV_AT-$GOV_END)" \
+            "$BAD" "$GOVSLICE" \
+            "CODEBASE-EVIDENCE.md:12 scopes the Content Gate work as fault-tolerant distributed systems in Rust and explicitly NOT as inference optimization. Reframe the claim around idempotent claim/receipt registration, immutable evidence layouts, manifest-after-data publication and integration-test scale -- performance language belongs to the inference topics, not to this one (D-02)."
+    fi
+done <<'FORBIDDEN'
+throughput
+latency
+speedup
+faster
+images/sec
+FORBIDDEN
+
+# ---------------------------------------------------------------------------
+# GROUP 4 -- D-04 fault-tolerance mechanisms named INLINE. Owner 03-04.
+#
+# D-04 requires each mechanism named in the topic whose subsystem actually
+# produced it -- no aggregate "fault tolerance" bullet standing in for the work.
+# These seven needles are what makes "named" checkable: an aggregate bullet can
+# claim fault tolerance without naming a single mechanism, and nothing else in
+# the phase would notice.
+# ---------------------------------------------------------------------------
+
+while IFS= read -r LIT; do
+    [ -n "$LIT" ] || continue
+    assert_present "D-04/03-04 fault-tolerance mechanism named inline (whitespace-squeezed text layer)" "$LIT" "$SQUEEZED"
+done <<'MECHANISMS'
+exponential backoff
+full jitter
+concurrency-safe S3 checkpoint
+lease/TTL heartbeat
+DLQ
+circuit breaker
+idempotent re-run
+MECHANISMS
+
+# ---------------------------------------------------------------------------
+# GROUP 5 -- EXP-03 torch.compile production claim and the keyword-promotion
+# pairing. Owners 03-05 (the compiler claim and Triton) and 03-04 (both
+# accelerator keywords).
+#
+# The literal carries plain ASCII double quotes: the mode string renders and
+# extracts as U+0022, and the token is short enough that it is never broken
+# across a wrap point, so the squeezed stream is the right home for it.
+#
+# The four promotion assertions exist because the harness's G6.6 calls warn
+# UNCONDITIONALLY with no branch on the count: a commit that lands a
+# KEYWORDS_TARGET keyword and forgets to promote it leaves the harness at exit 0.
+# Until this group existed the promotion rule was a comment in the manifest with
+# no machine backing at all. All four are unconditional -- both branches of D-08
+# land Triton, and 03-04 lands A100 and H100 -- so none of them is
+# branch-dependent the way the Class E needle below is.
+# ---------------------------------------------------------------------------
+
+assert_present "EXP-03a/03-05 torch.compile production claim (whitespace-squeezed text layer)" \
+    'torch.compile(mode="max-autotune")' "$SQUEEZED"
+
+assert_promoted "EXP-03b/03-05 keyword promoted in the same commit that landed it" 'torch.compile'
+assert_promoted "EXP-03b/03-04 keyword promoted in the same commit that landed it" 'A100'
+assert_promoted "EXP-03b/03-04 keyword promoted in the same commit that landed it" 'H100'
+assert_promoted "EXP-03b/03-05 keyword promoted in the same commit that landed it" 'Triton'
+
+# RECORDED GAP -- Class E, deliberately NOT asserted at wave 1.
+#
+# D-08's fallback honesty constraint has a machine owner, and it is not this
+# plan. On the `triton-only-fallback` branch the compiler-bridge clause must say
+# nothing about CUDA graphs ANYWHERE, and nothing else in Phase 3 enforces that:
+# it would otherwise be acceptance prose with no assertion behind it.
+#
+#   assertion : assert_absent 'CUDA' against "$SQUEEZED" (the 03-RESEARCH.md
+#               Validation-Architecture spec for EXP-03 c, its P3.12 row) and
+#               against "$TEX"
+#   label     : EXP-03c/03-05 fallback bridge names no CUDA graphs
+#   owner     : 03-05 Task 3, appended in the SAME commit that ships the
+#               fallback wording -- the same shape as 03-08 Task 1's per-draft
+#               assert_absent -> assert_present flip
+#   control   : 03-05 Task 3's obligation, not this plan's. The needle is x0 in
+#               docs/main.tex today, so it is well-formed rather than vacuous,
+#               but because it PASSES on arrival it needs a crafted control:
+#               insert 'CUDA' into a scratch text layer, run with --gate-text,
+#               require exit 1.
+#
+# It cannot be written here because the branch is undecided until 03-05 Task 1's
+# checkpoint answers, and on `cudagraphs-confirmed` the clause LEGITIMATELY names
+# CUDA-graph capture -- the needle would then be asserting the opposite of the
+# truth. Recording it as a gap with a named owner is the difference between a
+# decision and an omission a later reader has to rediscover.
+
+# ---------------------------------------------------------------------------
+# GROUP 6 -- EXP-04 retirement, the D-05 attribution rule, and the evidenced
+# replacements. Owners 03-05 (the swap and the attribution wording) and 03-04
+# (the spread figures).
+#
+# RETIREMENT IS ASSERTED IN THE RENDERED FORM, not the source form, on the text
+# layer. LaTeX converts the source's `--` into U+2013, so an ASCII '10--50'
+# needle against the text layer is VACUOUS -- it can never match, which makes it
+# a permanently-green assertion that proves nothing. The source forms are
+# asserted separately against docs/main.tex, where they are what is actually
+# written. Both halves are required: the source is where the regression is made,
+# the text layer is where a reader and an ATS parser see it.
+# ---------------------------------------------------------------------------
+
+assert_absent "EXP-04a/03-05 unverified speedup retired (rendered EN DASH form)" \
+    '10–50' "$GATE" \
+    "This range has no recorded provenance (PROJECT.md Out of Scope; ROADMAP criterion 3). Replace it with an evidenced figure from CODEBASE-EVIDENCE.md; do not reintroduce the unprovenanced range and do not soften it into a different unprovenanced one."
+
+assert_absent "EXP-04a/03-05 unverified speedup retired (rendered EN DASH form)" \
+    '10–50' "$SQUEEZED" \
+    "Same needle against the squeezed stream, so a mid-phrase wrap cannot hide the figure from the raw-line check."
+
+assert_absent "EXP-04a/03-05 unverified throughput figure retired (rendered EN DASH form)" \
+    '3–8K images/sec on 32 GPUs' "$SQUEEZED" \
+    "This throughput claim has no recorded provenance (ROADMAP criterion 3). Replace it with an evidenced figure; the measured 1.09M / 8xA100 / 16-fractional-GPU-actor set is the sanctioned replacement (D-05)."
+
+assert_absent "EXP-04a/03-05 unverified speedup retired (ASCII source form)" \
+    '10--50' "$TEX" \
+    "The source writes the ASCII double hyphen and LaTeX renders it as U+2013, so this is where the retirement is actually made. Removing it from the text layer without removing it here is impossible; removing it here is the edit."
+
+assert_absent "EXP-04a/03-05 unverified throughput figure retired (ASCII source form)" \
+    '3--8K' "$TEX" \
+    "As above: the source form is the edit site. Delete the range from the offline-inference \\resumeItem at docs/main.tex:155."
+
+# The D-05 attribution-safety needle. Label suffix 'd', never 'c': 03-RESEARCH.md's
+# test map already spends its EXP-04 c row on glyph hygiene, and two different
+# assertions answering to one label makes a census unreadable.
+#
+# D-05's binding rule is that his module was BENCHMARKED ON the Ray Data engine --
+# never that he achieved anything with it. Without this needle that rule is
+# subjective acceptance prose with no machine backing, and the honest replacement
+# wording could be written while leaving 'achieving' in place three words away.
+#
+# Matched CASE-INSENSITIVELY, and it is the ONLY case-insensitive absence needle
+# in this net: 'achieving', 'achieved' and 'Achievement' are one honesty
+# violation, not three, so the needle is the stem rather than a spelling. Asserted
+# in BOTH streams because the source is where the wording is chosen and the text
+# layer is where it is read.
+assert_absent_i "EXP-04d/03-05 attribution-safe wording" \
+    'achiev' "$TEX" \
+    "D-05: the offline-inference claim must say his module was BENCHMARKED ON the Ray Data engine, not that he achieved a result with it. Rewrite the clause at docs/main.tex:155 without any form of 'achieve'; the stem is matched case-insensitively because 'achieving', 'achieved' and 'Achievement' are the same violation."
+
+assert_absent_i "EXP-04d/03-05 attribution-safe wording" \
+    'achiev' "$SQUEEZED" \
+    "Same rule against the rendered text layer -- this is the half a reader and an ATS parser actually see."
+
+# The evidenced replacements, each traceable to a named CODEBASE-EVIDENCE.md
+# entry (the traceability table itself is a doc assertion, carried by the owning
+# plan's SUMMARY).
+while IFS= read -r LIT; do
+    [ -n "$LIT" ] || continue
+    assert_present "EXP-04b/03-05 evidenced replacement figure (whitespace-squeezed text layer)" "$LIT" "$SQUEEZED"
+done <<'SWAPFIGURES'
+1.09M
+8×A100
+16 fractional-GPU actors
+SWAPFIGURES
+
+while IFS= read -r LIT; do
+    [ -n "$LIT" ] || continue
+    assert_present "EXP-04b/03-04 evidenced scale figure (whitespace-squeezed text layer)" "$LIT" "$SQUEEZED"
+done <<'SCALEFIGURES'
+24×A100-40GB
+9 model queues
+64 H100s
+202.6M-row
+24.8M
+~700M
+35–38M
+40-node
+SCALEFIGURES
+
+# The two accelerator tokens again against the RAW extracted lines. Neither
+# contains whitespace, so this is the same normalization guard Group 1 documents
+# -- but here it also matters that each is readable on a single extracted line,
+# because that is what the harness's case-sensitive G6.5 keyword scan sees.
+while IFS= read -r TOK; do
+    [ -n "$TOK" ] || continue
+    assert_present "EXP-04b/03-04 accelerator keyword (raw extracted lines, normalization-proof)" "$TOK" "$GATE"
+done <<'ACCELERATORS'
+A100
+H100
+ACCELERATORS
+
+# ---------------------------------------------------------------------------
+# GROUP 7 -- EXP-07 Flipkart closure (owner 03-06) and EXP-08 absent-by-default
+# (owners 03-07 for the sign-off, 03-08 for the flip).
+#
+# The EXP-08 half is the only group here that PASSES on arrival, and it is the
+# one whose SOURCE assertion no existing gate could ever replace: a draft bullet
+# parked behind a '%' comment in docs/main.tex is invisible to every text-layer
+# gate in the repo, because LaTeX never renders it. D-14 makes the drafts absent
+# by default; they flip to assert_present one needle at a time, in the commit
+# that ships an approved bullet, only on a recorded approval.
+# ---------------------------------------------------------------------------
+
+assert_present "EXP-07a/03-06 Flipkart failure-class closure (whitespace-squeezed text layer)" \
+    'manual deploys' "$SQUEEZED"
+
+# 'STS' is REJECTED as a needle and must not be added: a fixed-string search for
+# it matches inside the word 'TESTS', so the assertion would be red on a document
+# that never mentions STS at all. 'AssumeRole' is the distinctive literal of the
+# same draft and carries no substring hazard.
+while IFS= read -r DRAFT; do
+    [ -n "$DRAFT" ] || continue
+    assert_absent "EXP-08a/03-07 provisional draft literal absent by default (source)" \
+        "$DRAFT" "$TEX" \
+        "D-14: the provisional cost/mentoring figures are absent by default and ship only on a recorded per-bullet approval at the 03-07 checkpoint. A '%'-commented draft counts as present here on purpose -- it is a leak no text-layer gate can see. If the bullet was approved, 03-08 Task 1 flips THIS needle from absent to present in the same commit that ships it; do not delete the assertion."
+    assert_absent "EXP-08a/03-07 provisional draft literal absent by default (text layer)" \
+        "$DRAFT" "$GATE" \
+        "D-14 absent-by-default: this literal is in the rendered PDF without a recorded approval. Either remove the bullet, or -- if it was approved at the 03-07 checkpoint -- have 03-08 Task 1 flip this needle from absent to present in the commit that ships it."
+done <<'DRAFTS'
+AssumeRole
+6-week
+mentored
+DRAFTS
+
+# ---------------------------------------------------------------------------
 # Human summary. Machine-readable RESULT lines come first; this block uses the
 # repo's >> progress and !! error prefixes.
 # ---------------------------------------------------------------------------
 
-printf '>> Groups run: 1 EXP-02c retention guards. Content only -- freshness is the harness G0.3.\n'
+printf '>> Groups run: 1 EXP-02c retention guards; 2 EXP-02a lead-bullet voice; 3 EXP-02b governance topic, Rust carriers and honest framing; 4 D-04 fault-tolerance mechanisms; 5 EXP-03 torch.compile claim and keyword-promotion pairing; 6 EXP-04 retirement, D-05 attribution and evidenced replacements; 7 EXP-07 Flipkart closure and EXP-08 draft absence. Content only -- freshness is the harness G0.3.\n'
 
 if [ "$FAILURES" -eq 0 ]; then
     printf '>> PASS: %s Phase-3 regression assertion(s), 0 failures.\n' "$P3_SEQ"
