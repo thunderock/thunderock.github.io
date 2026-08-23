@@ -873,25 +873,31 @@ No external library is adopted, so there is little to date. The one currency-sen
 | **A4** | Each approved EXP-08 bullet costs 1–2 rendered lines | §Checkpoint Mechanics | `[ASSUMED]` — depends on final wording. **Mitigated** by the recommendation to reserve ≥1 line (11.5pt) through the rebuild and to re-measure in the conditional wave. |
 | **A5** | ROADMAP criterion 3's "anywhere in the PDF" is PDF-scoped and does not reach `index.html` | §Runtime State Inventory | `[VERIFIED: ROADMAP.md:69 verbatim]` — the criterion says "in the PDF". If a reviewer reads it as project-wide, `index.html:196` becomes Phase-3 scope. **Mitigated** by recording the handoff rather than silently ignoring it (OQ-2). |
 
-## Open Questions
+## Open Questions (RESOLVED)
+
+> All four are discharged in the phase plans; none blocks execution. Each carries its `RESOLVED:` pointer inline below.
 
 1. **OQ-1 — How is D-08's config read discharged?**
    - *What we know:* the read targets `glimmer/modules/dp/content_type_classifier/module.py:76-77`; the mode string is recorded as `max-autotune`; the fallback wording (Triton-only) is pre-decided by D-08 itself; `EXP-03`'s core and ROADMAP criterion 2 land on **either** branch.
    - *What's unclear:* the genie source repo is not on this machine, so the agent cannot read it; and the `triton.cudagraphs` surface is unaddressed by any recorded citation.
    - *Recommendation:* a `checkpoint:human-verify` in the wave that writes the bridge wording, with the two-command copy-paste, both branches pre-authorized, and the outcome recorded behind a `[Phase 3 / D-08]` marker. **Do not** block the phase on it.
+   - **RESOLVED: 03-05 / Task 1** — blocking `checkpoint:human-verify` with the two-command read, both branches pre-authorized, outcome recorded behind `[Phase 3 / D-08]` (winning identifier only, so the branch is machine-detectable). 03-05 Task 3 reads that marker for the wording and, on `triton-only-fallback`, appends the Class E `CUDA` absence assertion (`P3.12`) in the same commit.
 
 2. **OQ-2 — Who fixes `index.html:196`?**
    - *What we know:* the live site repeats both retired figures verbatim and is published by `.github/workflows/jekyll.yml`; `SITE-01`/`SITE-02` are Phase 6; the audit already records that nothing asserts resume↔site agreement.
    - *What's unclear:* whether leaving an unprovenanced claim on the public site for three phases is acceptable given the milestone's honesty framing.
    - *Recommendation:* **Phase 3 records, Phase 6 fixes.** Add a `[Phase 3]` bullet to `.planning/STATE.md` naming `index.html:196` (retired figures) next to the known `index.html:207-225` (career break), so SITE-01 inherits a concrete, greppable obligation. Escalate to the user only if they want it pulled forward.
+   - **RESOLVED: 03-02 / Task 2** — one `[Phase 3]` STATE.md record names `index.html:196` (both retired figures, verified still present at write time), the publishing workflow, the PDF-scoped reading of criterion 3, AND `index.html:207-225` (SITE-02). Correction to the wording above: `index.html:207-225` was NOT already "known" on STATE.md — measured 2026-08-22, `grep -c 'index.html' .planning/STATE.md` returns 0, and SITE-02 lives only at `.planning/REQUIREMENTS.md:49`. 03-02 Task 2 is therefore what first puts both obligations on the canonical surface.
 
 3. **OQ-3 — Promote `Triton` in a Phase-3 commit, or phrase around it?**
    - *What we know:* D-07's honest bridge names Triton-generated kernels; `manifest.txt` assigns `Triton:5`; the manifest's rule is "the commit that adds it promotes it"; `G6.6` will not catch a miss.
    - *Recommendation:* **promote it** and record that Phase 3 landed a Phase-5-owned target early — ownership is a WARN-routing label, not a permission, and PG2-04's Skills-tier form remains additive. Worth one line in the plan so it is a decision, not an accident.
+   - **RESOLVED: 03-05 / Task 3** — promoted UNCONDITIONALLY (both D-08 branches name Triton-generated kernels), appended to `KEYWORDS_REQUIRED` with the `:5` suffix stripped, alongside `torch.compile`; 03-01's `assert_promoted` triple for `Triton` is likewise unconditional, so a missed landing or a missed promotion would leave the P3 net unable to reach exit 0. The early landing of the Phase-5-owned target is recorded by 03-08 Task 3.
 
 4. **OQ-4 — Does the phase add a Work-Experience employer-first assertion (WR-01 option b)?**
    - *What we know:* the Flipkart flip self-heals at ≥1 line of Adobe growth (measured), but it is a y-position accident; `region_first_nonempty` exists and carries the NT-02 empty-arg caveat.
    - *Recommendation:* **document + measure (option a) this phase**, and note the assertion as a Phase-4 candidate (Phase 4 shifts page 2, so it can own a page-1-stable clause). Adding it as a BLOCKER now lets a future cosmetic y-shift redden the gate. This sits inside the agent's discretion per CONTEXT.
+   - **RESOLVED: 03-08 / Task 3** — the five-block employer-versus-subtitle order is measured at the end state and recorded in a `[Phase 3]` STATE.md bullet as a `pdftotext` row-position artifact, explicitly not claimed as fixed, with the employer-first assertion named as a Phase-4 candidate. No BLOCKER is added this phase; `G6.13` stays a WARN owned by Phase 3 (claimed in 03-02 Task 1) and `ROLE_BIND_WINDOW` stays a local constant.
 
 ## Environment Availability
 
