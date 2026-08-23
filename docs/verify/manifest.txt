@@ -57,4 +57,4 @@ KEYWORDS_TARGET=torch.compile:3|A100:3|H100:3|ONNX:5|CUDA graphs:3|Iceberg:5|Tri
 # --- Sentinels: none = corroborating only, nothing to promote; unassigned = real deviation
 # --- with no owning requirement yet; any = the next phase touching that surface owns it.
 # --- G6.6 is a fallback only: a KEYWORDS_TARGET entry's own ":phase" suffix always wins.
-WARN_OWNERS=G4.3:none|G5.4:3|G6.6:3|G6.13:unassigned|G6.14:5|G6.4:any
+WARN_OWNERS=G4.3:none|G5.4:3|G6.6:3|G6.13:3|G6.14:5|G6.4:any
