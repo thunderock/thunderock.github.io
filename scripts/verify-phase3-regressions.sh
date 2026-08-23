@@ -726,17 +726,21 @@ fi
 # optimization.
 # ---------------------------------------------------------------------------
 
-while IFS= read -r LIT; do
-    [ -n "$LIT" ] || continue
-    assert_present "EXP-02b/03-04 governance topic literal (whitespace-squeezed text layer)" "$LIT" "$SQUEEZED"
-done <<'GOVLITERALS'
-Training-Data Governance
-27,135
-claim/receipt
-immutable S3 evidence layouts
-9.7k-line
-lineage
-GOVLITERALS
+# Explicit per-literal calls (was a here-doc loop). The owner's 798c0fb page-1
+# finalization removed two governance-topic integration-test scale figures, so those
+# two slots are reconciled from assert_present to assert_absent -- the net follows the
+# finalized document. Call ORDER is preserved byte-for-byte: emit() auto-numbers by
+# call order and the whole project pins these P3.xx ids (renumbering would break every
+# record that cites them), so a survivor may never trade places with a retired figure.
+# 2026-08-23 gate reconciliation.
+assert_present "EXP-02b/03-04 governance topic literal (whitespace-squeezed text layer)" 'Training-Data Governance' "$SQUEEZED"
+assert_absent "EXP-02b/03-04 governance topic scale figure retired by owner finalization (whitespace-squeezed text layer)" '27,135' "$SQUEEZED" \
+    "SUPERSEDED: the owner removed this integration-test count from the governance topic in 798c0fb (page 1 is finalized); the topic ships without scale numbers. Do not reintroduce it. See the gate-reconciliation record in .planning/STATE.md."
+assert_present "EXP-02b/03-04 governance topic literal (whitespace-squeezed text layer)" 'claim/receipt' "$SQUEEZED"
+assert_present "EXP-02b/03-04 governance topic literal (whitespace-squeezed text layer)" 'immutable S3 evidence layouts' "$SQUEEZED"
+assert_absent "EXP-02b/03-04 governance topic scale figure retired by owner finalization (whitespace-squeezed text layer)" '9.7k-line' "$SQUEEZED" \
+    "SUPERSEDED: the owner removed this integration-test count from the governance topic in 798c0fb (page 1 is finalized); the topic ships without scale numbers. Do not reintroduce it. See the gate-reconciliation record in .planning/STATE.md."
+assert_present "EXP-02b/03-04 governance topic literal (whitespace-squeezed text layer)" 'lineage' "$SQUEEZED"
 
 # 'Rust' is a BLOCKER keyword (KEYWORDS_REQUIRED) with exactly ONE carrier today
 # -- 'a Rust control plane' in the Build & Deployment topic. A single carrier is a
@@ -836,18 +840,18 @@ FORBIDDEN
 # the phase would notice.
 # ---------------------------------------------------------------------------
 
-while IFS= read -r LIT; do
-    [ -n "$LIT" ] || continue
-    assert_present "D-04/03-04 fault-tolerance mechanism named inline (whitespace-squeezed text layer)" "$LIT" "$SQUEEZED"
-done <<'MECHANISMS'
-exponential backoff
-full jitter
-concurrency-safe S3 checkpoint
-lease/TTL heartbeat
-DLQ
-circuit breaker
-idempotent re-run
-MECHANISMS
+# Explicit per-mechanism calls (was a here-doc loop). The owner's 798c0fb page-1
+# finalization reworded the governance topic to "idempotent claim/receipt registration"
+# and dropped the 'idempotent re-run' phrasing, so that one slot is reconciled to
+# assert_absent. Order preserved so every P3.xx id is unchanged (2026-08-23).
+assert_present "D-04/03-04 fault-tolerance mechanism named inline (whitespace-squeezed text layer)" 'exponential backoff' "$SQUEEZED"
+assert_present "D-04/03-04 fault-tolerance mechanism named inline (whitespace-squeezed text layer)" 'full jitter' "$SQUEEZED"
+assert_present "D-04/03-04 fault-tolerance mechanism named inline (whitespace-squeezed text layer)" 'concurrency-safe S3 checkpoint' "$SQUEEZED"
+assert_present "D-04/03-04 fault-tolerance mechanism named inline (whitespace-squeezed text layer)" 'lease/TTL heartbeat' "$SQUEEZED"
+assert_present "D-04/03-04 fault-tolerance mechanism named inline (whitespace-squeezed text layer)" 'DLQ' "$SQUEEZED"
+assert_present "D-04/03-04 fault-tolerance mechanism named inline (whitespace-squeezed text layer)" 'circuit breaker' "$SQUEEZED"
+assert_absent "D-04/03-04 fault-tolerance mechanism phrasing retired by owner finalization (whitespace-squeezed text layer)" 'idempotent re-run' "$SQUEEZED" \
+    "SUPERSEDED: the owner reworded the governance topic to 'idempotent claim/receipt registration' in 798c0fb (page 1 is finalized), removing the 'idempotent re-run' phrasing. Do not reintroduce it."
 
 # ---------------------------------------------------------------------------
 # GROUP 5 -- EXP-03 torch.compile production claim and the keyword-promotion
@@ -872,7 +876,15 @@ assert_present "EXP-03a/03-05 torch.compile production claim (whitespace-squeeze
 
 assert_promoted "EXP-03b/03-05 keyword promoted in the same commit that landed it" 'torch.compile'
 assert_promoted "EXP-03b/03-04 keyword promoted in the same commit that landed it" 'A100'
-assert_promoted "EXP-03b/03-04 keyword promoted in the same commit that landed it" 'H100'
+# SUPERSEDED (2026-08-23 gate reconciliation): the owner's 798c0fb page-1 finalization removed
+# 'H100' from the Experience block (A100 kept), so H100 was demoted KEYWORDS_REQUIRED ->
+# KEYWORDS_TARGET (H100:5, owner Phase 5). The promotion pairing no longer holds, so this slot
+# now asserts H100 is ABSENT from the rendered text. $GATE/$SQUEEZED are whole-document, so
+# Phase 5's Skills rebuild (PG2-04) re-adds H100 on page 2 and MUST flip this back to
+# assert_promoted 'H100' in the SAME commit that lands it. Id P3.44 preserved (see the
+# id-stability note in Group 3).
+assert_absent "EXP-03b/03-04 accelerator keyword demoted by owner finalization (whitespace-squeezed text layer)" 'H100' "$SQUEEZED" \
+    "Owner removed H100 from page 1 in 798c0fb; it is now a Phase-5 KEYWORDS_TARGET entry. Phase 5's Skills rebuild re-adds and re-promotes it (flip this back to assert_promoted then). Do not re-add H100 to the Experience section."
 assert_promoted "EXP-03b/03-05 keyword promoted in the same commit that landed it" 'Triton'
 
 # RECORDED GAP -- Class E, deliberately NOT asserted at wave 1.
@@ -969,31 +981,40 @@ done <<'SWAPFIGURES'
 16 fractional-GPU actors
 SWAPFIGURES
 
-while IFS= read -r LIT; do
-    [ -n "$LIT" ] || continue
-    assert_present "EXP-04b/03-04 evidenced scale figure (whitespace-squeezed text layer)" "$LIT" "$SQUEEZED"
-done <<'SCALEFIGURES'
-24×A100-40GB
-9 model queues
-64 H100s
-202.6M-row
-24.8M
-~700M
-35–38M
-40-node
-SCALEFIGURES
+# Explicit per-figure calls (was a here-doc loop). The owner's 798c0fb page-1
+# finalization generalized the Adobe GPU-fleet and migration figures ("1000s×GPUs per
+# model job across many model queues", "hyperscaled daily EMR ingestion", "a Billion
+# asset catalog"), removing the seven precise figures below; only '35–38M images/month'
+# survived. Each removed figure is reconciled from assert_present to assert_absent so the
+# net follows the finalized document. Order preserved so every P3.xx id is unchanged
+# (2026-08-23 gate reconciliation).
+assert_absent "EXP-04b/03-04 scale figure retired by owner finalization (whitespace-squeezed text layer)" '24×A100-40GB' "$SQUEEZED" \
+    "SUPERSEDED: generalized to '1000s×GPUs per model job' in 798c0fb (page 1 finalized). Do not reintroduce the precise figure."
+assert_absent "EXP-04b/03-04 scale figure retired by owner finalization (whitespace-squeezed text layer)" '9 model queues' "$SQUEEZED" \
+    "SUPERSEDED: generalized to 'many model queues' in 798c0fb (page 1 finalized). Do not reintroduce the precise count."
+assert_absent "EXP-04b/03-04 scale figure retired by owner finalization (whitespace-squeezed text layer)" '64 H100s' "$SQUEEZED" \
+    "SUPERSEDED: generalized to '1000s×GPUs per model job' in 798c0fb (page 1 finalized). Do not reintroduce the precise figure."
+assert_absent "EXP-04b/03-04 scale figure retired by owner finalization (whitespace-squeezed text layer)" '202.6M-row' "$SQUEEZED" \
+    "SUPERSEDED: precise migration figure removed in 798c0fb (page 1 finalized). Do not reintroduce it."
+assert_absent "EXP-04b/03-04 scale figure retired by owner finalization (whitespace-squeezed text layer)" '24.8M' "$SQUEEZED" \
+    "SUPERSEDED: precise migration figure removed in 798c0fb (page 1 finalized). Do not reintroduce it."
+assert_absent "EXP-04b/03-04 scale figure retired by owner finalization (whitespace-squeezed text layer)" '~700M' "$SQUEEZED" \
+    "SUPERSEDED: generalized to 'a Billion asset catalog' in 798c0fb (page 1 finalized). Do not reintroduce the precise figure."
+assert_present "EXP-04b/03-04 evidenced scale figure (whitespace-squeezed text layer)" '35–38M' "$SQUEEZED"
+assert_absent "EXP-04b/03-04 scale figure retired by owner finalization (whitespace-squeezed text layer)" '40-node' "$SQUEEZED" \
+    "SUPERSEDED: generalized to 'hyperscaled daily EMR ingestion' in 798c0fb (page 1 finalized). Do not reintroduce the precise figure."
 
 # The two accelerator tokens again against the RAW extracted lines. Neither
 # contains whitespace, so this is the same normalization guard Group 1 documents
 # -- but here it also matters that each is readable on a single extracted line,
 # because that is what the harness's case-sensitive G6.5 keyword scan sees.
-while IFS= read -r TOK; do
-    [ -n "$TOK" ] || continue
-    assert_present "EXP-04b/03-04 accelerator keyword (raw extracted lines, normalization-proof)" "$TOK" "$GATE"
-done <<'ACCELERATORS'
-A100
-H100
-ACCELERATORS
+# Explicit per-token calls (was a here-doc loop). A100 survives; H100 was removed by the
+# owner's 798c0fb finalization and demoted to a Phase-5 KEYWORDS_TARGET (see the Group-5
+# H100 note). Phase 5's Skills rebuild re-adds H100 and MUST flip this back to
+# assert_present 'H100' "$GATE" in the same commit. Order preserved (2026-08-23).
+assert_present "EXP-04b/03-04 accelerator keyword (raw extracted lines, normalization-proof)" 'A100' "$GATE"
+assert_absent "EXP-04b/03-04 accelerator keyword demoted by owner finalization (raw extracted lines)" 'H100' "$GATE" \
+    "Owner removed H100 from page 1 in 798c0fb; it is now a Phase-5 KEYWORDS_TARGET entry re-added in Skills. Flip this back to assert_present then. Do not re-add H100 to the Experience section."
 
 # ---------------------------------------------------------------------------
 # GROUP 7 -- EXP-07 Flipkart closure (owner 03-06) and the EXP-08 sign-off
