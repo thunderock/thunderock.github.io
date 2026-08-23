@@ -152,7 +152,7 @@
       \resumeTopic{Distributed Inference Frameworks}{Designed and led engineering for the org's online and offline inference systems powering experimentation and production at scale, reaching 24$\times$A100-40GB per model job across 9 model queues and 64 H100s in one parallel wave.}
         \resumeItemListStart
           \resumeItem{Built online inference on vLLM + Ray for rapid experimentation with LLMs such as Falcon-40B and Llama~2~70B.}
-          \resumeItem{Built offline inference on Ray Data + PyTorch Lightning, achieving 10--50$\times$ faster image loading and 3--8K images/sec on 32 GPUs.}
+          \resumeItem{Built offline inference on Ray Data + PyTorch Lightning; a module benchmarked on that engine at 1.09M rows, 8$\times$A100, 16 fractional-GPU actors.}
           \resumeItem{Modeled pipelines as horizontally-scaling Source $\to$ Transform $\to$ Sink plugins with no pod-to-pod communication, KEDA-autoscaled on SQS queue depth; batched sends retry on exponential backoff with full jitter, and undeliverable work drains to a DLQ.}
         \resumeItemListEnd
       \resumeTopic{Foundation Model Training Framework}{Leading development of a PyTorch-based training framework adopted across the org for training generative models on billions of images and videos.}
