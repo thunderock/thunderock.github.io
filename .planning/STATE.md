@@ -5,15 +5,15 @@ milestone_name: Staff MLE Resume Optimization
 current_phase: 05
 current_phase_name: Skills Rebuild
 status: executing
-stopped_at: Completed 05-01-PLAN.md
+stopped_at: Completed 05-02-PLAN.md
 last_updated: "2026-08-24T04:23:18.050Z"
 last_activity: 2026-08-24
-last_activity_desc: Phase 5 planning complete
+last_activity_desc: Phase 5 Plan 02 complete — per-item stretch-skill sign-off, PG2-04/05/06 ticked
 progress:
   total_phases: 5
   completed_phases: 4
   total_plans: 17
-  completed_plans: 16
+  completed_plans: 17
 ---
 
 # Project State
@@ -21,11 +21,11 @@ progress:
 ## Current Position
 
 Phase: 05 (Skills Rebuild) — EXECUTING
-Plan: 2 of 2
-Status: Ready to execute
-Last activity: 2026-08-23 — Phase 05 execution started
+Plan: 2 of 2 — COMPLETE
+Status: Phase 5 plans complete (per-item stretch-skill sign-off taken; PG2-04/05/06 ticked)
+Last activity: 2026-08-24 — Phase 05 Plan 02 complete
 
-Progress: [█████████░] 94%
+Progress: [██████████] 100%
 
 ## Project Reference
 
@@ -110,6 +110,20 @@ Decisions are logged in PROJECT.md Key Decisions table. Affecting current work:
 - [Phase 4]: Page-2 content net verify-phase4-regressions.sh (38 P4.x, green on arrival, each class --gate-text failable) wired into make; D-05 Teaching-3-TA override machine-recorded via assert_count
 - [Phase ?]: [Phase 5 / 05-01]: Skills rebuilt into 3 keyword tiers (Languages & Inference / Training & Distributed / Concepts), 3 rendered lines (G6.14 ok, first build, no rebalance). 4 new exact forms landed (ONNX Runtime, CUDA graphs, Iceberg, H100); manifest promotions ONNX/CUDA graphs/Iceberg/H100 (KEYWORDS_TARGET now empty) with P3.44 flipped to assert_promoted 'H100' and P3.65 to assert_present 'H100' $GATE in place (ids preserved), same commit. New scripts/verify-phase5-regressions.sh (25 assertions, option A owns ONNX/CUDA graphs/Iceberg assert_promoted; each class --gate-text/--manifest failable) wired as REGRESS5. Page 1 byte-frozen; C++ anchors intact; prohibited terms zero. requirements-completed EMPTY — PG2-04/05/06 tick at 05-02 (last-plan precedent).
 
+- [Phase 5 / 05-02]: **PER-ITEM STRETCH-SKILL SIGN-OFF TAKEN** at the 05-02 Task 1 blocking checkpoint (criterion 5; D-07), against the green document Plan 05-01 shipped — proven green FIRST as the green-first model requires (harness exit 0 · P2/P3/P4/P5 nets exit 0 with the P3 net at 72 anchored PASS · self-test exit 0). One verdict per stretch item, recorded as DECISIONS and never as omissions, mirroring the shape of the Phase-3 EXP-08 per-bullet sign-off record earlier in this section (its bracketed marker is deliberately NOT reproduced here — that record is uniqueness-guarded and must stay a single occurrence). **ALL TEN CONFIRMED — zero rejections, zero revisions**, so this took the all-confirmed branch: NO document change, NO backout, `docs/main.tex` / `docs/verify/manifest.txt` / the P3+P5 nets all byte-untouched. Verdicts with the confirmed interview-defense tier each carries:
+  - **H100 — CONFIRMED at tier OPERATED**, evidence the 64-H100 parallel enrichment wave.
+  - **CUDA graphs — CONFIRMED at tier OPERATED**, evidence torch.compile max-autotune driving CUDA-graph capture (settled on the D-08 cudagraphs-confirmed branch against a checksummed wheel).
+  - **ONNX Runtime — CONFIRMED at tier OPERATED**, evidence the ONNX Runtime CUDAExecutionProvider fingerprint embedding generator.
+  - **PyTorch Lightning — CONFIRMED at tier OPERATED**, evidence the Ray Data + PyTorch Lightning benchmark.
+  - **Iceberg — CONFIRMED at tier EVALUATED/CONVERSANT** — the one operated-LOOKING tools-tier placement resting on an evaluated-only defense (D-06 flag). The evaluated-tier framing under the tools-tier placement was explicitly raised at the checkpoint and accepted: the owner is comfortable discussing table format / schema evolution / time-travel conceptually and has NOT run it in production, so the claim is honest as conversant vocabulary, not as operated.
+  - **tensor parallelism — CONFIRMED at tier EVALUATED/CONVERSANT** (vocabulary, no commit evidence).
+  - **pipeline parallelism — CONFIRMED at tier EVALUATED/CONVERSANT** (vocabulary, no commit evidence).
+  - **Mixture of Experts (MoE) parallelism — CONFIRMED at tier EVALUATED/CONVERSANT** (vocabulary, no commit evidence).
+  - **KV-cache management — CONFIRMED at tier EVALUATED/CONVERSANT** (vocabulary, no commit evidence).
+  - **continuous batching — CONFIRMED at tier EVALUATED/CONVERSANT** (vocabulary, no commit evidence).
+
+  The gate was presented for real and could not auto-advance; a single blanket "looks good" was NOT accepted — each item drew an individual verdict against the rendered PDF. Because every item confirmed, the reject/revise backout branch (remove the keyword from Skills, reverse its manifest promotion, re-flip P3.44/P3.65 for H100) was NOT exercised and nothing was un-promoted. With the verdicts on record and the suite re-confirmed green (unchanged), PG2-04/PG2-05/PG2-06 were ticked complete (checkboxes + status table) and `requirements mark-complete` run — the phase-closing plan owning the tick per the last-plan precedent 03-01 through 03-08 and Phase 2 Plan 01 all followed. — Criterion 5 makes each stretch claim interview-defensible on the owner's own word, the only authority for a stretch claim crossing into the shipped résumé; recording one verdict per item with its tier is the audit trail that the claim was individually accepted, not blanket-approved.
+
 ### Pending Todos
 
 None yet.
@@ -136,7 +150,7 @@ Items acknowledged and carried forward:
 ## Session Continuity
 
 Last session: 2026-08-24T04:23:05.238Z
-Stopped at: Completed 05-01-PLAN.md
+Stopped at: Completed 05-02-PLAN.md
 Resume file: None
 
 ## Performance Metrics
@@ -163,3 +177,4 @@ Resume file: None
 | Plan | Duration | Tasks | Files |
 |------|----------|-------|-------|
 | Phase 05 P01 | 14 min | 2 tasks | 7 files |
+| Phase 05 P02 | 6 min | 2 tasks | 3 files |

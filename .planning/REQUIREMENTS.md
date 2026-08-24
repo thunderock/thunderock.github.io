@@ -29,9 +29,9 @@ Requirements for milestone v1.0. Each maps to roadmap phases.
 - [x] **PG2-01**: Projects section = `rollout` + `graph_ml` exactly, using spike Variant A LaTeX drafts (see `.opencode/skills/spike-findings-thunderock-github-io/references/projects-section.md`)
 - [x] **PG2-02**: Publication entry trimmed to citation + one-line contribution (abstract paragraph cut)
 - [x] **PG2-03**: Research/Teaching sections compressed; Education tightened (institution-before-city parse-order fix, GPAs dropped)
-- [ ] **PG2-04**: Skills section rebuilt on keyword tiers with exact-match forms (`vLLM`, `torch.compile`, `Kubernetes`, `FSDP`, `Ray`, `ONNX Runtime`, `A100`/`H100`, `CUDA graphs`, `Triton`, `Rust`, `C++`, `PyTorch Lightning`, `Flash Attention`, `KEDA`, `Spark`, `Iceberg`)
-- [ ] **PG2-05**: Explicitly-labeled concept-vocabulary Skills group (tensor parallelism, pipeline parallelism, Mixture of Experts (MoE) parallelism, KV-cache management, continuous batching); `speculative decoding` and `Go` appear nowhere on the document
-- [ ] **PG2-06**: C++ claim evidenced via NetSpeed NoC modules + graph_ml C++/Cython kernels in skills phrasing
+- [x] **PG2-04**: Skills section rebuilt on keyword tiers with exact-match forms (`vLLM`, `torch.compile`, `Kubernetes`, `FSDP`, `Ray`, `ONNX Runtime`, `A100`/`H100`, `CUDA graphs`, `Triton`, `Rust`, `C++`, `PyTorch Lightning`, `Flash Attention`, `KEDA`, `Spark`, `Iceberg`)
+- [x] **PG2-05**: Explicitly-labeled concept-vocabulary Skills group (tensor parallelism, pipeline parallelism, Mixture of Experts (MoE) parallelism, KV-cache management, continuous batching); `speculative decoding` and `Go` appear nowhere on the document
+- [x] **PG2-06**: C++ claim evidenced via NetSpeed NoC modules + graph_ml C++/Cython kernels in skills phrasing
 
 ### GitHub Presence
 
@@ -96,9 +96,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | GH-01 | Phase 4 | Deferred (D-08) |
 | GH-02 | Phase 4 | Deferred (D-08) |
 | GH-03 | Phase 4 | Complete |
-| PG2-04 | Phase 5 | Pending |
-| PG2-05 | Phase 5 | Pending |
-| PG2-06 | Phase 5 | Pending |
+| PG2-04 | Phase 5 | Complete |
+| PG2-05 | Phase 5 | Complete |
+| PG2-06 | Phase 5 | Complete |
 | VIS-01 | Phase 6 | Pending |
 | SITE-01 | Phase 6 | Pending |
 | SITE-02 | Phase 6 | Pending |
