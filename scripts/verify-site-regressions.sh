@@ -69,6 +69,33 @@
 #       bash scripts/verify-site-regressions.sh --html "$SC/fx.html"   # FAILs the retired-figure S6.x, exit 1
 #     (the two non-ASCII dashes/signs shown ASCII-ized here for the header; the
 #      real fixture line re-inserts the exact en-dash / multiplication-sign bytes)
+#
+#   an absent class re-inserted (career break / GPA / pruned section / grad title)
+#       cp index.html "$SC/fx.html"; printf 'Career Break 3.87 8.32 Bloomington BiasNet DeepFoodie Competitive D.S. Experience Certifications\n' >> "$SC/fx.html"
+#       bash scripts/verify-site-regressions.sh --html "$SC/fx.html"   # FAILs every absence S6.x, exit 1
+#
+#   a present class deleted (rollout / graph_ml link, torch.compile)
+#       sed 's#github.com/thunderock/rollout##g; s/torch.compile//g' index.html > "$SC/fx.html"
+#       bash scripts/verify-site-regressions.sh --html "$SC/fx.html"   # FAILs the corresponding presence S6.x, exit 1
+#
+#   D-08/D-09 honesty absence (a fabricated register/term line INSERTED)
+#       cp index.html "$SC/fx.html"; printf '<li>Shipped speculative decoding with TensorRT-LLM / TRT-LLM at 5K images/sec on 32 GPUs</li>\n' >> "$SC/fx.html"
+#       bash scripts/verify-site-regressions.sh --html "$SC/fx.html"   # FAILs the D-09 register + fabricated-term S6.x, exit 1
+#
+# DOCUMENTED OMISSIONS -- two D-09 needles are DELIBERATELY NOT added here, recorded
+# so no requirement is silently dropped:
+#   * bare `Go` (the language) -- there is NO safe byte-exact grep -F (substring)
+#     form over raw HTML: the surviving `Google` Font-link comment (and `Go`-prefixed
+#     prose) make a substring `Go` needle false-FAIL. Unlike the resume net's
+#     pdftotext stream (which carries no `Google`), this HTML source does, so the
+#     word-boundary trick the resume net uses cannot be reproduced with grep -F on
+#     raw markup. The `Go`-as-language boundary stays gated RESUME-side by
+#     verify-phase5-regressions.sh's word-boundary assert_absent_word over the shared
+#     document identity; it is NOT re-gated here.
+#   * bare `GPUs` -- the D-08/D-09 rewrite may legitimately keep
+#     `distributed GPU inference`-style phrasing, so a bare `GPUs` needle would
+#     false-FAIL on honest stack language. Only the exact retired fleet number
+#     `32 GPUs` (S6 D-09 register class) is provably absent and gated.
 
 # No errexit on purpose: every assertion must run and aggregate into FAILURES, so
 # a single zero-count grep (which exits 1) may not abort the run. -u and pipefail
@@ -240,11 +267,126 @@ assert_absent "S6 retired figure absent (raw source)" \
     "A retired latency figure is back on the public site. D-08 removes it. Fix index.html (Plan 06-02), never this needle."
 
 # ---------------------------------------------------------------------------
+# S6 -- career-break entry absent (D-10 / SITE-02). The site's "Career Break --
+# Master's Degree" timeline entry is removed so the site and resume agree (the
+# resume deleted the equivalent row in Phase 2, EXP-01). Non-negotiable per SITE-02.
+# ---------------------------------------------------------------------------
+
+assert_absent "S6 career-break entry absent (raw source)" \
+    'Career Break' "$HTML" \
+    "The career-break timeline entry is back on the public site. D-10/SITE-02 removes it. Fix index.html (Plan 06-02), never this needle."
+
+# ---------------------------------------------------------------------------
+# S6 -- Selected Projects is rollout + graph_ml (D-05). The 8 grad-school Projects
+# were replaced by the resume's two featured repos, both linked. Whitespace-free
+# URLs -> raw source directly.
+# ---------------------------------------------------------------------------
+
+assert_present "S6 featured project rollout link (raw source)" \
+    'github.com/thunderock/rollout' "$HTML"
+assert_present "S6 featured project graph_ml link (raw source)" \
+    'github.com/thunderock/graph_ml' "$HTML"
+
+# ---------------------------------------------------------------------------
+# S6 -- dropped GPAs absent (D-06). Education mirrors the resume: both GPAs gone.
+# The bare numbers `3.87` and `8.32` are the GPA values; neither has any other
+# legitimate occurrence on the synced site.
+# ---------------------------------------------------------------------------
+
+assert_absent "S6 dropped GPA absent (raw source)" \
+    '3.87' "$HTML" \
+    "A dropped GPA is back on the public site. D-06 drops both GPAs. Fix index.html (Plan 06-02), never this needle."
+assert_absent "S6 dropped GPA absent (raw source)" \
+    '8.32' "$HTML" \
+    "A dropped GPA is back on the public site. D-06 drops both GPAs. Fix index.html (Plan 06-02), never this needle."
+
+# ---------------------------------------------------------------------------
+# S6 -- Bloomington absent (D-06). The city is dropped from Education AND swept
+# from the hero/about paragraph ('Indiana University, Bloomington' -> 'Indiana
+# University'). The bare city name has no other legitimate occurrence.
+# ---------------------------------------------------------------------------
+
+assert_absent "S6 Bloomington city absent (raw source)" \
+    'Bloomington' "$HTML" \
+    "The Bloomington city is back on the public site. D-06 renders 'Indiana University' city-free. Fix index.html (Plan 06-02), never this needle."
+
+# ---------------------------------------------------------------------------
+# S6 -- pruned grad-era sections absent (D-05). The two off-message sections with
+# no resume counterpart are pruned: the 'Competitive D.S. Experience' hackathon
+# grid and the 'Certifications' section.
+# ---------------------------------------------------------------------------
+
+assert_absent "S6 pruned section absent (raw source)" \
+    'Competitive D.S. Experience' "$HTML" \
+    "The pruned 'Competitive D.S. Experience' section is back on the public site. D-05 prunes it. Fix index.html (Plan 06-02), never this needle."
+assert_absent "S6 pruned section absent (raw source)" \
+    'Certifications' "$HTML" \
+    "The pruned 'Certifications' section is back on the public site. D-05 prunes it. Fix index.html (Plan 06-02), never this needle."
+
+# ---------------------------------------------------------------------------
+# S6 -- the Adobe rewrite landed (D-08). torch.compile is the evidenced marker
+# the rebuilt-resume-voice Adobe block carries; its presence proves the rewrite
+# is in place (not the pre-Phase-3 generic voice).
+# ---------------------------------------------------------------------------
+
+assert_present "S6 Adobe rewrite marker torch.compile (raw source)" \
+    'torch.compile' "$HTML"
+
+# ---------------------------------------------------------------------------
+# S6 -- retired grad-project titles absent (D-05). Representative retired project
+# names must not resurrect on the public site now that Projects is rollout +
+# graph_ml.
+# ---------------------------------------------------------------------------
+
+assert_absent "S6 retired grad-project title absent (raw source)" \
+    'BiasNet' "$HTML" \
+    "A retired grad-school project title is back on the public site. Projects is exactly rollout + graph_ml (D-05). Fix index.html (Plan 06-02), never this needle."
+assert_absent "S6 retired grad-project title absent (raw source)" \
+    'DeepFoodie' "$HTML" \
+    "A retired grad-school project title is back on the public site. Projects is exactly rollout + graph_ml (D-05). Fix index.html (Plan 06-02), never this needle."
+
+# ---------------------------------------------------------------------------
+# S6 (D-09) -- retired throughput register absent. The public register is the
+# generalized resume: no hard fleet/throughput numbers. `images/sec` is BROADER
+# than the exact retired string -- it catches a re-worded throughput figure too --
+# and `32 GPUs` is the exact retired fleet number. Both live only on the retired-
+# figure <li> 06-02 deletes, so both are 0 post-sync and must stay 0. (The bare
+# `GPUs` needle is deliberately omitted -- see DOCUMENTED OMISSIONS in the header:
+# only the exact fleet number `32 GPUs` is provably absent.)
+# ---------------------------------------------------------------------------
+
+assert_absent "S6 D-09 retired throughput register absent (raw source)" \
+    'images/sec' "$HTML" \
+    "A throughput register ('images/sec', re-worded or not) is back on the public site. D-09: no hard throughput numbers. Fix index.html (Plan 06-02), never this needle."
+assert_absent "S6 D-09 retired fleet number absent (raw source)" \
+    '32 GPUs' "$HTML" \
+    "The retired '32 GPUs' fleet number is back on the public site. D-09: no hard fleet numbers. Fix index.html (Plan 06-02), never this needle."
+
+# ---------------------------------------------------------------------------
+# S6 (D-09) -- fabricated / no-evidence terms absent. The same honesty terms the
+# resume nets ban and 06-02's D-09 prohibition names: `speculative decoding`,
+# `TensorRT-LLM`, `TRT-LLM`. Already 0 on the synced file; must stay 0. (The bare
+# `Go` language needle is deliberately omitted -- see DOCUMENTED OMISSIONS in the
+# header: the surviving `Google` Font-link comment defeats a grep -F substring
+# form, and `Go` stays gated resume-side by verify-phase5's word-boundary check.)
+# ---------------------------------------------------------------------------
+
+assert_absent "S6 D-09 fabricated term absent (raw source)" \
+    'speculative decoding' "$HTML" \
+    "A fabricated / no-evidence term is back on the public site. CODEBASE-EVIDENCE.md forbids it. Fix index.html (Plan 06-02), never this needle."
+assert_absent "S6 D-09 fabricated term absent (raw source)" \
+    'TensorRT-LLM' "$HTML" \
+    "A fabricated / no-evidence term is back on the public site. CODEBASE-EVIDENCE.md forbids it. Fix index.html (Plan 06-02), never this needle."
+assert_absent "S6 D-09 fabricated term absent (raw source)" \
+    'TRT-LLM' "$HTML" \
+    "A fabricated / no-evidence term is back on the public site. CODEBASE-EVIDENCE.md forbids it. Fix index.html (Plan 06-02), never this needle."
+
+# ---------------------------------------------------------------------------
 # Human summary. Machine-readable RESULT lines come first; this block uses the
 # repo's >> progress and !! error prefixes.
 # ---------------------------------------------------------------------------
 
-printf '>> Groups run: S6 retired page-1 figures absent (3-8K images/sec, 10-50x). Raw index.html source, byte-exact LC_ALL=C grep -F.\n'
+printf '>> Groups run: S6 retired page-1 figures absent (3-8K images/sec, 10-50x); career break absent; rollout + graph_ml present; GPAs (3.87, 8.32) absent; Bloomington absent; pruned sections (Competitive D.S. Experience, Certifications) absent; torch.compile present; grad-project titles (BiasNet, DeepFoodie) absent; D-09 throughput register (images/sec, 32 GPUs) absent; D-09 fabricated terms (speculative decoding, TensorRT-LLM, TRT-LLM) absent. Deliberate omissions: bare Go + bare GPUs (recorded in header). Raw index.html source, byte-exact LC_ALL=C grep -F.\n'
 
 if [ "$FAILURES" -eq 0 ]; then
     printf '>> PASS: %s site-sync assertion(s), 0 failures.\n' "$S6_SEQ"
