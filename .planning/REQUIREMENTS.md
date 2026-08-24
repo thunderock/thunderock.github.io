@@ -41,7 +41,7 @@ Requirements for milestone v1.0. Each maps to roadmap phases.
 
 ### Visual
 
-- [ ] **VIS-01**: 2–3 accent-palette proposals rendered as side-by-side PDF samples meeting WCAG ≥7:1 text / ≥3:1 rules / ≥4.5:1 grayscale; user picks (teal stays if none win); chosen palette applied (2 hex literals; dead `accentlight` definition cleaned up)
+- [x] **VIS-01**: 2–3 accent-palette proposals rendered as side-by-side PDF samples meeting WCAG ≥7:1 text / ≥3:1 rules / ≥4.5:1 grayscale; user picks (teal stays if none win); chosen palette applied (2 hex literals; dead `accentlight` definition cleaned up)
 
 ### Site Sync
 
@@ -99,11 +99,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PG2-04 | Phase 5 | Complete |
 | PG2-05 | Phase 5 | Complete |
 | PG2-06 | Phase 5 | Complete |
-| VIS-01 | Phase 6 | Pending |
+| VIS-01 | Phase 6 | Complete |
 | SITE-01 | Phase 6 | Pending |
 | SITE-02 | Phase 6 | Pending |
 
 **Coverage:**
+
 - v1 requirements: 23 total
 - Mapped to phases: 23
 - Unmapped: 0 ✓

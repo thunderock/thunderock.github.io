@@ -145,12 +145,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. The site's own career-break timeline entry is gone from `index.html`, so resume and site agree
   5. A final `make verify` passes, and the PDF pasted as plain text into a form field reads in correct order with the handle and URLs intact
 
-**Plans**: 3 plans in 2 waves (wave 1 runs palette + site-content in parallel; wave 2 is the site net + final gate)
+**Plans**: 1/3 plans executed
 **UI hint**: yes
 
 **Wave 1**
 
-- [ ] 06-01-PLAN.md — palette samples (sed+latexmk harness, 4 columns + grayscale, WCAG bar), blocking pick checkpoint, apply 2 hex literals + delete accentlight (VIS-01)
+- [x] 06-01-PLAN.md — palette samples (sed+latexmk harness, 4 columns + grayscale, WCAG bar), blocking pick checkpoint, apply 2 hex literals + delete accentlight (VIS-01)
 - [ ] 06-02-PLAN.md — site content sync: Adobe-block rewrite (retired figures gone, torch.compile, Rust governance), Education mirror + hero/about sweep, Projects → rollout+graph_ml, prune Competitive/Certifications, remove career-break (SITE-01, SITE-02)
 
 **Wave 2** *(depends on 06-01 + 06-02)*
@@ -169,7 +169,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 (Phase 4 may ru
 | 3. Adobe Rebuild & Staff-Signal Bullets | 8/8 | Complete    | 2026-08-23 |
 | 4. Page-2 Restructure & GitHub Presence | 2/2 | Complete   | 2026-08-24 |
 | 5. Skills Rebuild | 2/2 | Complete    | 2026-08-24 |
-| 6. Palette & Site Sync | 0/3 | Not started | - |
+| 6. Palette & Site Sync | 1/3 | In Progress|  |
 
 ## Ordering Rationale
 
