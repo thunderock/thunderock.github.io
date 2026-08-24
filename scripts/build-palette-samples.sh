@@ -32,6 +32,18 @@ set -euo pipefail
 # latexmk lives in the MacTeX texbin, which is not on a non-login PATH.
 export PATH="/Library/TeX/texbin:$PATH"
 
+# Temp cleanup on any exit path (error/Ctrl-C included): the success paths
+# already remove both the per-build scratch tree (build_one) and the summary
+# accumulator (all-mode), so this only backstops the error/interrupt paths.
+# The accumulator is always safe to drop; the scratch is kept only when a
+# latexmk failure set KEEP_SCRATCH=1 to leave it for inspection.
+SCRATCH=""; SUMMARY_ACC=""; KEEP_SCRATCH=0
+cleanup() {
+  [ -n "${SUMMARY_ACC:-}" ] && rm -f "$SUMMARY_ACC" 2>/dev/null || true
+  [ "${KEEP_SCRATCH:-0}" = 1 ] || { [ -n "${SCRATCH:-}" ] && rm -rf "$SCRATCH" 2>/dev/null; } || true
+}
+trap cleanup EXIT INT TERM
+
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
 SRC="$REPO/docs/main.tex"
 OUTDIR="$REPO/build/palette"
@@ -129,6 +141,7 @@ build_one() {
   if ! ( cd "$SCRATCH" && latexmk -pdf -interaction=nonstopmode -halt-on-error \
            -jobname="palette-$name" main.tex >/dev/null 2>&1 ); then
     echo "!! latexmk failed for $name — scratch left at $SCRATCH for inspection" >&2
+    KEEP_SCRATCH=1
     return 1
   fi
 
