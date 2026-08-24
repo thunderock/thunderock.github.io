@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Staff MLE Resume Optimization
-status: verifying
-last_updated: "2026-08-24T02:13:32.252Z"
-last_activity: 2026-08-24
+status: ready_to_plan
+last_updated: "2026-08-24T02:38:40Z"
+last_activity: 2026-08-24 -- Phase 4 COMPLETE (page-2 restructure) + code-review gate PASSED (CR-01 BLOCKER + WR-01 fixed in cb6b590, proven failable; 3 INFO dispositioned). Five suites green, page 1 byte-frozen. Ready to plan Phase 5.
 progress:
   total_phases: 6
   completed_phases: 4
@@ -36,6 +36,8 @@ See: .planning/PROJECT.md (updated 2026-08-21)
 ### Decisions
 
 Decisions are logged in PROJECT.md Key Decisions table. Affecting current work:
+
+- [Phase 04 / close + code review]: Phase 4 shipped the page-2 restructure — Projects → `rollout` + `graph_ml` (7 grad entries gone), Publication trimmed to citation + one fairness-aware line, Research → one line, Education institution-first with GPAs + cities dropped and `EDU_INSTITUTION` synced (D-07) — with **page 1 byte-frozen at `798c0fb`**. Teaching kept as 3 items (D-05 owner override); GH-01/02 deferred (D-08, no GitHub mutations), GH-03 confirmed. A standing page-2 content net (`scripts/verify-phase4-regressions.sh`, 38 assertions, wired as `REGRESS4` in `make verify`/`verify-regressions`) now guards it. The post-phase code-review gate found + fixed one BLOCKER (`cb6b590`): **multi-word (space-containing) literals in a `pdftotext` net MUST assert against `$SQUEEZED`, never the raw `$GATE` stream** — `pdftotext` wraps phrases across lines, so a raw-stream absence check FALSE-PASSES on a wrapped regression (proven with a `--gate-text` fixture: raw count 0, squeezed count 1, P4.32 correctly FAILs). Single-token needles (GPAs, `Poster`) stay on `$GATE`. ⚠ **STANDING RULE for Phase 5's Skills net:** its multi-word keywords (`CUDA graphs`, `Flash Attention`, `ONNX Runtime`, `PyTorch Lightning`) must assert against `$SQUEEZED`. — why: closes a false-green class the P2/P3 nets already avoid; recorded so the Phase-5 keyword net does not reintroduce it.
 
 - [Post-Phase-3 / Page-1 Finalization + Gate Reconciliation]: The owner finalized the page-1 Work Experience block in commit `798c0fb` after an external review — precise internal figures generalized (fleet → "1000s×GPUs per model job across many model queues"; ingestion → "hyperscaled daily EMR ingestion"; "~700M" → "a Billion asset catalog"; the figures 27,135 / 9.7k-line / idempotent re-run / 24×A100-40GB / 9 model queues / 64 H100s / 202.6M-row / 24.8M / 40-node removed), **`H100` removed (A100 kept)**, Groupon subtitle gained "RECOMMENDATION SYSTEMS", PDF regenerated with source. Honesty flags on "1000s×GPUs per model job" and "a Billion asset catalog" were raised and **DISMISSED by the owner** — **page 1 is FINAL; never edit `docs/main.tex` lines 140–210 to satisfy a red gate.** The gates were then reconciled TO that document in `b6f8011` (gates follow the document, never the reverse): `docs/verify/manifest.txt` demoted `H100` KEYWORDS_REQUIRED → `KEYWORDS_TARGET` (`H100:5`, owner Phase 5); `scripts/verify-phase3-regressions.sh` retired the 10 removed-figure needles to `assert_absent` and demoted the two H100 keyword needles, with the here-doc loops expanded to explicit calls so **every pinned `P3.xx` id is preserved (`P3_SEQ` still 72)** — `P3.44`/`P3.65` are now the H100-demotion slots, `P3.62` still guards the surviving `35–38M`. All suites green (`verify-resume` 0 blockers, G6.6 now WARNs `H100` as a Phase-5 target; P3 net 72 PASS/0 FAIL; P2 net 27 PASS; self-test 10 G7/G8 PASS). ⚠ **PHASE-5 OBLIGATION (do not lose):** `$GATE`/`$SQUEEZED` are whole-document, so when the Skills rebuild (PG2-04) re-adds `H100` on page 2 it MUST, in the SAME commit, flip **`P3.44`** back to `assert_promoted 'H100'` and **`P3.65`** back to `assert_present 'H100' "$GATE"`, and re-promote `H100` KEYWORDS_TARGET → KEYWORDS_REQUIRED (`:5` suffix stripped) — otherwise the P3 net reddens mid-Phase-5. — why: the harness exists to protect the owner's chosen content; strengthen-never-weaken applies to assertion logic, not to superseded needle literals, so the net follows the finalized document.
 - [Roadmap]: Gate → budget → content ordering is forced by measurement, not preference — page 1 has 0.15pt slack and `make build` is silent on a 3-page overflow (exit 0, zero warnings)
@@ -129,8 +131,8 @@ Items acknowledged and carried forward:
 
 ## Session Continuity
 
-Last session: 2026-08-24T02:13:32.245Z
-Stopped at: Completed 04-02-PLAN.md (phase 4 complete)
+Last session: 2026-08-24T02:38:40Z
+Stopped at: Phase 4 fully closed — executed (04-01/04-02), verified (goal-backward PASSED, 04-VERIFICATION.md), code-reviewed (04-REVIEW.md; CR-01 BLOCKER + WR-01 fixed in cb6b590). SITE-01 expanded to a full site sync, held for Phase 6. Ready to plan Phase 5 (Skills Rebuild).
 Resume file: None
 
 ## Performance Metrics
