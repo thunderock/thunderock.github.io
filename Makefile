@@ -9,7 +9,7 @@
 #   make view             - open docs/AshutoshTiwari.pdf in macOS Preview
 #   make watch            - latexmk -pvc continuous build
 #   make verify           - gate the PDF: page budget, ATS text layer, honesty freeze
-#   make verify-regressions - standing content-regression assertions (P2.x + P3.x)
+#   make verify-regressions - standing content-regression assertions (P2.x + P3.x + P4.x)
 #   make verify-selftest  - prove the gates fire (overflow probe + negative controls)
 #   make verify-baseline  - regenerate docs/verify/manifest.txt from live measurement
 #   make clean            - remove auxiliary build artifacts
@@ -29,6 +29,7 @@ PDF        := $(TEX_DIR)/$(JOBNAME).pdf
 VERIFY     := scripts/verify-resume.sh
 REGRESS    := scripts/verify-phase2-regressions.sh
 REGRESS3   := scripts/verify-phase3-regressions.sh
+REGRESS4   := scripts/verify-phase4-regressions.sh
 
 # Make sure /Library/TeX/texbin is reachable even in non-login shells.
 export PATH := /Library/TeX/texbin:$(PATH)
@@ -190,12 +191,13 @@ watch:  ## Continuous build with latexmk -pvc
 # reporting. Never prefix any line with `-` or `|| true`: that hides the
 # failure and defeats the scripts. Note the harness remains the oracle -- make
 # collapses the scripts' 1-vs-2 exit vocabulary into its own 2, so the gating
-# invocation stays `bash $(VERIFY) && bash $(REGRESS) && bash $(REGRESS3)` run
-# directly. To run only the nets, without building or gating the PDF, use
+# invocation stays `bash $(VERIFY) && bash $(REGRESS) && bash $(REGRESS3) && bash $(REGRESS4)`
+# run directly. To run only the nets, without building or gating the PDF, use
 # `make verify-regressions`.
 verify: $(PDF)  ## Gate the PDF: page budget, page-1 boundary, ATS text layer, honesty freeze
 	@bash $(REGRESS)
 	@bash $(REGRESS3)
+	@bash $(REGRESS4)
 	@bash $(VERIFY)
 
 # Standing content-regression nets for the invariants no assertion in $(VERIFY)
@@ -205,7 +207,12 @@ verify: $(PDF)  ## Gate the PDF: page budget, page-1 boundary, ATS text layer, h
 # Phase 3 ones: the rebuilt Adobe block's retained claims, lead-bullet voice,
 # governance topic, fault-tolerance mechanisms, compiler bridge, evidenced
 # replacement figures and the sign-off outcomes -- what was approved asserted
-# present, what was rejected asserted absent.
+# present, what was rejected asserted absent. $(REGRESS4) holds the Phase 4
+# page-2 ones: Selected Projects is exactly rollout + graph_ml with the retired
+# grad-school names gone and the C++/Cython anchor kept, the Publication citation
+# + one contribution line with the abstract cut, the one-line Research item, the
+# institution-first GPA/city-free Education entry, and the D-05 owner override
+# (Teaching still carries its three TA items -- a machine-recorded gate, not prose).
 #
 # Both are wired here rather than left standalone because an uninvoked net is an
 # unenforced invariant, which is the defect the milestone audit named for the
@@ -221,9 +228,10 @@ verify: $(PDF)  ## Gate the PDF: page budget, page-1 boundary, ATS text layer, h
 # comment block above documents on `verify`. The waiver flags named only inside
 # those scripts must never appear in this recipe either: a run carrying one
 # certifies nothing.
-verify-regressions:  ## Standing content-regression nets (P2.x + P3.x): career-break absence, locked descriptor literals, Adobe rebuild invariants
+verify-regressions:  ## Standing content-regression nets (P2.x + P3.x + P4.x): career-break absence, locked descriptor literals, Adobe rebuild invariants, page-2 restructure
 	@bash $(REGRESS)
 	@bash $(REGRESS3)
+	@bash $(REGRESS4)
 
 verify-selftest:  ## Prove the gates fire: overflow probe + five negative controls
 	@bash $(VERIFY) --selftest
