@@ -123,10 +123,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. The `C++` token is anchored to NetSpeed NoC modules and `graph_ml`'s C++/Cython kernels, both verifiable by a reader from the document itself
   5. Every stretch item carries a recorded evidence tier (built / operated / evaluated) plus the user's **per-item** approval — not one blanket "looks good" on a finished list
 
-**Plans**: 2 plans
+**Plans**: 1/2 plans executed
 **Wave 1**
 
-- [ ] 05-01-PLAN.md — Rebuild Skills into 3 keyword tiers (≤3 lines, 17 exact forms), same-commit manifest promotions + P3.44/P3.65 H100 flips, new Phase-5 regression net wired into make
+- [x] 05-01-PLAN.md — Rebuild Skills into 3 keyword tiers (≤3 lines, 17 exact forms), same-commit manifest promotions + P3.44/P3.65 H100 flips, new Phase-5 regression net wired into make
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
@@ -159,7 +159,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 (Phase 4 may ru
 | 2. Page-1 Budget & Text-Layer Defects | 2/2 | Complete    | 2026-08-22 |
 | 3. Adobe Rebuild & Staff-Signal Bullets | 8/8 | Complete    | 2026-08-23 |
 | 4. Page-2 Restructure & GitHub Presence | 2/2 | Complete   | 2026-08-24 |
-| 5. Skills Rebuild | 0/TBD | Not started | - |
+| 5. Skills Rebuild | 1/2 | In Progress|  |
 | 6. Palette & Site Sync | 0/TBD | Not started | - |
 
 ## Ordering Rationale

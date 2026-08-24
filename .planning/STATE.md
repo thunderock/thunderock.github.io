@@ -2,38 +2,37 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Staff MLE Resume Optimization
-current_phase: 4
-current_phase_name: page-2-restructure-github-presence
+current_phase: 05
+current_phase_name: Skills Rebuild
 status: executing
-stopped_at: Phase 5 context gathered
-last_updated: "2026-08-24T04:01:20.143Z"
+stopped_at: Completed 05-01-PLAN.md
+last_updated: "2026-08-24T04:23:18.050Z"
 last_activity: 2026-08-24
 last_activity_desc: Phase 5 planning complete
 progress:
   total_phases: 5
   completed_phases: 4
   total_plans: 17
-  completed_plans: 15
-  percent: 67
+  completed_plans: 16
 ---
 
 # Project State
 
 ## Current Position
 
-Phase: 4 (page-2-restructure-github-presence) — EXECUTING
+Phase: 05 (Skills Rebuild) — EXECUTING
 Plan: 2 of 2
 Status: Ready to execute
-Last activity: 2026-08-23 — Phase 5 planning complete
+Last activity: 2026-08-23 — Phase 05 execution started
 
-Progress: [██████████] 100%
+Progress: [█████████░] 94%
 
 ## Project Reference
 
 See: .planning/PROJECT.md (updated 2026-08-21)
 
 **Core value:** Resume passes ATS keyword screens for Staff MLE / inference-framework roles — every claim interview-defensible.
-**Current focus:** Phase 4 — page-2-restructure-github-presence
+**Current focus:** Phase 05 — Skills Rebuild
 
 ## Accumulated Context
 
@@ -109,6 +108,7 @@ Decisions are logged in PROJECT.md Key Decisions table. Affecting current work:
 - [Phase 4]: GH-02 (fix rollout README stale status) DEFERRED by owner (D-08) — accepted trade-off: featured rollout link reads stale status; ready fix preserved, not ticked
 - [Phase 4]: GH-03 SATISFIED + ticked — rollout wording owner-confirmed (D-01), shipped in 04-01; no checkpoint (confirmation pre-existed)
 - [Phase 4]: Page-2 content net verify-phase4-regressions.sh (38 P4.x, green on arrival, each class --gate-text failable) wired into make; D-05 Teaching-3-TA override machine-recorded via assert_count
+- [Phase ?]: [Phase 5 / 05-01]: Skills rebuilt into 3 keyword tiers (Languages & Inference / Training & Distributed / Concepts), 3 rendered lines (G6.14 ok, first build, no rebalance). 4 new exact forms landed (ONNX Runtime, CUDA graphs, Iceberg, H100); manifest promotions ONNX/CUDA graphs/Iceberg/H100 (KEYWORDS_TARGET now empty) with P3.44 flipped to assert_promoted 'H100' and P3.65 to assert_present 'H100' $GATE in place (ids preserved), same commit. New scripts/verify-phase5-regressions.sh (25 assertions, option A owns ONNX/CUDA graphs/Iceberg assert_promoted; each class --gate-text/--manifest failable) wired as REGRESS5. Page 1 byte-frozen; C++ anchors intact; prohibited terms zero. requirements-completed EMPTY — PG2-04/05/06 tick at 05-02 (last-plan precedent).
 
 ### Pending Todos
 
@@ -135,9 +135,9 @@ Items acknowledged and carried forward:
 
 ## Session Continuity
 
-Last session: 2026-08-24T03:14:38.669Z
-Stopped at: Phase 5 context gathered
-Resume file: .planning/phases/05-skills-rebuild/05-CONTEXT.md
+Last session: 2026-08-24T04:23:05.238Z
+Stopped at: Completed 05-01-PLAN.md
+Resume file: None
 
 ## Performance Metrics
 
@@ -158,3 +158,8 @@ Resume file: .planning/phases/05-skills-rebuild/05-CONTEXT.md
 | Phase 03 P08 | 17 min | 3 tasks | 9 files |
 | Phase 04 P01 | 6min | 3 tasks | 8 files |
 | Phase 04 P02 | 5min | 2 tasks | 5 files |
+**Per-Plan Metrics:**
+
+| Plan | Duration | Tasks | Files |
+|------|----------|-------|-------|
+| Phase 05 P01 | 14 min | 2 tasks | 7 files |
