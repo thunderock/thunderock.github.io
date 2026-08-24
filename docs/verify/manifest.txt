@@ -50,14 +50,16 @@ SKILLS_MAX_LINES=3                # measures 4 today; owner Phase 5 -> WARN unti
 
 # --- Keyword tiers. Promotion = move an entry from KEYWORDS_TARGET to KEYWORDS_REQUIRED
 # --- in the same commit that adds the keyword. Present today = BLOCKER; absent = WARN.
-# --- 2026-08-23 gate reconciliation: H100 DEMOTED KEYWORDS_REQUIRED -> KEYWORDS_TARGET
-# --- (owner Phase 5). The owner finalized the page-1 Experience block in commit 798c0fb after
-# --- an external review and removed the sole H100 occurrence (A100 kept). This is a sanctioned
-# --- demotion recording an owner supersession, NOT gate-weakening: H100 re-enters via Phase 5's
-# --- Skills rebuild (PG2-04), which re-promotes it in the same commit. Do not re-add H100 to
-# --- the Experience section to satisfy this gate -- page 1 is finalized.
-KEYWORDS_REQUIRED=inference|distributed|Kubernetes|PyTorch|FSDP|Ray|vLLM|Rust|fault|KEDA|SQS|Spark|Flash Attention|A100|torch.compile|Triton
-KEYWORDS_TARGET=ONNX:5|CUDA graphs:3|Iceberg:5|H100:5
+# --- 2026-08-23 gate reconciliation: H100 was DEMOTED KEYWORDS_REQUIRED -> KEYWORDS_TARGET
+# --- when the owner finalized the page-1 Experience block in commit 798c0fb (sole H100
+# --- occurrence removed, A100 kept). Phase 5's Skills rebuild (PG2-04) re-lands H100 on
+# --- page 2 and, in the SAME commit, re-promoted it here -- alongside the three other
+# --- Phase-5 targets ONNX, CUDA graphs and Iceberg -- so KEYWORDS_TARGET is now empty and
+# --- KEYWORDS_REQUIRED carries all four. Do not re-add H100 to the Experience section --
+# --- page 1 is finalized. Each promotion is machine-gated (H100 by the P3.44 flip; ONNX,
+# --- CUDA graphs, Iceberg by the Phase-5 net's assert_promoted).
+KEYWORDS_REQUIRED=inference|distributed|Kubernetes|PyTorch|FSDP|Ray|vLLM|Rust|fault|KEDA|SQS|Spark|Flash Attention|A100|torch.compile|Triton|ONNX|CUDA graphs|Iceberg|H100
+KEYWORDS_TARGET=
 
 # --- WARN owners. Every WARN-tier assertion needs an entry or it prints an empty owner.
 # --- Sentinels: none = corroborating only, nothing to promote; unassigned = real deviation

@@ -876,15 +876,14 @@ assert_present "EXP-03a/03-05 torch.compile production claim (whitespace-squeeze
 
 assert_promoted "EXP-03b/03-05 keyword promoted in the same commit that landed it" 'torch.compile'
 assert_promoted "EXP-03b/03-04 keyword promoted in the same commit that landed it" 'A100'
-# SUPERSEDED (2026-08-23 gate reconciliation): the owner's 798c0fb page-1 finalization removed
-# 'H100' from the Experience block (A100 kept), so H100 was demoted KEYWORDS_REQUIRED ->
-# KEYWORDS_TARGET (H100:5, owner Phase 5). The promotion pairing no longer holds, so this slot
-# now asserts H100 is ABSENT from the rendered text. $GATE/$SQUEEZED are whole-document, so
-# Phase 5's Skills rebuild (PG2-04) re-adds H100 on page 2 and MUST flip this back to
-# assert_promoted 'H100' in the SAME commit that lands it. Id P3.44 preserved (see the
-# id-stability note in Group 3).
-assert_absent "EXP-03b/03-04 accelerator keyword demoted by owner finalization (whitespace-squeezed text layer)" 'H100' "$SQUEEZED" \
-    "Owner removed H100 from page 1 in 798c0fb; it is now a Phase-5 KEYWORDS_TARGET entry. Phase 5's Skills rebuild re-adds and re-promotes it (flip this back to assert_promoted then). Do not re-add H100 to the Experience section."
+# FLIPPED (2026-08-24, Phase 5 PG2-04): the owner's 798c0fb page-1 finalization removed 'H100'
+# from the Experience block (A100 kept) and it was demoted KEYWORDS_REQUIRED -> KEYWORDS_TARGET
+# (H100:5, owner Phase 5). Phase 5's Skills rebuild re-lands 'H100' on page 2 and, in the SAME
+# commit, re-promotes it KEYWORDS_TARGET -> KEYWORDS_REQUIRED (suffix stripped). $GATE/$SQUEEZED
+# are whole-document, so this slot is flipped back to the promotion pairing it originally
+# asserted. Id P3.44 preserved -- flipped in place at the same call position (see the
+# id-stability note in Group 3). Do not re-add H100 to the Experience section; page 1 is final.
+assert_promoted "EXP-03b/05-01 accelerator keyword re-promoted in the same commit that re-landed it" 'H100'
 assert_promoted "EXP-03b/03-05 keyword promoted in the same commit that landed it" 'Triton'
 
 # RECORDED GAP -- Class E, deliberately NOT asserted at wave 1.
@@ -1010,11 +1009,12 @@ assert_absent "EXP-04b/03-04 scale figure retired by owner finalization (whitesp
 # because that is what the harness's case-sensitive G6.5 keyword scan sees.
 # Explicit per-token calls (was a here-doc loop). A100 survives; H100 was removed by the
 # owner's 798c0fb finalization and demoted to a Phase-5 KEYWORDS_TARGET (see the Group-5
-# H100 note). Phase 5's Skills rebuild re-adds H100 and MUST flip this back to
-# assert_present 'H100' "$GATE" in the same commit. Order preserved (2026-08-23).
+# H100 note). FLIPPED (2026-08-24, Phase 5 PG2-04): the Skills rebuild re-lands H100 on page 2,
+# so this slot is flipped back to assert_present against the RAW gate stream -- the raw stream is
+# what the harness's case-sensitive G6.5 keyword scan reads, so H100 must be readable on a single
+# extracted line. Id P3.65 preserved -- flipped in place at the same call position (2026-08-24).
 assert_present "EXP-04b/03-04 accelerator keyword (raw extracted lines, normalization-proof)" 'A100' "$GATE"
-assert_absent "EXP-04b/03-04 accelerator keyword demoted by owner finalization (raw extracted lines)" 'H100' "$GATE" \
-    "Owner removed H100 from page 1 in 798c0fb; it is now a Phase-5 KEYWORDS_TARGET entry re-added in Skills. Flip this back to assert_present then. Do not re-add H100 to the Experience section."
+assert_present "EXP-04b/05-01 accelerator keyword re-landed in Skills (raw extracted lines, normalization-proof)" 'H100' "$GATE"
 
 # ---------------------------------------------------------------------------
 # GROUP 7 -- EXP-07 Flipkart closure (owner 03-06) and the EXP-08 sign-off
