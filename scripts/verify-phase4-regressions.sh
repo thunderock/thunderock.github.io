@@ -346,9 +346,9 @@ assert_count "PG2-01 \\resumeProjectHeading structure (source)" '\resumeProjectH
 # distinctive opening clause is gone from both the text layer and the source.
 # ---------------------------------------------------------------------------
 
-assert_present "PG2-02 first-author citation (text layer)" 'first author' "$GATE"
-assert_present "PG2-02 NetSci 2023 venue (text layer)"     'NetSci 2023'  "$GATE"
-assert_present "PG2-02 IC2S2 2023 venue (text layer)"      'IC2S2 2023'   "$GATE"
+assert_present "PG2-02 first-author citation (whitespace-squeezed text layer)" 'first author' "$SQUEEZED"
+assert_present "PG2-02 NetSci 2023 venue (whitespace-squeezed text layer)"     'NetSci 2023'  "$SQUEEZED"
+assert_present "PG2-02 IC2S2 2023 venue (whitespace-squeezed text layer)"      'IC2S2 2023'   "$SQUEEZED"
 assert_present "PG2-02 Poster link (text layer)"           'Poster'       "$GATE"
 assert_present "PG2-02 fairness-aware contribution line (whitespace-squeezed text layer)" \
     'fairness-aware graph representation learning' "$SQUEEZED"
@@ -390,11 +390,11 @@ assert_absent "PG2-03 Education GPA 8.32/10.0 absent from the text layer" \
 assert_absent "PG2-03 Education GPA 8.32/10.0 absent from the source" \
     '8.32/10.0' "$TEX" \
     "A dropped GPA is back in docs/main.tex. D-06 drops both GPAs."
-assert_absent "PG2-03 Education city dropped from the institution cell (text layer)" \
-    'Indiana University, Bloomington' "$GATE" \
+assert_absent "PG2-03 Education city dropped from the institution cell (whitespace-squeezed text layer)" \
+    'Indiana University, Bloomington' "$SQUEEZED" \
     "The Bloomington city is back on the institution cell. D-06 renders 'Indiana University' city-free (manifest EDU_INSTITUTION synced, D-07)."
-assert_present "PG2-03 Education institution name retained (text layer)" \
-    'Indiana University' "$GATE"
+assert_present "PG2-03 Education institution name retained (whitespace-squeezed text layer)" \
+    'Indiana University' "$SQUEEZED"
 assert_present "PG2-03 Education master's date range retained (whitespace-squeezed text layer)" \
     'Aug. 2021' "$SQUEEZED"
 assert_present "PG2-03 Education bachelor's date range retained (whitespace-squeezed text layer)" \
@@ -410,8 +410,8 @@ assert_present "PG2-03 Education bachelor's date range retained (whitespace-sque
 
 assert_count "PG2-03 D-05 Teaching three TA items retained (text layer)" \
     'Teaching Assistant' "$GATE" 3
-assert_present "PG2-03 D-05 Teaching course INFO-I 606 (text layer)" 'INFO-I 606' "$GATE"
-assert_present "PG2-03 D-05 Teaching course CSCI-B 555 (text layer)" 'CSCI-B 555' "$GATE"
+assert_present "PG2-03 D-05 Teaching course INFO-I 606 (whitespace-squeezed text layer)" 'INFO-I 606' "$SQUEEZED"
+assert_present "PG2-03 D-05 Teaching course CSCI-B 555 (whitespace-squeezed text layer)" 'CSCI-B 555' "$SQUEEZED"
 
 # ---------------------------------------------------------------------------
 # Human summary. Machine-readable RESULT lines come first; this block uses the
