@@ -26,9 +26,9 @@ Requirements for milestone v1.0. Each maps to roadmap phases.
 
 ### Page 2 Restructure
 
-- [ ] **PG2-01**: Projects section = `rollout` + `graph_ml` exactly, using spike Variant A LaTeX drafts (see `.opencode/skills/spike-findings-thunderock-github-io/references/projects-section.md`)
-- [ ] **PG2-02**: Publication entry trimmed to citation + one-line contribution (abstract paragraph cut)
-- [ ] **PG2-03**: Research/Teaching sections compressed; Education tightened (institution-before-city parse-order fix, GPAs dropped)
+- [x] **PG2-01**: Projects section = `rollout` + `graph_ml` exactly, using spike Variant A LaTeX drafts (see `.opencode/skills/spike-findings-thunderock-github-io/references/projects-section.md`)
+- [x] **PG2-02**: Publication entry trimmed to citation + one-line contribution (abstract paragraph cut)
+- [x] **PG2-03**: Research/Teaching sections compressed; Education tightened (institution-before-city parse-order fix, GPAs dropped)
 - [ ] **PG2-04**: Skills section rebuilt on keyword tiers with exact-match forms (`vLLM`, `torch.compile`, `Kubernetes`, `FSDP`, `Ray`, `ONNX Runtime`, `A100`/`H100`, `CUDA graphs`, `Triton`, `Rust`, `C++`, `PyTorch Lightning`, `Flash Attention`, `KEDA`, `Spark`, `Iceberg`)
 - [ ] **PG2-05**: Explicitly-labeled concept-vocabulary Skills group (tensor parallelism, pipeline parallelism, Mixture of Experts (MoE) parallelism, KV-cache management, continuous batching); `speculative decoding` and `Go` appear nowhere on the document
 - [ ] **PG2-06**: C++ claim evidenced via NetSpeed NoC modules + graph_ml C++/Cython kernels in skills phrasing
@@ -90,9 +90,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | EXP-04 | Phase 3 | Complete |
 | EXP-07 | Phase 3 | Complete |
 | EXP-08 | Phase 3 | Complete |
-| PG2-01 | Phase 4 | Pending |
-| PG2-02 | Phase 4 | Pending |
-| PG2-03 | Phase 4 | Pending |
+| PG2-01 | Phase 4 | Complete |
+| PG2-02 | Phase 4 | Complete |
+| PG2-03 | Phase 4 | Complete |
 | GH-01 | Phase 4 | Pending |
 | GH-02 | Phase 4 | Pending |
 | GH-03 | Phase 4 | Pending |
