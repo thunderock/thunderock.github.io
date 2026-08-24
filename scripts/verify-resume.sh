@@ -1731,9 +1731,23 @@ emit_rows G6.4 "$WORK/census.rows"
 # ---------------------------------------------------------------------------
 
 manifest_list KEYWORDS_REQUIRED > "$WORK/kw.required"
+# A whitespace-squeezed view of the text layer (whole document collapsed so runs
+# of spaces/tabs/newlines become a single space). A multi-word required keyword
+# ('CUDA graphs', 'Flash Attention') that pdftotext wrapped across a line counts
+# 0 on the raw gate.txt but is still present in the document -- squeezing lets
+# G6.5 see it. This only STRENGTHENS the gate: a keyword genuinely absent is
+# still absent from the squeezed view (still FAILs), and a whitespace-free single
+# token cannot be hidden by squeezing, so its count is unchanged. The raw count
+# is preferred for the PASS message; the squeezed count is a floor used only when
+# a wrap would otherwise false-FAIL.
+tr -s ' \t\n' ' ' < "$WORK/gate.txt" > "$WORK/gate.squeezed" || die2 "keyword whitespace normalization failed"
 while IFS= read -r KW; do
     [ -n "$KW" ] || continue
     N=$(LC_ALL=C grep -oF "$KW" "$WORK/gate.txt" | wc -l | tr -d ' ')
+    NS=$(LC_ALL=C grep -oF "$KW" "$WORK/gate.squeezed" | wc -l | tr -d ' ')
+    if [ "$NS" -gt "$N" ]; then
+        N="$NS"
+    fi
     if [ "$N" != 0 ]; then
         result G6.5 PASS "required keyword present (case-sensitive): '$KW' x$N"
     else

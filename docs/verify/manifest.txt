@@ -46,7 +46,7 @@ PROHIBITED_WORDS=Go
 PROHIBITED_PHRASES=speculative decoding
 NONASCII_ALLOW=2013,2019,2022,2192,2206,00D7,2014,201C,201D
 DIGIT_BULLET_FLOOR=7
-SKILLS_MAX_LINES=3                # measures 4 today; owner Phase 5 -> WARN until then
+SKILLS_MAX_LINES=3                # Phase 5 rebuild brought this to 3 (target met)
 
 # --- Keyword tiers. Promotion = move an entry from KEYWORDS_TARGET to KEYWORDS_REQUIRED
 # --- in the same commit that adds the keyword. Present today = BLOCKER; absent = WARN.

@@ -231,7 +231,7 @@ assert_present() {
     if [ "$_ap" -ge 1 ]; then
         emit PASS "$1: '$2' present ($_ap match(es)) in $_apd"
     elif [ "$_ap" -eq 0 ]; then
-        emit FAIL "$1: '$2' is ABSENT from $_apd -- a Skills tier token Plan 05-01 landed was shortened, merged or dropped. Restore the literal verbatim; do not relax this assertion (05-CONTEXT.md D-01..D-05)"
+        emit FAIL "$1: '$2' is ABSENT from the whole-document text layer ($_apd) -- this is a document-wide ATS presence check, so the literal is gone from the ENTIRE document, not just the Skills block. Restore the literal verbatim wherever it belongs; do not relax this assertion (05-CONTEXT.md D-01..D-05)"
     else
         emit FAIL "$1: '$2' could not be measured against $_apd (unreadable or missing input) -- the verdict is UNKNOWN, which is never a pass"
     fi
@@ -293,7 +293,19 @@ assert_absent_word() {
 # manifest as DATA to cross-check rather than as configuration, which is why
 # --manifest exists.
 assert_promoted() {
+    # conjunct 1: present in the text layer -- wrap-safe for multi-word literals.
+    # A multi-word literal (e.g. 'CUDA graphs') can be broken across a pdftotext
+    # wrap point in the RAW stream and count 0 on a perfectly correct document
+    # (STATE.md [Phase 04 / close] BLOCKER, the reason SQUEEZED exists). The
+    # SQUEEZED stream is a presence superset of RAW, so single tokens (ONNX,
+    # Iceberg) are unaffected while a wrapped multi-word literal is still counted
+    # as present. Take the larger of the two counts: the squeezed stream is
+    # authoritative for presence whenever the raw stream wrapped the literal.
     _apr_gate=$(gcount -Fc "$2" "$GATE")
+    _apr_sq=$(gcount -Fc "$2" "$SQUEEZED")
+    if [ "$_apr_gate" -ge 0 ] && [ "$_apr_sq" -ge 0 ] && [ "$_apr_gate" -lt "$_apr_sq" ]; then
+        _apr_gate="$_apr_sq"
+    fi
     if [ -s "$WORK/kw-required.txt" ]; then
         _apr_req=$(gcount -Fxc "$2" "$WORK/kw-required.txt")
     else
