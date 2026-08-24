@@ -35,9 +35,9 @@ Requirements for milestone v1.0. Each maps to roadmap phases.
 
 ### GitHub Presence
 
-- [ ] **GH-01**: `random_walk` repo privatized (`gh api -X PATCH` with personal token)
-- [ ] **GH-02**: `rollout` README status line fixed to reflect actual implemented state (currently says "spec / pre-implementation"; tree shows 18 crates, 197 test paths, CI)
-- [ ] **GH-03**: `rollout` capability wording confirmed with user before the resume ships (must survive "walk me through it")
+- [ ] **GH-01**: `random_walk` repo privatized (`gh api -X PATCH` with personal token) — **DEFERRED (D-08, owner: resume-only).** `random_walk` is public but ~empty and not linked from the résumé, so leaving it public has no click-through impact (privatization was account-hygiene only). Ready command preserved in `04-CONTEXT.md` Deferred Ideas; no GitHub mutation performed in Phase 4.
+- [ ] **GH-02**: `rollout` README status line fixed to reflect actual implemented state (currently says "spec / pre-implementation"; tree shows 18 crates, 197 test paths, CI) — **DEFERRED (D-08, owner: resume-only).** Accepted trade-off: the featured `github.com/thunderock/rollout` link keeps reading its stale "spec / pre-implementation" status. Ready fix preserved in `04-CONTEXT.md` Deferred Ideas; no README edit performed in Phase 4.
+- [x] **GH-03**: `rollout` capability wording confirmed with user before the resume ships (must survive "walk me through it") — satisfied on the résumé side: wording owner-confirmed during discuss-phase (D-01) and shipped verbatim in Plan 04-01 Task 3.
 
 ### Visual
 
@@ -93,9 +93,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PG2-01 | Phase 4 | Complete |
 | PG2-02 | Phase 4 | Complete |
 | PG2-03 | Phase 4 | Complete |
-| GH-01 | Phase 4 | Pending |
-| GH-02 | Phase 4 | Pending |
-| GH-03 | Phase 4 | Pending |
+| GH-01 | Phase 4 | Deferred (D-08) |
+| GH-02 | Phase 4 | Deferred (D-08) |
+| GH-03 | Phase 4 | Complete |
 | PG2-04 | Phase 5 | Pending |
 | PG2-05 | Phase 5 | Pending |
 | PG2-06 | Phase 5 | Pending |
