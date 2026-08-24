@@ -163,17 +163,54 @@ build_one() {
   fi
 
   echo "   color PDF: build/palette/palette-$name.pdf"
-  measure "$name" "$A" "$D" "$pages"
+  MOUT="$(measure "$name" "$A" "$D" "$pages")"
+  printf '%s\n' "$MOUT"
+  # Accumulate the machine line for the final summary table (all-mode).
+  if [ -n "${SUMMARY_ACC:-}" ]; then
+    printf '%s\n' "$MOUT" | grep '^>> PALETTE' >> "$SUMMARY_ACC"
+  fi
   echo ""
 
   rm -rf "$SCRATCH"
 }
 
+# Render the accumulated machine lines as one aligned comparison table — the
+# side-by-side the VIS-01 checkpoint reads. Fixed bar restated in the header.
+print_summary() {
+  [ -s "$1" ] || return 0
+  echo "=============================================================="
+  echo "== SUMMARY — fixed WCAG bar: text>=7:1 rule>=3:1 grayText>=4.5:1 grayRule>=3:1, pages==2"
+  echo "=============================================================="
+  awk '
+    BEGIN {
+      printf "  %-9s %8s %8s %10s %10s %6s %8s\n", \
+             "palette","text","rule","grayText","grayRule","pages","VERDICT"
+    }
+    {
+      name=$3
+      for (i=1;i<=NF;i++) {
+        if ($i ~ /^text=/)     { t=$i;  sub(/text=/,"",t) }
+        if ($i ~ /^rule=/)     { r=$i;  sub(/rule=/,"",r) }
+        if ($i ~ /^grayText=/) { gt=$i; sub(/grayText=/,"",gt) }
+        if ($i ~ /^grayRule=/) { gr=$i; sub(/grayRule=/,"",gr) }
+        if ($i ~ /^pages=/)    { p=$i;  sub(/pages=/,"",p) }
+        if ($i ~ /^VERDICT=/)  { v=$i;  sub(/VERDICT=/,"",v) }
+      }
+      printf "  %-9s %8s %8s %10s %10s %6s %8s\n", name,t,r,gt,gr,p,v
+    }
+  ' "$1"
+  echo ""
+  echo "Open the eight PDFs in build/palette/ (four color + four grayscale) side by side to pick."
+}
+
 ARG="${1:-all}"
 if [ "$ARG" = "all" ]; then
+  SUMMARY_ACC="$(mktemp "${TMPDIR:-/tmp}/palette-summary.XXXXXX")"
   for n in teal navy oxblood graphite; do
     build_one "$n"
   done
+  print_summary "$SUMMARY_ACC"
+  rm -f "$SUMMARY_ACC"
 else
   build_one "$ARG"
 fi
