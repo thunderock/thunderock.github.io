@@ -30,7 +30,7 @@ SECTIONS=WORK EXPERIENCE|PUBLICATIONS|EDUCATION|RESEARCH EXPERIENCE / INDEPENDEN
 # left behind after its string leaves the document degrades into grep -Fx on the
 # empty string, which matches the region's first BLANK line.
 EDU_HEADING=EDUCATION
-EDU_INSTITUTION=Indiana University, Bloomington
+EDU_INSTITUTION=Indiana University
 EDU_DATE=Aug. 2021 – May 2023
 EDU_BIND_WINDOW=3
 
