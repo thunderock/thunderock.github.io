@@ -145,7 +145,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. The site's own career-break timeline entry is gone from `index.html`, so resume and site agree
   5. A final `make verify` passes, and the PDF pasted as plain text into a form field reads in correct order with the handle and URLs intact
 
-**Plans**: 2/3 plans executed
+**Plans**: 3/3 plans executed
 **UI hint**: yes
 
 **Wave 1**
@@ -155,7 +155,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 **Wave 2** *(depends on 06-01 + 06-02)*
 
-- [ ] 06-03-PLAN.md — site-sync regression net (verify-site-regressions.sh, green, each class failable) wired into `make verify` as REGRESS6, final `make verify` + plain-text paste test (SITE-01, SITE-02)
+- [x] 06-03-PLAN.md — site-sync regression net (verify-site-regressions.sh, green, each class failable) wired into `make verify` as REGRESS6, final `make verify` + plain-text paste test (SITE-01, SITE-02)
 
 ## Progress
 
@@ -169,7 +169,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 (Phase 4 may ru
 | 3. Adobe Rebuild & Staff-Signal Bullets | 8/8 | Complete    | 2026-08-23 |
 | 4. Page-2 Restructure & GitHub Presence | 2/2 | Complete   | 2026-08-24 |
 | 5. Skills Rebuild | 2/2 | Complete    | 2026-08-24 |
-| 6. Palette & Site Sync | 2/3 | In Progress|  |
+| 6. Palette & Site Sync | 3/3 | In Progress|  |
 
 ## Ordering Rationale
 
