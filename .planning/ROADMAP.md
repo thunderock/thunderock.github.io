@@ -22,7 +22,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 3: Adobe Rebuild & Staff-Signal Bullets** - Spend the budget on evidenced fault-tolerance / distributed-inference content (completed 2026-08-23)
 - [x] **Phase 4: Page-2 Restructure & GitHub Presence** - Projects → `rollout` + `graph_ml`; compress page 2; make linked repos click-through-safe (completed 2026-08-24; GH-01/GH-02 deferred per D-08)
 - [x] **Phase 5: Skills Rebuild** - Derive keyword-tier Skills from finalized bullets, every item interview-defensible
-- [ ] **Phase 6: Palette & Site Sync** - Palette chosen against frozen content; `index.html` tells the same story
+- [x] **Phase 6: Palette & Site Sync** - Palette chosen against frozen content; `index.html` tells the same story (completed 2026-08-24)
 
 ## Phase Details
 
@@ -169,7 +169,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 (Phase 4 may ru
 | 3. Adobe Rebuild & Staff-Signal Bullets | 8/8 | Complete    | 2026-08-23 |
 | 4. Page-2 Restructure & GitHub Presence | 2/2 | Complete   | 2026-08-24 |
 | 5. Skills Rebuild | 2/2 | Complete    | 2026-08-24 |
-| 6. Palette & Site Sync | 3/3 | In Progress|  |
+| 6. Palette & Site Sync | 3/3 | Complete    | 2026-08-24 |
 
 ## Ordering Rationale
 
