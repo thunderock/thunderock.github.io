@@ -103,7 +103,9 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. `speculative decoding` and `Go` appear **zero** times in the extracted text of the entire document
   4. The `C++` token is anchored to NetSpeed NoC modules and `graph_ml`'s C++/Cython kernels, both verifiable by a reader from the document itself
   5. Every stretch item carries a recorded evidence tier (built / operated / evaluated) plus the user's **per-item** approval — not one blanket "looks good" on a finished list
-**Plans**: TBD
+**Plans**: 2 plans
+- [ ] 05-01-PLAN.md — Rebuild Skills into 3 keyword tiers (≤3 lines, 17 exact forms), same-commit manifest promotions + P3.44/P3.65 H100 flips, new Phase-5 regression net wired into make
+- [ ] 05-02-PLAN.md — Per-item approval checkpoint (blocking, evidence tier per stretch item) + phase close (tick PG2-04/05/06)
 
 ### Phase 6: Palette & Site Sync
 **Goal**: The artifact set ships — palette chosen against the document the user will actually send, and site text telling the same story as the rebuilt resume
