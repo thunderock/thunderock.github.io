@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Staff MLE Resume Optimization
-status: executing
-last_updated: "2026-08-24T02:01:16.949Z"
+status: verifying
+last_updated: "2026-08-24T02:13:32.252Z"
 last_activity: 2026-08-24
 progress:
   total_phases: 6
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 15
-  completed_plans: 14
-  percent: 50
+  completed_plans: 15
+  percent: 67
 ---
 
 # Project State
@@ -19,10 +19,10 @@ progress:
 
 Phase: 4 (page-2-restructure-github-presence) — EXECUTING
 Plan: 2 of 2
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-08-24
 
-Progress: [█████████░] 93%
+Progress: [██████████] 100%
 
 ## Project Reference
 
@@ -96,9 +96,13 @@ Decisions are logged in PROJECT.md Key Decisions table. Affecting current work:
 - [Phase 03]: [Phase 3 / 03-08]: UPSTREAM ARTIFACT CORRECTIONS this phase discovered, recorded so measurement supersedes the document rather than the reverse. (1) **The Swiggy rendered-line count in `03-RESEARCH.md` is WRONG in two places and the measurement supersedes both**: `:487` states "gate 36-46, 8 rendered lines" and `:666` restates "Swiggy, **8** today" as the EXP-07c line-neutrality oracle, but 36 through 46 inclusive is **11** lines, the per-bullet breakdown sums to 11 (2+2+2+2+2+1), and the region measures **11** at both 03-03 and this end state. A differential neutrality check that had trusted the 8 would have reported a **false regression of +3 lines on an untouched block**. Flipkart's 9 in the same rows is correct. Related and equally load-bearing: those gate spans are true only at the moment they were written -- Adobe grew four times this phase, shifting every line below it, so a neutrality check must re-derive regions from boundaries (and from BOTH header rows, per the WR-01 record above), never from stored line numbers. (2) **`G6.6`'s target-keyword WARN fires UNCONDITIONALLY, with no branch on the measured count** -- read from the implementation, not assumed: the loop computes `N` and then calls `warn G6.6 ... "target keyword '$KW' x$N"` on every iteration, so a keyword that has been ADDED to the document but NOT promoted into `KEYWORDS_REQUIRED` prints the same advisory it printed at x0 and never escalates. Consequence, stated plainly: **`G6.5`/`G6.6` are the promotion CONVENTION, not a promotion GATE**, and the only machine backing for same-commit promotion anywhere in this repo is the new P3 net's promotion triple -- `P3.42`-`P3.45`, each a three-conjunct assertion (present in the text layer AND a whole pipe-field of `KEYWORDS_REQUIRED` AND no `KEYWORDS_TARGET` field left carrying its `name:` prefix), all four PASS at the end state for `torch.compile`, `A100`, `H100` and `Triton`. Phase 5 adds keywords and inherits this: a promotion it lands outside that triple's coverage has no gate behind it. -- Phase 2's rule is that a predicted figure written as measured is how a wrong number survives into the next phase. Both corrections are of exactly that shape: an arithmetic slip promoted into an oracle, and a convention mistaken for an assertion.
 - [Phase 03]: [Phase 3 / 03-08]: PHASE-5-OWNED KEYWORD LANDED EARLY, and the ownership label is recorded as routing rather than permission. `Triton` was promoted from `KEYWORDS_TARGET` into `KEYWORDS_REQUIRED` by 03-05 and reads **x1** at `G6.5` PASS at the end state, with `P3.45` asserting the full promotion triple. This was unconditional rather than branch-dependent: **both** D-08 branches name Triton-generated kernels, so 03-05 promoted it either way. The point worth carrying is that a `KEYWORDS_TARGET` entry's `:phase` suffix is a **WARN-ROUTING LABEL** -- it decides which phase a `G6.6` advisory is addressed to -- and is **not a permission gate**: nothing prevents an earlier phase from landing and promoting a later phase's target, and nothing should, because the promotion rule is same-commit-as-the-content and the content landed here. Phase 5's PG2-04 obligation is therefore **ADDITIVE, not duplicated**: its Skills-tier form of Triton is a second surface for the same keyword, and Phase 5 must not read this early promotion as PG2-04 already discharged. **`CUDA graphs` was deliberately LEFT UNPROMOTED on both D-08 branches** and still reads `G6.6` **x0** with owner Phase 3 at the end state, because D-07's shipped wording is the hyphenated singular `CUDA-graph capture`, which the fixed-string plural target never matches. Promoting it would require either changing shipped honest wording to satisfy a needle or relaxing the needle -- both forbidden. It stays a Phase-5 PG2-04 target, and the WARN naming Phase 3 as owner is the record that the decision was taken here rather than overlooked. Finally, on the Class E gap: D-08 resolved to the branch on which the bridge clause legitimately names CUDA-graph capture, so the `EXP-03c/03-05` `CUDA` ABSENCE assertion was **deliberately NOT added** to `scripts/verify-phase3-regressions.sh` and does **not** stand in the net -- it survives only as the commented RECORDED GAP block at the end of Group 5, `grep -Fc 'EXP-03c/03-05'` returns 1 from that comment alone, there is no live `assert_absent 'CUDA'` anywhere in the file, and `LC_ALL=C grep -Fci CUDA docs/main.tex` reads **1**, which is the CORRECT value on this branch rather than a leak. Adding it would have asserted the opposite of the truth and been permanently red on a correct document. -- A phase boundary in a keyword table is a routing hint, not a lock; saying so explicitly stops Phase 5 from either re-promoting a keyword that is already required or treating its own Skills obligation as already met.
 - [Phase 03]: Single-file LaTeX source is a standing constraint: the entire resume lives in docs/main.tex with no local \input/\include splits, so the source compiles anywhere with a standard TeX distribution (distro-shipped inputs like glyphtounicode are fine). Verified today: main.tex is the only .tex in the repo. Applies to all future phases (4-6): never split sections into separate files.
-- [Phase ?]: 04-01: D-05 owner override — Teaching left byte-unchanged (3 TA items), intentional deviation from ROADMAP Phase-4 criterion 4
-- [Phase ?]: 04-01: spike Variant A graph_ml block needed one escaped underscore (\_) in the \href display text to compile; text layer unchanged (Rule 1 auto-fix)
-- [Phase ?]: 04-01: EDU_INSTITUTION manifest needle synced to 'Indiana University' in the same commit as the D-06 source edit (D-07); G6.12 logic untouched
+- [Phase 4]: 04-01: D-05 owner override — Teaching left byte-unchanged (3 TA items), intentional deviation from ROADMAP Phase-4 criterion 4
+- [Phase 4]: 04-01: spike Variant A graph_ml block needed one escaped underscore (\_) in the \href display text to compile; text layer unchanged (Rule 1 auto-fix)
+- [Phase 4]: 04-01: EDU_INSTITUTION manifest needle synced to 'Indiana University' in the same commit as the D-06 source edit (D-07); G6.12 logic untouched
+- [Phase 4]: GH-01 (privatize random_walk) DEFERRED by owner (D-08) — unlinked/empty, no résumé click-through; ready command preserved, not ticked
+- [Phase 4]: GH-02 (fix rollout README stale status) DEFERRED by owner (D-08) — accepted trade-off: featured rollout link reads stale status; ready fix preserved, not ticked
+- [Phase 4]: GH-03 SATISFIED + ticked — rollout wording owner-confirmed (D-01), shipped in 04-01; no checkpoint (confirmation pre-existed)
+- [Phase 4]: Page-2 content net verify-phase4-regressions.sh (38 P4.x, green on arrival, each class --gate-text failable) wired into make; D-05 Teaching-3-TA override machine-recorded via assert_count
 
 ### Pending Todos
 
@@ -125,8 +129,8 @@ Items acknowledged and carried forward:
 
 ## Session Continuity
 
-Last session: 2026-08-24T02:01:06.133Z
-Stopped at: Completed 04-01-PLAN.md
+Last session: 2026-08-24T02:13:32.245Z
+Stopped at: Completed 04-02-PLAN.md (phase 4 complete)
 Resume file: None
 
 ## Performance Metrics
@@ -147,3 +151,4 @@ Resume file: None
 | Phase 03 P07 | 48 min | 2 tasks | 2 files |
 | Phase 03 P08 | 17 min | 3 tasks | 9 files |
 | Phase 04 P01 | 6min | 3 tasks | 8 files |
+| Phase 04 P02 | 5min | 2 tasks | 5 files |

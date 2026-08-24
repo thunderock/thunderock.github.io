@@ -128,7 +128,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 (Phase 4 may ru
 | 1. Verification Harness | 3/3 | Complete    | 2026-08-22 |
 | 2. Page-1 Budget & Text-Layer Defects | 2/2 | Complete    | 2026-08-22 |
 | 3. Adobe Rebuild & Staff-Signal Bullets | 8/8 | Complete    | 2026-08-23 |
-| 4. Page-2 Restructure & GitHub Presence | 2/2 | Complete    | 2026-08-24 |
+| 4. Page-2 Restructure & GitHub Presence | 2/2 | Complete   | 2026-08-24 |
 | 5. Skills Rebuild | 0/TBD | Not started | - |
 | 6. Palette & Site Sync | 0/TBD | Not started | - |
 
