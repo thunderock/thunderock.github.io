@@ -192,13 +192,13 @@ I am a Senior Machine Learning Engineer at <b>Adobe Firefly</b>, with a Master's
                                 </div>
                                 <div class="col-md-7 col-sm-12">
                                     <ul>
-                                        <li>Leading parts of ML Platform — distributed inference for billions of images/videos and training frameworks for foundation models.</li>
-                                        <li>Designed and led the org's online and offline inference systems: vLLM + Ray for LLMs like Falcon-40B / Llama 2 70B, and Ray Data + PyTorch Lightning for offline inference achieving 3–8K images/sec on 32 GPUs (10–50× faster image loading).</li>
-                                        <li>Leading development of a PyTorch-based foundation model training framework adopted across the org — plugin-based FSDP/FSDP2 strategies, Flash Attention 2/3, and context/distributed attention for DiT text-to-image and text-to-video training.</li>
-                                        <li>Co-built the underlying Kubernetes platform: plugin pipelines (KEDA-autoscaled on SQS), BuildKit/ECR image builds, a Rust control plane, and an MCP interface so AI agents can drive build/deploy/inference end-to-end.</li>
-                                        <li>Built the org's first data quality framework on Cerberus, used across enrichment pipelines to validate the correctness of feature-generation outputs.</li>
-                                        <li>Built a CLI-driven build system (BuildKit → ECR on KEDA-scaled Kubernetes jobs) and modeled data pipelines as horizontally-scaling Source → Transform → Sink plugins with no pod-to-pod communication.</li>
-                                        <li>Modeled a data lineage/provenance graph across datasets, assets, builds, and inferences, backed by the Rust control plane serving as the platform's authoritative state.</li>
+                                        <li>Lead fault-tolerant distributed inference and training infrastructure for the org's ML platform — GPU pipelines on Kubernetes engineered to survive node loss and partial failure, from hyperscaled daily ingestion through production model inference.</li>
+                                        <li>Designed and led the org's online and offline inference systems: online inference on vLLM + Ray for rapid experimentation with LLMs such as Falcon-40B and Llama 2 70B; offline inference on Ray Data + PyTorch Lightning, introducing torch.compile(mode="max-autotune") in production as a compiler bridge — compiler-generated Triton kernels, operator fusion, and CUDA-graph capture.</li>
+                                        <li>Modeled data pipelines as horizontally-scaling Source → Transform → Sink plugins with no pod-to-pod communication, KEDA-autoscaled on SQS queue depth.</li>
+                                        <li>Leading development of a PyTorch foundation-model training framework adopted across the org for training generative models on billions of images and videos — a plugin-based strategy pattern over FSDP/FSDP2, Flash Attention 2/3, and context/distributed attention for DiT text-to-image and text-to-video training.</li>
+                                        <li>Built the CLI-driven build and deployment system (BuildKit images on KEDA-scaled Kubernetes jobs, pushed to ECR), fronted by a Rust control plane and an MCP interface so AI agents can drive builds, deployments, and inference.</li>
+                                        <li>Solely authored the org's fault-tolerant training-data governance and lineage subsystem in Rust: idempotent claim/receipt registration, immutable S3 evidence layouts, and manifest-after-data publication.</li>
+                                        <li>Wrote the org's first data quality framework on Cerberus, used across enrichment pipelines to validate the correctness of feature-generation outputs.</li>
                                     </ul>
                                 </div>
                             </div>
