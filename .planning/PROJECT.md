@@ -29,9 +29,9 @@ The resume gets past ATS keyword screens and recruiter scans for Staff MLE / inf
 - [x] Adobe Firefly section rebuilt on commit-verified evidence, positioned for inference-framework/optimization roles — Validated in Phase 3: Adobe Rebuild & Staff-Signal Bullets (fault-tolerance/distributed-inference lead, Rust governance topic, torch.compile compiler bridge, all figures evidence-traced; EXP-08: 3 drafts rejected, mentoring line approved+shipped)
 - [x] Language keyword-optimized against Staff MLE / inference-framework job postings (research-driven) — Validated in Phase 5: Skills Rebuild (page-1 half landed in Phase 3; Skills half now landed — 3-tier taxonomy carrying all 17 exact-match forms incl. ONNX Runtime/H100/CUDA graphs/Iceberg, rendered in ≤3 lines)
 - [x] Skills section stretched only to interview-defensible adjacent tech (user approves final list) — Validated in Phase 5: Skills Rebuild (per-item approval checkpoint: 10 stretch items each individually confirmed with a recorded evidence tier — built/operated/evaluated; concept-vocabulary group labeled `Concepts:`; Go/speculative-decoding zero whole-document)
-- [ ] 2–3 accent palette proposals rendered as PDF samples; user picks (teal stays if none win)
-- [ ] `index.html` hero/about synced with new resume positioning
-- [ ] Experience section still fits page 1 exactly; PDF stays ATS-parsable (Phase 2: text-layer defects cleared, `make verify` green, 50.4pt page-1 budget freed; Phases 3-6 spend it)
+- [x] 2–3 accent palette proposals rendered as PDF samples; user picks (teal stays if none win) — Validated in Phase 6: Palette & Site Sync (navy/oxblood/graphite + teal rendered side-by-side with grayscale, all clearing the WCAG bar; user picked the teal incumbent at the blocking VIS-01 checkpoint, dead `accentlight` definition removed; page 1 byte-frozen)
+- [x] `index.html` synced with the finalized resume across all mirrored sections — Validated in Phase 6: Palette & Site Sync (scope expanded beyond hero/about: Adobe block rewritten to the rebuilt-resume voice with retired figures gone, Projects → `rollout`+`graph_ml`, grad-era Competitive/Certifications pruned, career-break entry removed, Education mirrored; a `verify-site-regressions.sh` net wired as `REGRESS6` machine-guards it)
+- [x] Experience section still fits page 1 exactly; PDF stays ATS-parsable — Validated through milestone close (page 1 byte-frozen at `798c0fb` across Phases 3–6; final `make verify` green — 2 pages, ATS text layer intact, six regression nets passing)
 
 ### Out of Scope
 
@@ -102,4 +102,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-08-24 after Phase 5 (Skills Rebuild) completion — Skills rebuilt into a 3-tier keyword taxonomy (≤3 lines, all 17 exact-match forms), per-item interview-defensibility approved, code-review BLOCKER (multi-word wrap-safe gate) fixed; only Phase 6 (palette & site sync) remains*
+*Last updated: 2026-08-24 after Phase 6 (Palette & Site Sync) completion — **milestone v1.0 complete (6/6 phases)**. Palette chosen at the VIS-01 checkpoint (teal incumbent kept, dead `accentlight` removed); `index.html` fully synced to the rebuilt resume with a `REGRESS6` site net; final `make verify` green (2 pages, ATS layer intact, six regression nets passing) and the plain-text paste test approved. Commits are local — the site publishes only on the owner's push to `master`.*
