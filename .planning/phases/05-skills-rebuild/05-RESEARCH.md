@@ -367,15 +367,17 @@ No missing dependencies. `[VERIFIED: which pdftotext; docs/AshutoshTiwari.pdf pr
 
 **If any Concepts-line wrap or G6.5 wrap risk materializes, it surfaces loudly at build/verify — none is a silent failure.**
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Where do the 3 new `assert_promoted` assertions live — new Phase-5 net or appended to the P3 net?**
    - Known: STATE.md says "extend the triple"; the H100 flip must stay in the P3 net (P3.44/P3.65 are there).
    - Unclear: whether growing `P3_SEQ` past 72 (option B) is acceptable vs. isolating Phase-5 promotions (option A).
    - Recommendation: **option A** — Phase-5 net carries its own `assert_promoted` copy + `--manifest`; P3 net only gets the in-place H100 flip. Record the choice.
+   - **RESOLVED:** option A adopted in Plan 05-01 (Task 2) — the new `scripts/verify-phase5-regressions.sh` owns the ONNX/CUDA graphs/Iceberg `assert_promoted` gate with its own `--manifest` plumbing; the P3 net only receives the in-place P3.44/P3.65 H100 flip (H100's promotion stays machine-gated there).
 2. **Does the bare `PyTorch` token stay listed alongside `PyTorch Lightning` in Skills?**
    - Known: bare `PyTorch` is x5 already (satisfied); `PyTorch Lightning` satisfies it by substring.
    - Recommendation: Claude's discretion (CONTEXT) — a fit/space call; drop bare `PyTorch` from Skills if space is tight (it stays required-keyword-satisfied by the page-1/page-2 occurrences and the Lightning substring).
+   - **RESOLVED:** left to Claude's discretion per CONTEXT and settled in Plan 05-01 Task 1's action — bare `PyTorch` in Skills is discretionary (redundant by `PyTorch Lightning` substring), to be dropped if space is tight while the required keyword stays satisfied by page-1/page-2 occurrences and the Lightning substring.
 
 ## Sources
 
