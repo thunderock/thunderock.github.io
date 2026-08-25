@@ -306,21 +306,21 @@ assert_present "PG2-01 rollout repo link (text layer)"  'github.com/thunderock/r
 assert_present "PG2-01 graph_ml repo link (text layer)" 'github.com/thunderock/graph_ml' "$GATE"
 assert_present "PG2-01 graph_ml C++/Cython anchor (whitespace-squeezed text layer)" 'C++/Cython' "$SQUEEZED"
 
-# The seven retired grad-school project names, absent from the published text
-# layer. Whitespace-free names match the raw gate stream; multi-word names would
-# only ever fail to match if broken, so absence there is conservative-safe.
+# Grad-school project names that STAY absent from the published text layer. The
+# owner restored bias_manifold, BiasNet and DeepFoodie to fill page 2 (superseding
+# D-01's exactly-two rollout+graph_ml), so those three are no longer asserted
+# absent; the remaining grad-era entries stay retired. Whitespace-free names match
+# the raw gate stream; multi-word names would only ever fail to match if broken,
+# so absence there is conservative-safe.
 while IFS= read -r RETIRED; do
     [ -n "$RETIRED" ] || continue
     assert_absent "PG2-01 retired project name absent from the text layer" "$RETIRED" "$GATE" \
-        "A retired 2017-2022 grad-school project is back on page 2. Selected Projects is exactly rollout + graph_ml (04-CONTEXT.md D-01). Remove the resurrected entry."
+        "A still-retired grad-school project is back on page 2. Only rollout, graph_ml, bias_manifold, BiasNet and DeepFoodie are featured; remove this entry."
 done <<'RETIRED_NAMES'
-BiasNet
-DeepFoodie
 BlindNet
 Continuous Dominant Set
 Humana
 AnalyticsVidhya
-Bias Manifolds
 RETIRED_NAMES
 
 # A representative subset asserted absent in SOURCE too, to catch a commented-out
@@ -330,15 +330,16 @@ while IFS= read -r SRC_RETIRED; do
     assert_absent "PG2-01 retired project name absent from the source" "$SRC_RETIRED" "$TEX" \
         "A retired project name is back in docs/main.tex (possibly commented out). Selected Projects is exactly rollout + graph_ml (04-CONTEXT.md D-01)."
 done <<'SRC_RETIRED_NAMES'
-BiasNet
 Continuous Dominant Set
 AnalyticsVidhya
 SRC_RETIRED_NAMES
 
 # Structure guard: \resumeProjectHeading is defined once in the preamble and used
-# exactly twice (rollout + graph_ml). Exactly 3 in source; a 4th use means a third
-# project heading crept in, a count of 2 means a use was dropped.
-assert_count "PG2-01 \\resumeProjectHeading structure (source)" '\resumeProjectHeading' "$TEX" 3
+# five times (rollout, graph_ml, bias_manifold, BiasNet, DeepFoodie -- the owner
+# restored three grad-era projects to fill page 2, superseding D-01's exactly-two).
+# Exactly 6 in source; a 7th use means an unplanned heading crept in, a lower count
+# means a use was dropped.
+assert_count "PG2-01 \\resumeProjectHeading structure (source)" '\resumeProjectHeading' "$TEX" 6
 
 # ---------------------------------------------------------------------------
 # PG2-02 -- the first-author NetSci/IC2S2 citation + venue + Poster links survive,

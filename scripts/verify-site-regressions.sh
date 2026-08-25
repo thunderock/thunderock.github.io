@@ -301,14 +301,15 @@ assert_absent "S6 dropped GPA absent (raw source)" \
     "A dropped GPA is back on the public site. D-06 drops both GPAs. Fix index.html (Plan 06-02), never this needle."
 
 # ---------------------------------------------------------------------------
-# S6 -- Bloomington absent (D-06). The city is dropped from Education AND swept
-# from the hero/about paragraph ('Indiana University, Bloomington' -> 'Indiana
-# University'). The bare city name has no other legitimate occurrence.
+# S6 -- Education uses the implicit-city campus name (owner update, supersedes
+# D-06's bare 'Indiana University'): the site reads 'Indiana University Bloomington'
+# so the location is implicit in the official campus name rather than a dropped
+# city cell. Assert the campus-name form is present on the public site (this also
+# keeps the site's Education in sync with the resume's EDU_INSTITUTION).
 # ---------------------------------------------------------------------------
 
-assert_absent "S6 Bloomington city absent (raw source)" \
-    'Bloomington' "$HTML" \
-    "The Bloomington city is back on the public site. D-06 renders 'Indiana University' city-free. Fix index.html (Plan 06-02), never this needle."
+assert_present "S6 Education uses the implicit-city campus name (raw source)" \
+    'Indiana University Bloomington' "$HTML"
 
 # ---------------------------------------------------------------------------
 # S6 -- pruned grad-era sections absent (D-05). The two off-message sections with

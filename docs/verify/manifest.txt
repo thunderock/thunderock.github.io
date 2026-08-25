@@ -30,7 +30,7 @@ SECTIONS=WORK EXPERIENCE|PUBLICATIONS|EDUCATION|RESEARCH EXPERIENCE / INDEPENDEN
 # left behind after its string leaves the document degrades into grep -Fx on the
 # empty string, which matches the region's first BLANK line.
 EDU_HEADING=EDUCATION
-EDU_INSTITUTION=Indiana University
+EDU_INSTITUTION=Indiana University Bloomington
 EDU_DATE=Aug. 2021 – May 2023
 EDU_BIND_WINDOW=3
 
@@ -46,7 +46,7 @@ PROHIBITED_WORDS=Go
 PROHIBITED_PHRASES=speculative decoding
 NONASCII_ALLOW=2013,2019,2022,2192,2206,00D7,2014,201C,201D
 DIGIT_BULLET_FLOOR=7
-SKILLS_MAX_LINES=3                # Phase 5 rebuild brought this to 3 (target met)
+SKILLS_MAX_LINES=5                # owner added an ML & Research tier to help fill page 2 (Skills now renders 5 lines)
 
 # --- Keyword tiers. Promotion = move an entry from KEYWORDS_TARGET to KEYWORDS_REQUIRED
 # --- in the same commit that adds the keyword. Present today = BLOCKER; absent = WARN.
