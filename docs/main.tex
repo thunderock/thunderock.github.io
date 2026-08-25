@@ -152,7 +152,7 @@
         \resumeItemListStart
           \resumeItem{Built online inference on vLLM + Ray for rapid experimentation with LLMs such as Falcon-40B and Llama~2~70B.}
           \resumeItem{Built offline inference on Ray Data + PyTorch Lightning; a module benchmarked on that engine at 1.09M rows, 8$\times$A100, 16 fractional-GPU actors. Introduced torch.compile(mode="max-autotune") in production: compiler-generated Triton kernels, fusion, CUDA-graph capture.}
-          \resumeItem{Modeled pipelines as horizontally-scaling Source $\to$ Transform $\to$ Sink plugins with no pod-to-pod communication, KEDA-autoscaled on SQS queue depth; batched sends retry on exponential backoff with full jitter, and undeliverable work drains to a DLQ.}
+          \resumeItem{Modeled pipelines as horizontally-scaling plugins with no pod-to-pod communication, KEDA-autoscaled on SQS queue depth; batched sends retry on exponential backoff with full jitter, and undeliverable work drains to a DLQ.}
         \resumeItemListEnd
       \resumeTopic{Foundation Model Training Framework}{Leading development of a PyTorch-based training framework adopted across the org for training generative models on billions of images and videos.}
         \resumeItemListStart
@@ -276,7 +276,7 @@ A non-parametric contrastive framework for fairness-aware graph representation l
 \resumeProjectHeading
     {\textbf{rollout} $|$ \emph{Rust, Distributed Training \& Inference, RL for LLMs, vLLM, PyO3, Postgres}}{\href{https://github.com/thunderock/rollout}{\underline{github.com/thunderock/rollout}}}
     \resumeItemListStart
-      \resumeItem{Multi-node reinforcement-learning framework for LLMs in Rust (18 crates, 197 test files, CI): PPO/GRPO/DPO/SFT/RM algorithms, vLLM-backed batch + online inference, actor/learner split with work-stealing, training-state and CRIU process snapshots, PyO3 in-process plugins.}
+      \resumeItem{Multi-node reinforcement-learning framework for LLMs in Rust (18 crates, extensive test coverage, CI): PPO/GRPO/DPO/SFT/RM algorithms, vLLM-backed batch + online inference, actor/learner split with work-stealing, training-state and CRIU process snapshots, PyO3 in-process plugins.}
     \resumeItemListEnd
 \resumeProjectHeading
     {\textbf{graph\_ml} $|$ \emph{Python, PyTorch Geometric, C++/Cython}}{\href{https://github.com/thunderock/graph_ml}{\underline{github.com/thunderock/graph\_ml}}}
@@ -305,8 +305,10 @@ A non-parametric contrastive framework for fairness-aware graph representation l
 \section{Technical Skills}
  \begin{itemize}[leftmargin=0.15in, label={}]
     \small{\item{
-     \textbf{Languages \& Inference}{: Rust, C++, Python, vLLM, ONNX Runtime, Triton, torch.compile, CUDA graphs, A100, H100} \\
-     \textbf{Training \& Distributed}{: PyTorch Lightning, FSDP, Flash Attention, Ray, Kubernetes, KEDA, Spark, Iceberg} \\
+     \textbf{Languages \& Inference}{: Rust, C++, Python, PyO3, vLLM, ONNX Runtime, Triton, torch.compile, CUDA graphs, A100, H100} \\
+     \textbf{Training \& Distributed}{: PyTorch, PyTorch Lightning, FSDP, Flash Attention, NCCL, Ray} \\
+     \textbf{RL \& Alignment}{: PPO, GRPO, DPO, SFT, RLHF / reward modeling, actor-critic} \\
+     \textbf{Platform \& Cloud}{: Kubernetes, KEDA, Docker / BuildKit, AWS (EMR, ECR, S3, SQS), Spark, Flink, Iceberg, Postgres} \\
      \textbf{Concepts}{: tensor parallelism, pipeline parallelism, Mixture of Experts (MoE) parallelism, KV-cache management, continuous batching} \\
      \textbf{ML \& Research}{: Graph Neural Networks, Contrastive Learning, Recommendation Systems, PyTorch Geometric, TensorFlow, scikit-learn, Pandas, NumPy}
     }}
@@ -322,3 +324,4 @@ A non-parametric contrastive framework for fairness-aware graph representation l
 
 %-------------------------------------------
 \end{document}
+
